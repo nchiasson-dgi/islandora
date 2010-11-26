@@ -55,9 +55,6 @@ class ModsFormBuilder extends FormBuilder {
 	$xpath = new DOMXPath($dom);
 	// Register the php: namespace (required)
 	$xpath->registerNamespace("php", "http://php.net/xpath");
-
-	// Register PHP functions (no restrictions)
-	$xpath->registerPHPFunctions();
 	
 	foreach ($elements as $element) {
 
