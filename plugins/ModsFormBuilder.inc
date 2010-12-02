@@ -310,7 +310,7 @@ class ModsFormBuilder extends FormBuilder
     $dom = DOMDocument::loadXML($content);
     $xpath = new DOMXPath($dom); // MODS.xml data access
     $xpath->registerNamespace("php", "http://php.net/xpath"); // Register the php: namespace (required)
-    $xpath->registerNamespace("mods", $MODS_NS); // Register the mods: namespace (required)
+    $xpath->registerNamespace("mods", self::$MODS_NS); // Register the mods: namespace (required)
 
     foreach ($contentModelFormElements as $contentModelFormElement) {
       $formElement = new FormElement($contentModelFormElement, $xpath);
