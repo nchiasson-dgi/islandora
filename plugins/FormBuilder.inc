@@ -146,7 +146,7 @@ class FormBuilder {
     if (!empty($form_values['ingest-file-location'])) {
       $this->createFedoraDataStreams($form_values, $dom, $rootElement);
     }
-    $this->createPolicy($collectionPid, &$dom, &$rootElement);
+    $this->createPolicy($collectionPid, $dom, $rootElement);
 
     try {
       
