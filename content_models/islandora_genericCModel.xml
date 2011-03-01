@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foxml:digitalObject VERSION="1.1" PID="islandora:genericCModel"
+xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
+<foxml:objectProperties>
+<foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Generic Content Model for Fedora Attach"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="fedoraAdmin"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2010-01-26T21:29:20.416Z"/>
+<foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2010-03-11T21:01:44.921Z"/>
+</foxml:objectProperties>
+<foxml:datastream ID="DC" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+<foxml:datastreamVersion ID="DC1.0" LABEL="Dublin Core Record for this object" CREATED="2010-01-26T21:29:20.416Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="396">
+<foxml:xmlContent>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+  <dc:title>Generic Content Model for Fedora Attach</dc:title>
+  <dc:identifier>islandora:genericCModel</dc:identifier> 
+</oai_dc:dc>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="ISLANDORACM" CONTROL_GROUP="X" STATE="A" >
+  <foxml:datastreamVersion ID="ISLANDORACM.0" MIMETYPE="application/xml" LABEL="ISLANDORACM.0">
+    <foxml:xmlContent>
+      <content_model name="genericCModel">
+     <mimetypes>
+        <type>*</type>
+      </mimetypes>
+       <display_in_fieldset>
+        <datastream id="QDC">
+            <method>
+                <file>plugins/ShowStreamsInFieldSets.inc</file>
+                <class_name>ShowStreamsInFieldSets</class_name>
+                <method_name>showQdc</method_name>
+            </method>
+        </datastream>
+        <datastream id="OBJ">
+            <method>
+                <file>plugins/ShowStreamsInFieldSets.inc</file>
+                <class_name>ShowStreamsInFieldSets</class_name>
+                <method_name>showOBJLink</method_name>
+            </method>
+        </datastream>
+    </display_in_fieldset>
+    <!--<ingest_rules>
+        <rule>
+            <applies_to>
+              application/pdf
+            </applies_to>
+             <methods>
+                <method>
+                    <file>plugins/ImageManipulation.inc</file>
+                    <class_name>ImageManipulation</class_name>
+                    <method_name>createThumbnailFromPDF</method_name>
+                    <modified_files_ext>jpg</modified_files_ext>
+                    <datastream_id>TN</datastream_id>
+                    <parameters>
+                        <parameter name="width">100</parameter>
+                        <parameter name="height">120</parameter>
+                    </parameters>
+                </method>
+            </methods>           
+        </rule>
+      </ingest_rules>-->
+  </content_model>
+    </foxml:xmlContent>
+  </foxml:datastreamVersion>
+</foxml:datastream>
+</foxml:digitalObject>
