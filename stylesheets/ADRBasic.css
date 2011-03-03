@@ -1,39 +1,47 @@
 /* 
-    Document   : coccc
+    Document   : ADRBasic.inc
     Created on : 4-Oct-2010, 4:00:18 PM
     Author     : default
     Description:
         Purpose of the stylesheet follows.
 */
-
-/* 
-   TODO customize this sample style
-   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
-*/
-
 .fedora_object_container {
-   position: relative;
-   }
+    position: relative;
+}
 
-.fedora_mods_container {
-   position: relative;
-   float: left;
-   left: 0;
-   width: 75%;
-   }
+.x-tab-panel-header-plain ul {
+    padding: 0px;
+    margin: 0px;
+    margin-bottom: -3px;
+}
 
-.fedora_links_container {
-  vertical-align:top;
-   position: absolute;
-   right: 0;
-   width: 20%;
-   padding-left: 5px;
-   clear: both;
-   }
-.fedora_detailed_list {
-  vertical-align:top;
-   position: relative;
-   left: 0;
-   padding-left: 5px;
-   clear: both;
-   }
+/* default loading indicator for ajax calls */
+.loading-indicator {
+    font-size:8pt;
+    background-image:url('../../resources/images/default/grid/loading.gif');
+    background-repeat: no-repeat;
+    background-position: left;
+    padding-left:20px;
+}
+
+.new-tab {
+    background-image:url(../feed-viewer/images/new_tab.gif) !important;
+}
+
+.tabs {
+    background-image:url( ../desktop/images/tabs.gif ) !important;
+}
+
+.overview-label {
+    font-size: 2.0em;
+    width: 15%;
+}
+
+.overview-value {
+    font-size: 1.2em;
+}
+
+.overview-date-info {
+    font-size: 1.0em;
+    text-align: center;
+}
