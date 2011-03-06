@@ -34,11 +34,16 @@
 
 .overview-label {
     font-size: 2.0em;
-    width: 15%;
+    width: 10%;
+}
+
+table.x-table-layout > tbody {
+    border: 0px;
 }
 
 .overview-value {
     font-size: 1.2em;
+    width: 80%;
 }
 
 .overview-date-info {
