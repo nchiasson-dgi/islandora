@@ -140,9 +140,10 @@ class ADRBasic {
   private function getDatastreamIconURL($dsid, $mime_type) {
     // Find in object
     // If not found use default for mime type.
+    global $base_url;
     $path_to_default_images = drupal_get_path('module', 'fedora_repository') . '/images/mime_types/';
     $image = $this->defaultMimeIcons[$mime_type];
-    return 'http://coalliance.dev/' . $path_to_default_images . $image; // $image;
+    return "$base_url/$path_to_default_images$image"; // $image;
   }
 
   private function createStore($storeId, $data, $fields) {
