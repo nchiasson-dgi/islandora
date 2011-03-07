@@ -26,25 +26,48 @@ class ADRBasic {
    */
   protected $item;
   /**
-   * If the user has permission this will be the two tabs Overview and Manage, if the user doesn't have permission to modify
-   * the object only the Overview tab will be presented.
+   * MODS datastream. Information is extracted from this XML document and rendered to the form.
    * 
    * @var array
    */
-  protected $tabs;
+  protected $mods;
+  protected $titles;
+  protected $authors;
+  protected $description;
+  protected $dateCreated;
+  protected $dateModified;
+  protected $user;
+  protected $defaultMimeIcons = array(
+    'application/rdf+xml' => 'pdf.png',
+    'text/xml' => 'pdf.png',
+  );
 
   /**
    * Create a view for describing/managing an object.
-   * 
+   *
    * @param string $pid
    */
   public function __construct($pid) {
     module_load_include('inc', 'fedora_repository', 'api/fedora_item');
     $this->pid = $pid;
     $this->item = new Fedora_Item($this->pid);
-    $this->tabs['adrbasic'] = array(
-      '#type' => 'tabset',
-    );
+    $this->setDisplayInfo();
+  }
+
+  private function setDisplayInfo() {
+    $mods = new SimpleXMLElement($this->item->get_datastream_dissemination("MODS"));
+    $mods->registerXPathNamespace("mods", "http://www.loc.gov/mods/v3");
+    $this->titles = $mods->xpath('/mods:mods/mods:titleInfo/mods:title');
+    $this->authors = $mods->xpath('//mods:role[mods:roleTerm = "creator"]/../../mods:name/mods:namePart');
+    $this->description = $mods->xpath('//mods:abstract');
+    $foxml = new SimpleXMLElement($this->item->export_as_foxml());
+    $foxml->registerXPathNamespace("audit", "info:fedora/fedora-system:def/audit#");
+    $audit = $foxml->xpath("(//*[local-name()='responsibility'])[last()]");
+    $this->user = $audit[0];
+    $this->dateCreated = new DateTime($this->item->objectProfile->objCreateDate);
+    $this->dateCreated = $this->dateCreated->format('F j, Y');
+    $this->dateModified = new DateTime($this->item->objectProfile->objLastModDate);
+    $this->dateModified = $this->dateModified->format('F j, Y');
   }
 
   /**
@@ -53,110 +76,106 @@ class ADRBasic {
    * @return boolean
    */
   private function canManageObject() {
-    return TRUE;
-  }
-
-  private function renderManageTab() {
-    
-  }
-
-  // for the file viewer maybe some sorta accordian thing where the description "hides"
-  private function renderOverviewTab() {
-    $description = $this->renderDescription();
-    $viewer = $this->renderDatastreamViewer($this->pid, $dsid);
-    $description = "<h3><a href='#'>Description</a></h3><div>$description</div>";
-    $viewer = "<h3><a href='#'>Viewer</a></h3><div>$viewer</div>";
-    $output = "<div class='accordian'>$description$viewer</div>";
-    return $output;
-  }
-
-  private function renderDescription() {
-    $xml = new SimpleXMLElement($this->item->get_datastream_dissemination("MODS"));
-    $xml->registerXPathNamespace("mods", "http://www.loc.gov/mods/v3");
-    $title = $xml->xpath('/mods:mods/mods:titleInfo/mods:title');
-    $author = $xml->xpath('//mods:role[mods:roleTerm = "creator"]/../../mods:name/mods:namePart');
-    $type_of_resource = $xml->xpath('//mods:typeOfResource');
-    $digital_origin = $xml->xpath('//mods:physicalDescription/mods:digitalOrigin');
-    $date_created = $xml->xpath('//mods:dateCreated[@keyDate="yes"]');
-    $date_digitized = $xml->xpath('//mods:dateCaptured');
-    $rights_statement = $xml->xpath('//mods:accessCondition[@type="useAndReproduction"]');
-    $description = $xml->xpath('//mods:abstract');
-    $note_admin = $xml->xpath('//mods:note[@type="admin"]');
-    $subject_topic = $xml->xpath('//mods:subject/mods:topic');
-    $subject_corporate = $xml->xpath('//mods:subject/mods:name[@type="corporate"]/mods:namePart');
-    $subject_personal = $xml->xpath('//mods:subject/mods:name[@type="personal"]/mods:namePart');
-    $subject_time = $xml->xpath('//mods:subject/mods:temporal');
-    $subject_geographic = $xml->xpath('//mods:subject/mods:geographic');
-    $subject_form = $xml->xpath('//mods:subject/mods:genre');
-    $place_of_publication = $xml->xpath('//mods:originInfo/mods:place/mods:placeTerm');
-    $publisher = $xml->xpath('//mods:originInfo/mods:publisher');
-    $language = $xml->xpath('//mods:recordInfo/mods:languageOfCataloging/mods:languageTerm[@authority="iso639-2"]');
-    $series = $xml->xpath('//mods:relatedItem/mods:titleInfo[@type="series"]/mods:title');
-    $html .= '<table align="left"><tr><td valign="top" align="right" class="fedora_mods_field" width="15%">';
-    $html .='<strong>Title</strong></td><td>';
-    foreach ($title as $t) {
-      $html .= $t . '<br />';
-    }
-    $html .= $this->htmlSnippet("Author", $author);
-    $html .= $this->htmlSnippet("Type of Resource", $type_of_resource);
-    $html .= $this->htmlSnippet("Digital Origin", $digital_origin);
-    $html .= $this->htmlSnippet("Date Created", $date_created);
-    $html .= $this->htmlSnippet("Date Digitized", $date_digitized);
-    $html .= $this->htmlSnippet("Rights Statement", $rights_statement);
-    $html .= $this->htmlSnippet("Description", $description);
-    $html .= $this->htmlSnippet("Note", $note_admin);
-    $html .= $this->htmlSnippet("Topic", $subject_topic);
-    $html .= $this->htmlSnippet("Corporate Name(s)", $subject_corporate);
-    $html .= $this->htmlSnippet("Subject (Personal)", $subject_personal);
-    $html .= $this->htmlSnippet("Subject (Time)", $subject_time);
-    $html .= $this->htmlSnippet("Geography", $subject_geographic);
-    $html .= $this->htmlSnippet("Form", $subject_form);
-    $html .= $this->htmlSnippet("Place of Publication", $place_of_publication);
-    $html .= $this->htmlSnippet("Publisher", $publisher);
-    $html .= $this->htmlSnippet("Language", $language);
-    $html .= $this->htmlSnippet("Series", $series);
-    $html .='</td></tr></table></div></div><br />';
-    return $html;
-  }
-
-  private function htmlSnippet($name, $value) {
-    $html = '</td></tr>';
-    $html .= "<tr><td valign='top' align='right' class='mods_field'><strong>$name</strong></td><td>";
-    if (!empty($value)) {
-      foreach ($value as $va) {
-        $html .= $va . '<br />';
-      }
-      return $html;
-    }
-    else {
-      return '';
-    }
-  }
-
-  public static function renderDatastreamViewer($pid = NULL, $dsid = NULL) {
-    if (!isset($pid) || !isset($dsid)) {
-      return '';
-    }
-    // Determine the datastream to render, figure out the mime type, find the proper class associated with that.
-    // Render the viewer.
-  }
-
-  private function renderFileList() {
-    // Renders a list of files aka datastreams
-  }
-
-  private function renderFile() {
-    // Renders the file/icon
-  }
-
-  private function displayViewer() {
-    // Do some ajax thing ?
+    return FALSE;
   }
 
   private function includeRequiredScripts() {
     $path = drupal_get_path('module', 'fedora_repository');
     drupal_add_css("$path/stylesheets/ADRBasic.css");
-    drupal_add_js("$path/js/ADRBasic.js");
+    module_load_include('module', 'ext', 'ext');
+    ext_load_library();
+    $this->createDescriptionStore();
+    $this->createDatastreamStore();
+    $include_files = array(
+      'ADRBasicViewer.ui.js',
+      'ADRBasicViewer.js',
+      'OverviewPanel.ui.js',
+      'OverviewPanel.js',
+      'ViewerPanel.ui.js',
+      'ViewerPanel.js',
+      'ManagePanel.ui.js',
+      'ManagePanel.js',
+      'EditObjectPanel.ui.js',
+      'EditObjectPanel.js',
+      'EditDescriptionPanel.ui.js',
+      'EditDescriptionPanel.js',
+      'EditFilesPanel.ui.js',
+      'EditFilesPanel.js',
+      'DescriptionPanel.ui.js',
+      'DescriptionPanel.js',
+      'FilesPanel.ui.js',
+      'FilesPanel.js',
+      'ADRBasic.js'
+    );
+    foreach ($include_files as $file) {
+      drupal_add_js("$path/js/ADRBasic/$file");
+    }
+  }
+
+  private function createDescriptionStore() {
+    $data = array();
+    $fields = array('title', 'author', 'description');
+    $data[] = array(
+      implode(' ', $this->titles), implode(' ', $this->authors), $this->description
+    );
+    $fields = $this->convertPhpArrayToJsString($fields);
+    $data = $this->convertPhpArrayToJsString($data);
+    $datastream = $this->createStore('FedoraObjectInfoStore', $data, $fields);
+    drupal_add_js($datastream, 'inline');
+  }
+
+  private function createDatastreamStore() {
+    $data = array();
+    $fields = array('dsid', 'label', 'mime', 'img');
+    foreach ($this->item->datastreams as $dsid => $attr) {
+      $img = $this->getDatastreamIconURL($dsid, $attr['MIMEType']);
+      $data[] = array($dsid, $attr['label'], $attr['MIMEType'], $img);
+    }
+    $fields = $this->convertPhpArrayToJsString($fields);
+    $data = $this->convertPhpArrayToJsString($data);
+    $datastream = $this->createStore('DatastreamStore', $data, $fields);
+    drupal_add_js($datastream, 'inline');
+  }
+
+  private function getDatastreamIconURL($dsid, $mime_type) {
+    // Find in object
+    // If not found use default for mime type.
+    $path_to_default_images = drupal_get_path('module', 'fedora_repository') . '/images/mime_types/';
+    $image = $this->defaultMimeIcons[$mime_type];
+    return 'http://coalliance.dev/' . $path_to_default_images . $image; // $image;
+  }
+
+  private function createStore($storeId, $data, $fields) {
+    return "$storeId = Ext.extend(Ext.data.ArrayStore, {
+    constructor: function(cfg) {
+        cfg = cfg || {};
+        $storeId.superclass.constructor.call(this, Ext.apply({
+            storeId: '$storeId',
+            idIndex: 0,
+            autoDestroy: true,
+            data: $data,
+            fields: $fields}, cfg));
+    }});
+    new $storeId()";
+  }
+
+  /**
+   *
+   * @param <type> $array
+   * @return string
+   */
+  private function convertPhpArrayToJsString($array) {
+    $output = '[ ';
+    foreach ($array as $value) {
+      if (is_array($value)) {
+        $output .= $this->convertPhpArrayToJsString($value) . ',';
+      }
+      else {
+        $output .= "'$value',";
+      }
+    }
+    $output .= ' ]';
+    return $output;
   }
 
   /**
@@ -166,195 +185,9 @@ class ADRBasic {
    * @return <type>
    */
   public function render() {
+    module_load_include('inc', 'fedora_repository', 'plugins/ShowStreamsInFieldSets');
+    module_load_include('inc', 'fedora_repository', 'plugins/tagging_form');
     $this->includeRequiredScripts();
-    $this->tabs['overview'] = $this->renderOverviewTab();
-    if ($this->canManageObject()) {
-      $this->tabs['manage'] = $this->renderManageTab();
-    }
-    return '<div class="tabs">' . tabs_render($this->tabs) . '</div>';
-
-
-
-    // Render tabs
-    // Render Description
-    // Render files
-    module_load_include('inc', 'fedora_repository', 'plugins/tagging_form');
-    module_load_include('inc', 'fedora_repository', 'plugins/ShowStreamsInFieldSets');
-    global $base_url;
-    $tabset = array();
-    $tabset['my_tabset'] = array(
-      '#type' => 'tabset',
-    );
-
-    global $user;
-    $modsText = $this->item->get_datastream_dissemination("MODS");
-    $modsAsHtml = $this->getModsAsHtml($modsText);
-    $modsAsHtml = '<div class="fedora_object_container"><div class="fedora_mods_container">' . $modsAsHtml;
-    $html = '</div><div class="fedora_links_container">';
-    //$html .='Audio <br />'.$this->getListOfStreams('audio/mpeg');
-    $html .='PDF <br />' . $this->getListOfStreams('application/pdf', array('Agreement'));
-    $html .='</div></div><br />';
-    $modsAsHtml .=$html;
-    $tabset['my_tabset']['second_tab'] = array(
-      '#type' => 'tabpage',
-      '#title' => t('Descripton'),
-      '#content' => $modsAsHtml,
-    );
-
-    return '<div class="tabs">' . tabs_render($tabset) . '</div>';
-  }
-
-}
-
-class cog {
-
-  private $pid = NULL;
-  private $item = NULL;
-
-  function cog($pid) {
-    $this->pid = $pid;
-    module_load_include('inc', 'fedora_repository', 'api/fedora_item');
-    module_load_include('inc', 'fedora_repository', 'api/dublin_core');
-    $this->item = new Fedora_Item($pid);
-    drupal_add_css(drupal_get_path('module', 'fedora_repository') . '/stylesheets/coccc.css');
-  }
-
-  function getModsAsHtml($modsString) {
-    $xml = new SimpleXMLElement($modsString);
-    $xml->registerXPathNamespace("mods", "http://www.loc.gov/mods/v3");
-    $title = $xml->xpath('/mods:mods/mods:titleInfo/mods:title');
-    $author = $xml->xpath('//mods:role[mods:roleTerm = "creator"]/../../mods:name/mods:namePart');
-    $type_of_resource = $xml->xpath('//mods:typeOfResource');
-    $digital_origin = $xml->xpath('//mods:physicalDescription/mods:digitalOrigin');
-    $date_created = $xml->xpath('//mods:dateCreated[@keyDate="yes"]');
-    $date_digitized = $xml->xpath('//mods:dateCaptured');
-    $rights_statement = $xml->xpath('//mods:accessCondition[@type="useAndReproduction"]');
-    $description = $xml->xpath('//mods:abstract');
-    $note_admin = $xml->xpath('//mods:note[@type="admin"]');
-    $subject_topic = $xml->xpath('//mods:subject/mods:topic');
-    $subject_corporate = $xml->xpath('//mods:subject/mods:name[@type="corporate"]/mods:namePart');
-    $subject_personal = $xml->xpath('//mods:subject/mods:name[@type="personal"]/mods:namePart');
-    $subject_time = $xml->xpath('//mods:subject/mods:temporal');
-    $subject_geographic = $xml->xpath('//mods:subject/mods:geographic');
-    $subject_form = $xml->xpath('//mods:subject/mods:genre');
-    $place_of_publication = $xml->xpath('//mods:originInfo/mods:place/mods:placeTerm');
-    $publisher = $xml->xpath('//mods:originInfo/mods:publisher');
-    $language = $xml->xpath('//mods:recordInfo/mods:languageOfCataloging/mods:languageTerm[@authority="iso639-2"]');
-    $series = $xml->xpath('//mods:relatedItem/mods:titleInfo[@type="series"]/mods:title');
-    $html .= '<table align="left"><tr><td valign="top" align="right" class="fedora_mods_field" width="15%">';
-    $html .='<strong>Title</strong></td><td>';
-    foreach ($title as $t) {
-      $html .= $t . '<br />';
-    }
-    $html .= $this->htmlSnippet("Author", $author);
-    $html .= $this->htmlSnippet("Type of Resource", $type_of_resource);
-    $html .= $this->htmlSnippet("Digital Origin", $digital_origin);
-    $html .= $this->htmlSnippet("Date Created", $date_created);
-    $html .= $this->htmlSnippet("Date Digitized", $date_digitized);
-    $html .= $this->htmlSnippet("Rights Statement", $rights_statement);
-    $html .= $this->htmlSnippet("Description", $description);
-    $html .= $this->htmlSnippet("Note", $note_admin);
-    $html .= $this->htmlSnippet("Topic", $subject_topic);
-    $html .= $this->htmlSnippet("Corporate Name(s)", $subject_corporate);
-    $html .= $this->htmlSnippet("Subject (Personal)", $subject_personal);
-    $html .= $this->htmlSnippet("Subject (Time)", $subject_time);
-    $html .= $this->htmlSnippet("Geography", $subject_geographic);
-    $html .= $this->htmlSnippet("Form", $subject_form);
-    $html .= $this->htmlSnippet("Place of Publication", $place_of_publication);
-    $html .= $this->htmlSnippet("Publisher", $publisher);
-    $html .= $this->htmlSnippet("Language", $language);
-    $html .= $this->htmlSnippet("Series", $series);
-    $html .='</td></tr></table></div></div><br />';
-    return $html;
-  }
-
-  function htmlSnippet($name, $value) {
-    $html = '</td></tr>';
-    $html .='<tr><td valign="top" align="right" class="mods_field"><strong>' . $name . '</strong></td><td>';
-    if (!empty($value)) {
-      foreach ($value as $va) {
-        $html .= $va . '<br />';
-      }
-      return $html;
-    }
-    else {
-      return '';
-    }
-  }
-
-//finds datastreams that have a certain mimetype
-  //excludes ones that contain any strings in the array $exclude
-  //finds datastreams that have a certain mimetype
-  //excludes ones that contain any strings in the array $exclude
-  function getListOfStreams($mimeTypeToRetrieve, $exclude=null) {
-    // $list_of_streams = array();
-    global $base_url;
-    $html = '';
-    $datastreams_list = $this->item->get_datastreams_list_as_SimpleXML();
-    if ($datastreams_list != FALSE) {
-      foreach ($datastreams_list->datastreamDef as $ds) {
-        if ($mimeTypeToRetrieve == $ds->MIMEType) {
-          // $list_of_streams[] = $ds;
-          $include = TRUE;
-          if (isset($exclude)) {
-            foreach ($exclude as $value) {
-              if (stristr($ds->ID, $value)) {
-                $include = false;
-              }
-            }
-          }
-          if ($include) {
-            $label = $ds->label;
-            if (empty($label)) {
-              $label = $ds->ID;
-            }
-            $html .= '<a href = "' . $base_url . '/fedora/repository/' . $this->pid . '/' . $ds->ID . '/' . drupal_urlencode($label) . '">' . $label . '</a><br />';
-          }
-        }
-      }
-    }
-    //return $list_of_streams;
-    return $html;
-  }
-
-  function showTabs() {
-    module_load_include('inc', 'fedora_repository', 'plugins/tagging_form');
-    module_load_include('inc', 'fedora_repository', 'plugins/ShowStreamsInFieldSets');
-    module_load_include('inc', 'fedora_repository', 'api/fedora_item');
-
-    global $base_url;
-
-    $tabset = array();
-
-    $tabset['my_tabset'] = array(
-      '#type' => 'tabset',
-    );
-
-    // $listOfStreams = $this->getListOfStreams("audio/mpeg");
-
-    global $user;
-    $modsText = $this->item->get_datastream_dissemination("MODS");
-    $modsAsHtml = $this->getModsAsHtml($modsText);
-    $modsAsHtml = '<div class="fedora_object_container"><div class="fedora_mods_container">' . $modsAsHtml;
-    $html = '</div><div class="fedora_links_container">';
-    //$html .='Audio <br />'.$this->getListOfStreams('audio/mpeg');
-    $html .='PDF <br />' . $this->getListOfStreams('application/pdf', array('Agreement'));
-    $html .='</div></div><br />';
-    $modsAsHtml .=$html;
-    $tabset['my_tabset']['second_tab'] = array(
-      '#type' => 'tabpage',
-      '#title' => t('Descripton'),
-      '#content' => $modsAsHtml,
-    );
-
-
-    /*  $tabset['my_tabset']['third_tab'] = array(
-      '#type' => 'tabpage',
-      '#title' => t('Image'),
-      '#content' => '<a href ="'.$base_url.'/fedora/repository/'.$this->pid.'/WEB/web.jpg"><img src = "'.$base_url.'/fedora/repository/'.$this->pid.'/PREVIEW/preview.jpg"></a>',
-      ); */
-    // Render the tabset.
-    return '<div class="tabs">' . tabs_render($tabset) . '</div>';
   }
 
 }
