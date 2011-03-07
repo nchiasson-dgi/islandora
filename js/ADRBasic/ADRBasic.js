@@ -10,4 +10,5 @@ Ext.onReady(function(){
         renderTo: 'content-fedora'
     });
     adrbasic.show();
+    $('#center form').css('margin-bottom', 0); // Overwrite style's from theme.
 });
