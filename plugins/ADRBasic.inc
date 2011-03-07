@@ -172,7 +172,7 @@ class ADRBasic {
     );
     $fields = $this->convertPhpArrayToJsString($fields);
     $data = $this->convertPhpArrayToJsString($data);
-    $datastream = $this->createStore('description', $data, $fields);
+    $datastream = $this->createStore('FedoraObjectInfoStore', $data, $fields);
     drupal_add_js($datastream, 'inline');
   }
 
@@ -185,7 +185,7 @@ class ADRBasic {
     }
     $fields = $this->convertPhpArrayToJsString($fields);
     $data = $this->convertPhpArrayToJsString($data);
-    $datastream = $this->createStore('datastreams', $data, $fields);
+    $datastream = $this->createStore('DatastreamStore', $data, $fields);
     drupal_add_js($datastream, 'inline');
   }
 
@@ -194,7 +194,7 @@ class ADRBasic {
     // If not found use default for mime type.
     $path_to_default_images = drupal_get_path('module', 'fedora_repository') . '/images/mime_types/';
     $image = $this->defaultMimeIcons[$mime_type];
-    return $path_to_default_images . $image;
+    return 'http://coalliance.dev/' . $path_to_default_images . $image;// $image;
   }
 
   private function createStore($storeId, $data, $fields) {

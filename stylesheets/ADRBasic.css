@@ -5,15 +5,6 @@
     Description:
         Purpose of the stylesheet follows.
 */
-.fedora_object_container {
-    position: relative;
-}
-
-.x-tab-panel-header-plain ul {
-    padding: 0px;
-    margin: 0px;
-    margin-bottom: -3px;
-}
 
 /* default loading indicator for ajax calls */
 .loading-indicator {
@@ -37,10 +28,6 @@
     width: 10%;
 }
 
-table.x-table-layout > tbody {
-    border: 0px;
-}
-
 .overview-value {
     font-size: 1.2em;
     width: 80%;
@@ -50,3 +37,7 @@ table.x-table-layout > tbody {
     font-size: 1.0em;
     text-align: center;
 }
+
+/*.default-pdf-meme {
+    background-image:  url(/sites/coalliance.dev/modules/fedora_repository/images/mime_types/pdf.png);    
+}*/
