@@ -731,7 +731,7 @@ class ObjectHelper {
 	  if ($allow) {
 	  // $ingestObject = '<a title="'. t('Ingest a New object into ') . $collectionName . ' '. $collection_pid . '" href="'. base_path() .
 	    $ingestObject = '<a title="' . t('Ingest a New object into !collection_name PID !collection_pid', array('!collection_name' => $collectionName, '!collection_pid' => $collection_pid)) . '" href="' . base_path() .
-		    'fedora/ingestObject/' . $collection_pid . '/' . $collectionName . '"><img src="' . $base_url . '/' . $path .
+		    'formbuilder/ingest/' . $collection_pid . '/' . $collectionName . '"><img src="' . $base_url . '/' . $path .
 		    '/images/ingest.png" alt="' . t('Add a New Object') . '" class="icon"></a>' . t(' Add to this Collection');
 	  }
 	}
