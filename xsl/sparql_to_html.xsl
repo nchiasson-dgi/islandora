@@ -130,17 +130,17 @@
         <xsl:variable name="newTitle"> 
             <xsl:call-template name="replace-string"> 
                 <xsl:with-param name="text" select="s:title"></xsl:with-param> 
-                <xsl:with-param name="from" select="&apos;_&apos;"></xsl:with-param> 
-                <xsl:with-param name="to" select="&apos; &apos;"></xsl:with-param> 
+                <xsl:with-param name="from" select="&apos;/&apos;"></xsl:with-param> 
+                <xsl:with-param name="to" select="&apos;-&apos;"></xsl:with-param> 
             </xsl:call-template> 
         </xsl:variable> 
         <xsl:variable name="linkUrl"> 
             <xsl:choose> 
                 <xsl:when test="($CONTENTMODEL=&apos;islandora:collectionCModel&apos;)"> 
-                    <xsl:value-of select="$BASEURL"></xsl:value-of>/fedora/repository/<xsl:copy-of select="$PID"></xsl:copy-of>/-/<xsl:value-of select="s:title"></xsl:value-of> 
+                    <xsl:value-of select="$BASEURL"></xsl:value-of>/fedora/repository/<xsl:copy-of select="$PID"></xsl:copy-of>/-/<xsl:value-of select="$newTitle"></xsl:value-of> 
                 </xsl:when> 
                 <xsl:otherwise> 
-                    <xsl:value-of select="$BASEURL"></xsl:value-of>/fedora/repository/<xsl:copy-of select="$PID"></xsl:copy-of>/-/<xsl:value-of select="s:title"></xsl:value-of> 
+                    <xsl:value-of select="$BASEURL"></xsl:value-of>/fedora/repository/<xsl:copy-of select="$PID"></xsl:copy-of>/-/<xsl:value-of select="$newTitle"></xsl:value-of> 
                 </xsl:otherwise> 
             </xsl:choose> 
             <xsl:value-of select="s:content"></xsl:value-of> 
@@ -162,7 +162,7 @@
             <br clear="all"></br> 
             <a> 
                 <xsl:attribute name="href"> 
-                    <xsl:value-of select="$BASEURL"></xsl:value-of>/fedora/repository/<xsl:copy-of select="$PID"></xsl:copy-of>/-/<xsl:value-of select="s:title"></xsl:value-of> 
+                    <xsl:value-of select="$BASEURL"></xsl:value-of>/fedora/repository/<xsl:copy-of select="$PID"></xsl:copy-of>/-/<xsl:value-of select="$newTitle"></xsl:value-of> 
                 </xsl:attribute> 
                 <xsl:value-of select="$newTitle"></xsl:value-of> 
             </a> 

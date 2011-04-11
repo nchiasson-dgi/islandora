@@ -76,8 +76,11 @@ class SecurityClass {
         foreach ($condition->Apply->Apply->AttributeValue as $attributeValue) {
           $allowedRoles[] = strip_tags($attributeValue->asXML());
         }
-        foreach ($condition->Apply->Apply->Apply->AttributeValue as $attributeValue) {
-          $allowedRoles[] = strip_tags($attributeValue->asXML());
+        $av = $condition->Apply->Apply->Apply->AttributeValue;
+        if (!empty($av)) {
+          foreach ($av as $attributeValue) {
+            $allowedRoles[] = strip_tags($attributeValue->asXML());
+          }
         }
       }
       if ($attributeId == "urn:fedora:names:fedora:2.1:subject:loginId") {
