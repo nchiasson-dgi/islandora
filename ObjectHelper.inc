@@ -143,7 +143,7 @@ class ObjectHelper {
        }
 
         if ($asAttachment) {
-          $suggestedFileName = "$label";
+          $suggestedFileName = "$dsID";
           $pos = strpos($suggestedFileName, '.');
           /**
            * Here we used to take an object of, say, type application/pdf with label, say, "My Document"
