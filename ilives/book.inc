@@ -127,9 +127,10 @@ class IslandoraBook {
     $title_info = $mods_item_doc->getElementsByTagNameNS('http://www.loc.gov/mods/v3', 'titleInfo')->item(0);
     $title = '';
     foreach(array('nonSort', 'title') as $title_field) {
-      $title .= $title_info->getElementsByTagNameNS('http://www.loc.gov/mods/v3', $title_field)->item(0)->nodeValue;
+      $title .= $title_info->getElementsByTagNameNS('http://www.loc.gov/mods/v3', $title_field)->item(0)->nodeValue . ' ';
+      
     }
-    
+    $title = trim($title);
     $mods_text = $mods_item_doc->saveXML();
     global $user;
     $mimetype = new MimeClass();
@@ -169,10 +170,6 @@ class IslandoraBook {
     global $base_url;
 
     $tabset = array();
-
-    $tabset['my_tabset'] = array(
-      '#type' => 'tabset',
-    );
     
     global $user;
     $qs = '';
@@ -182,34 +179,43 @@ class IslandoraBook {
 
     $viewer_url = variable_get('fedora_base_url', '') . '/get/'. $this->pid . '/ilives:viewerSdef/getViewer'. $qs;
     $html = '<iframe src="'. $viewer_url . '" scrolling="0" frameborder="0" style="width: 100%; height: 800px;">Errors: unable to load viewer</iframe>';
-    $tabset['my_tabset']['second_tab'] = array(
+    $tabset['second_tab'] = array(
       '#type' => 'tabpage',
-      '#title' => t('Full-size'),
+      '#title' => t('Read'),
       '#content' => $html
     );
-    $tabset['my_tabset']['first_tab'] = array(
+    $tabset['first_tab'] = array(
       // #type and #title are the minimum requirements.
       '#type' => 'tabpage',
       '#title' => t('Description'),
       // This will be the content of the tab.
       '#content' => fedora_ilives_create_book_view($this->pid),
     );
-
-    $tabset['my_tabset']['add_pages'] = array(
-      '#type' => 'tabpage',
-      '#title' => t('Add pages'),
-      '#content' => drupal_get_form('book_add_pages_form', $this->pid),
-    );
-    return tabs_render($tabset);
+    
+    if (user_access('ingest new fedora objects')) { 
+      $tabset['add_pages'] = array(
+        '#type' => 'tabpage',
+        '#title' => t('Add pages'),
+        '#content' => drupal_get_form('book_add_pages_form', $this->pid),
+      );
+    }
+    return $tabset;
   }
 }
 
-function book_add_pages_form(&$form_state, $pid) {
+function book_add_pages_form(&$form_state, $pid, $page_cmodel = 'ilives:pageCModel', $relation = 'isMemberOfCollection') {
   $form['pid'] = array(
     '#type' => 'hidden',
     '#value' => $pid,
   );
-
+  $form['page_cmodel'] = array (
+    '#type' => 'hidden',
+    '#value' => $page_cmodel,
+  );
+  $form['relation'] = array (
+    '#type' => 'hidden',
+    '#value' => $relation,
+  );
   $form['tiff_dir'] = array(
     '#type' => 'textfield',
     '#title' => t('TIFF folder'),
@@ -244,7 +250,7 @@ function book_add_pages_form_submit($form, &$form_state) {
       }
       closedir($tiff_dir);
       sort($file_list);
-      ilives_create_page_objects($pid, $file_list);
+      ilives_create_page_objects($pid, $file_list, $form_state['values']['page_cmodel'], $form_state['values']['relation']);
     }
   }
 }
@@ -252,7 +258,7 @@ function book_add_pages_form_submit($form, &$form_state) {
 /**
  * Create a page object for each element in $image_list as a child object of $pid
  */
-function ilives_create_page_objects($pid, $image_list = array()) {
+function ilives_create_page_objects($pid, $image_list = array(), $page_cmodel = 'ilives:pageCModel', $relation = 'isMemberOfCollection') {
   module_load_include('inc', 'fedora_repository', 'api/fedora_item');
   $book = new Fedora_Item($pid);
   if (!$book->exists()) {
@@ -267,18 +273,18 @@ function ilives_create_page_objects($pid, $image_list = array()) {
   $page_num = 1;
   $book_title = $book->objectProfile->objLabel;
   foreach ($image_list as $image_path) {
-    $batch['operations'][] = array('ilives_add_single_page_object', array($pid, $image_path, $page_num, "$book_title - Page ". sprintf("%03d", $page_num)));
+    $batch['operations'][] = array('ilives_add_single_page_object', array($pid, $image_path, $page_num, "$book_title - Page ". sprintf("%03d", $page_num), $page_cmodel, $relation));
     $page_num++;
   }
   batch_set($batch);
 }
 
-function ilives_add_single_page_object($book_pid, $page_file, $page_num = 1, $page_title = NULL) {
+function ilives_add_single_page_object($book_pid, $page_file, $page_num = 1, $page_title = NULL, $page_cmodel = 'ilives:pageCModel', $relation = 'isMemberOfCollection') {
   module_load_include('inc', 'fedora_repository', 'api/fedora_utils');
   module_load_include('inc', 'fedora_repository', 'api/fedora_item');
   $page_item = Fedora_Item::ingest_new_item("$book_pid-". sprintf("%03d", $page_num), 'A', $page_title);
-  $page_item->add_relationship('hasModel', 'ilives:pageCModel', FEDORA_MODEL_URI);
-  $page_item->add_relationship('isMemberOf', $book_pid);
+  $page_item->add_relationship('hasModel', $page_cmodel, FEDORA_MODEL_URI);
+  $page_item->add_relationship($relation, $book_pid);
   $page_item->add_datastream_from_file($page_file, 'TIFF', 'Archival TIFF', 'image/tiff', 'M');
 }
 
