@@ -174,27 +174,21 @@ class FormBuilder {
     module_load_include('inc', 'fedora_repository', 'MimeClass');
     global $base_url;
     $mimetype = new MimeClass();
-    $server=NULL;
-    $file=$form_values['ingest-file-location'];
+    $server = NULL;
+    $file = $form_values['ingest-file-location'];
 
-    if (!empty( $file)) {
+    if (!empty($file)) {
       $dformat = $mimetype->getType($file);
-      
-      $parts = explode('/', $file);
-      foreach ($parts as $n => $part) {
-        $parts[$n] = rawurlencode($part);
-      }
-      $path = implode('/', $parts);
-      $fileUrl = $base_url . '/' . $path;
-      
-      $beginIndex = strrpos($fileUrl, '/');
-      $dtitle = substr($fileUrl, $beginIndex + 1);
-      $dtitle = urldecode($dtitle);
+      $fileUrl = file_create_url($file);
+
+      $beginIndex = strrpos($file, '/');
+      $dtitle = substr($file, $beginIndex + 1);
+
       $ds1 = $dom->createElement("foxml:datastream");
       $ds1->setAttribute("ID", "OBJ");
       $ds1->setAttribute("STATE", "A");
       $ds1->setAttribute("CONTROL_GROUP", "M");
-      $ds1v= $dom->createElement("foxml:datastreamVersion");
+      $ds1v = $dom->createElement("foxml:datastreamVersion");
       $rootElement->appendChild($ds1);
 
       $ds1v->setAttribute("ID", "OBJ.0");
@@ -207,36 +201,26 @@ class FormBuilder {
       $ds1v->appendChild($ds1content);
     }
     if (!empty($_SESSION['fedora_ingest_files'])) {
-      
-     
-      
+
       foreach ($_SESSION['fedora_ingest_files'] as $dsid => $createdFile) {
-	
-	
-        if (!empty($file)) { 
-	   $found = strstr($createdFile, $file);
-	   if ($found !== FALSE) {
-	      $createdFile = $found;
-	   }
-	} 
+        if (!empty($file)) {
+          $found = strstr($createdFile, $file);
+          if ($found !== FALSE) {
+            $createdFile = $found;
+          }
+        }
 
         $dformat = $mimetype->getType($createdFile);
-	$parts = explode('/', $createdFile);
-        foreach ($parts as $n => $part) {
-          $parts[$n] = rawurlencode($part);
-        }
-        $path = implode('/', $parts);
-        $fileUrl = $base_url . '/' . $path;
-      
-        $beginIndex = strrpos($fileUrl, '/');
-        $dtitle = substr($fileUrl, $beginIndex + 1);
-        $dtitle = urldecode($dtitle);
-        $dtitle = $dtitle;
+        $fileUrl = file_create_url($createdFile);
+
+        $beginIndex = strrpos($createdFile, '/');
+        $dtitle = substr($createdFile, $beginIndex + 1);
+
         $ds1 = $dom->createElement("foxml:datastream");
         $ds1->setAttribute("ID", "$dsid");
         $ds1->setAttribute("STATE", "A");
         $ds1->setAttribute("CONTROL_GROUP", "M");
-        $ds1v= $dom->createElement("foxml:datastreamVersion");
+        $ds1v = $dom->createElement("foxml:datastreamVersion");
         $ds1v->setAttribute("ID", "$dsid.0");
         $ds1v->setAttribute("MIMETYPE", "$dformat");
         $ds1v->setAttribute("LABEL", "$dtitle");
@@ -246,11 +230,17 @@ class FormBuilder {
         $ds1->appendChild($ds1v);
         $ds1v->appendChild($ds1content);
         $rootElement->appendChild($ds1);
+
+        if(variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PRIVATE)
+        {
+          $files = variable_get('fedora_repository_uploads', array());
+          $files[$fileUrl] = $dformat;
+          variable_set('fedora_repository_uploads', $files);
+        }
       }
     }
   }
 
-  
   /**
    * Creates the RELS-EXT for the foxml
    */
@@ -278,11 +268,11 @@ class FormBuilder {
     if (!isset($relationship)) {
       $relationship = 'isMemberOfCollection';
     }
-    $member = $dom->createElement("fedora:". $relationship);
+    $member = $dom->createElement("fedora:" . $relationship);
     $membr = $form_values['collection_pid'];
     $member->setAttribute("rdf:resource", "info:fedora/$membr");
     $rdfHasModel = $dom->createElement("fedora-model:hasModel");
-    $contentModelPid=$form_values['content_model_pid'];
+    $contentModelPid = $form_values['content_model_pid'];
     $rdfHasModel->setAttribute("rdf:resource", "info:fedora/$contentModelPid");
     $drdf->appendChild($dvrdf);
     $dvrdf->appendChild($dvcontent);
@@ -293,7 +283,6 @@ class FormBuilder {
     $rootElement->appendChild($drdf);
   }
 
-  
   /**
    * Creates the standard foxml properties
    */

@@ -17,25 +17,26 @@ class ImageManipulation {
   function createPreview($parameterArray, $dsid, $file, $file_ext) {
     $system = getenv('System');
     $file_suffix = '_' . $dsid . '.' . $file_ext;
-    $width = $parameterArray['width']; 
+    $width = $parameterArray['width'];
 
     if (!isset($parameterArray['height'])) {
-	$height = $width;
-    } else { 
-	$height = $parameterArray['height'];
+      $height = $width;
+    }
+    else {
+      $height = $parameterArray['height'];
     }
 
     $returnValue = TRUE;
     $output = array();
-    
-    $destDir  = dirname($file).'/work';
-    $destFile = $destDir .'/'. basename($file) . $file_suffix;
-    if (!is_dir($destDir)) { 
+
+    $destDir = dirname($file) . '/work';
+    $destFile = $destDir . '/' . basename($file) . $file_suffix;
+    if (!is_dir($destDir)) {
       @mkdir($destDir);
     }
 
     if (!file_exists($destFile)) {
-      exec('convert -resize ' . $width . 'x'.$height.' -quality 85  "' . $file . '"[0] -strip "' .$destFile . '" 2>&1 &', $output, $returnValue);
+      exec('convert -resize ' . $width . 'x' . $height . ' -quality 85  "' . $file . '"[0] -strip "' . $destFile . '" 2>&1 &', $output, $returnValue);
     }
     else
       $returnValue = '0';
@@ -140,7 +141,16 @@ class ImageManipulation {
       return $returnValue;
     }
     $filename = substr(strrchr($file, '/'), 1);
-    $output_path = $_SERVER['DOCUMENT_ROOT'] . base_path() . file_directory_path() . '/' . $filename . $file_suffix;
+
+    // determine path based on public or private filesystem
+    if(variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PRIVATE){
+      $output_path = file_directory_path();
+    } else {
+      $output_path = $_SERVER['DOCUMENT_ROOT'] . base_path() . file_directory_path();
+    }
+
+    $output_path .= '/' . $filename . $file_suffix;
+    
     $returnValue = imageapi_image_close($image, $output_path);
     if ($returnValue) {
       $_SESSION['fedora_ingest_files']["$dsid"] = $file . $file_suffix;
@@ -177,7 +187,8 @@ class ImageManipulation {
     $var = $file . $file_suffix . ' returnvalue= ' . $returnValue;
 
     if ($returnValue == '0') {
-      $_SESSION['fedora_ingest_files']["$dsid"] = $file . $file_suffix;
+      $filename = $file . $file_suffix;
+      $_SESSION['fedora_ingest_files']["$dsid"] = $filename;
       return TRUE;
     }
     else {

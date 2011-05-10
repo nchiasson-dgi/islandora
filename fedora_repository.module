@@ -164,6 +164,33 @@ function fedora_repository_ingest_form_submit($form, &$form_state) {
   }
 }
 
+/**
+ * Respond to the request to download file in a private filesystem.
+ *
+ * This hook is only called when drupal private files in enabled. This
+ * hook looks to see if the file that is being requested has been uploaded
+ * by fedora_repository, if it has it allows the file to be downloaded and
+ * removes it from the table of files.
+ *
+ * @param $filepath path of the file being downloaded
+ */
+function fedora_repository_file_download($filepath)
+{
+  
+  $fullpath = file_create_url($filepath);
+  $files = variable_get('fedora_repository_uploads',array());
+
+  if(array_key_exists($fullpath, $files)) {
+    $headers = array('Content-type:' => $files[$filepath]);
+    unset($files[$filePath]);
+    variable_set('fedora_repository_uploads', $files);
+    return $headers;
+  }
+
+  return NULL;
+   
+}
+
 function fedora_repository_ingest_form_validate($form, &$form_state) {
   //only validate the form if the submit button was pressed (other buttons may be used for AHAH
   if ($form_state['clicked_button']['#id'] == 'edit-submit') {
@@ -179,9 +206,19 @@ function fedora_repository_ingest_form_validate($form, &$form_state) {
         $validators = array();
 
         if (!empty($_FILES['files']['name']['ingest-file-location'])) {
-          $fileObject = file_save_upload('ingest-file-location', $validators);
 
+          // save the file and then move it to the /files folder
+          $fileObject = file_save_upload('ingest-file-location', $validators);
           file_move($fileObject->filepath, 0, 'FILE_EXISTS_RENAME');
+
+          // we have to save the filename when its a private download
+          if(variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PRIVATE)
+          {
+            $files = variable_get('fedora_repository_uploads', array());
+            $files[file_create_url($fileObject->filepath)] = $fileObject->filemime;
+            variable_set('fedora_repository_uploads', $files);
+          }
+
           $form_state['values']['ingest-file-location'] = $fileObject->filepath;
         }
 

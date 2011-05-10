@@ -25,10 +25,11 @@ class DemoFormBuilder extends FormBuilder {
 
     if (!empty($file)) {
       $dformat = $mimetype->getType($file);
-      $fileUrl = $base_url .'/'. drupal_urlencode($file);
-      $beginIndex = strrpos($fileUrl, '/');
-      $dtitle = substr($fileUrl, $beginIndex + 1);
-      $dtitle = urldecode($dtitle);
+      $fileUrl = file_create_url($file);
+
+      $beginIndex = strrpos($file, '/');
+      $dtitle = substr($file, $beginIndex + 1);
+
       //		$dtitle =  substr($dtitle, 0, strpos($dtitle, "."));
       $ds1 = $dom->createElement("foxml:datastream");
       $ds1->setAttribute("ID", "FULL_SIZE");
@@ -50,12 +51,12 @@ class DemoFormBuilder extends FormBuilder {
       foreach ($_SESSION['fedora_ingest_files'] as $dsid => $createdFile) {
         $createdFile = strstr($createdFile, $file);
         $dformat = $mimetype->getType($createdFile);
-        $fileUrl = $base_url .'/'. drupal_urlencode( $createdFile );
-        $beginIndex = strrpos($fileUrl, '/');
-        $dtitle = substr($fileUrl, $beginIndex + 1);
-        $dtitle = urldecode($dtitle);
-        //				$dtitle =  substr($dtitle, 0, strpos($dtitle, "."));
-        $dtitle = $dtitle;
+
+        $fileUrl = file_create_url($createdFile);
+
+        $beginIndex = strrpos($createdFile, '/');
+        $dtitle = substr($createdFile, $beginIndex + 1);
+
         $ds1 = $dom->createElement("foxml:datastream");
         $ds1->setAttribute("ID", "$dsid");
         $ds1->setAttribute("STATE", "A");
@@ -70,6 +71,13 @@ class DemoFormBuilder extends FormBuilder {
         $ds1->appendChild($ds1v);
         $ds1v->appendChild($ds1content);
         $rootElement->appendChild($ds1);
+
+        if(variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PRIVATE)
+        {
+          $files = variable_get('fedora_repository_uploads', array());
+          $files[$fileUrl] = $dformat;
+          variable_set('fedora_repository_uploads', $files);
+        }
       }
     }
   }
