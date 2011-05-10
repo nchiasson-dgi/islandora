@@ -363,7 +363,7 @@ class ObjectHelper {
     $ds_list = $item->get_datastreams_list_as_array();
     $output = $this->getFormattedDC($item);
     $dsid = array_key_exists('QDC', $ds_list) ? 'QDC' : 'DC';
-      
+    $path = drupal_get_path('module', 'fedora_repository');
     
     //$baseUrl=substr($baseUrl, 0, (strpos($baseUrl, "/")-1));
     if (user_access(ObjectHelper :: $EDIT_FEDORA_METADATA)) {
@@ -374,7 +374,7 @@ class ObjectHelper {
       if ($allow) {
 
         $output .= '<br /><a title = "' . t('Edit Meta Data') . '" href="' . $base_url . '/fedora/repository/' . 'editmetadata/' . $pid . '/' .
-            $dsId . '"><img src="' . $base_url . '/' . $path . '/images/edit.gif" alt="' . t('Edit Meta Data') . '" /></a>';
+            $dsid . '"><img src="' . $base_url . '/' . $path . '/images/edit.gif" alt="' . t('Edit Meta Data') . '" /></a>';
 
       }
     }
@@ -529,7 +529,7 @@ class ObjectHelper {
     }
     $cmodels = array();
     foreach ($sxml->xpath('//@uri') as $uri) {
-      if (strpos($uri, 'fedora-system:fedoraObject-3.0') != FALSE && $include_fedora_system_content_models == FALSE) {
+      if (strpos($uri, 'fedora-system:FedoraObject-3.0') != FALSE && $include_fedora_system_content_models == FALSE) {
         continue;
       }
       $cmodel_pid = substr(strstr($uri, '/'), 1);
@@ -851,7 +851,6 @@ class ObjectHelper {
     module_load_include('inc', 'fedora_repository', 'api/fedora_utils');
     // Before executing the query, we hve a base case of accessing the top-level collection
     global $base_url;
-
     if ($pid == variable_get('fedora_repository_pid', 'islandora:top')){
         $breadcrumbs[] = l(t('Digital repository'), 'fedora/repository');
         $breadcrumbs[] = l(t('Home'), $base_url);
