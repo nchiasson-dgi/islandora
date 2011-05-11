@@ -106,6 +106,16 @@ function validDsid($dsid) {
   return $valid;
 }
 
+/**
+ * This function will mangle a string so that it is a proper
+ * DSID. All forbidden characters are removed (replaced with
+ * nothing). If it is too long the last 63 characters are used.
+ * If the string starts with a number it is prefixed with X. This
+ * function is handy when using a filename as a dsid.
+ *
+ * @param string $dsid The unmangled input DSID
+ * @return string The mangled output DSID
+ */
 function fixDsid($dsid) {
   $new_dsid = trim($dsid);
 
@@ -124,5 +134,37 @@ function fixDsid($dsid) {
 
   return $new_dsid;
 
+}
+
+/**
+ * This islandora helper function gets a URL for a file that is going to
+ * be ingested into fedora. It handles adding the file to the islandora
+ * private files table if private filesystems are enabled, so that the
+ * file can be ingested into fedora. If using public filesystems it is the
+ * same as calling file_create_url and drupal_urlencode.
+ *
+ * @param string $filepath path to file to get url for
+ *   This file must be somewhere in file_directory_path();
+ * @param string $mimetype (optional) the mimetype of the file is known
+ * @return a publically accessable url fedora can ingest from
+ */
+function islandora_create_url($filepath, $mimetype = NULL)
+{
+  $path = drupal_urlencode($filepath);
+  $url = file_create_url($path);
+
+  if(variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PRIVATE)
+  {
+    if(!$mimetype) {
+      module_load_include('inc', 'fedora_repository', 'MimeClass');
+      $mimetype_helper = new MimeClass();
+      $mimetype = $mimetype_helper->getType($datastream_file);
+    }
+    $files = variable_get('fedora_repository_uploads', array());
+    $files[file_create_url($filepath)] = $mimetype;
+    variable_set('fedora_repository_uploads', $files);
+  }
+
+  return $url;
 }
 

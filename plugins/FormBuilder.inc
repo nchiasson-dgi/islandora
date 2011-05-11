@@ -172,6 +172,8 @@ class FormBuilder {
 
   function createFedoraDataStreams($form_values, &$dom, &$rootElement) {
     module_load_include('inc', 'fedora_repository', 'MimeClass');
+    module_load_include('inc', 'fedora_repository', 'api/fedora_utils');
+
     global $base_url;
     $mimetype = new MimeClass();
     $server = NULL;
@@ -179,8 +181,7 @@ class FormBuilder {
 
     if (!empty($file)) {
       $dformat = $mimetype->getType($file);
-      $fileUrl = file_create_url($file);
-
+      $fileUrl = islandora_create_url($file, $dformat);
       $beginIndex = strrpos($file, '/');
       $dtitle = substr($file, $beginIndex + 1);
 
@@ -211,8 +212,7 @@ class FormBuilder {
         }
 
         $dformat = $mimetype->getType($createdFile);
-        $fileUrl = file_create_url($createdFile);
-
+        $fileUrl = islandora_create_url($createdFile, $dformat);
         $beginIndex = strrpos($createdFile, '/');
         $dtitle = substr($createdFile, $beginIndex + 1);
 
@@ -230,13 +230,6 @@ class FormBuilder {
         $ds1->appendChild($ds1v);
         $ds1v->appendChild($ds1content);
         $rootElement->appendChild($ds1);
-
-        if(variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PRIVATE)
-        {
-          $files = variable_get('fedora_repository_uploads', array());
-          $files[$fileUrl] = $dformat;
-          variable_set('fedora_repository_uploads', $files);
-        }
       }
     }
   }

@@ -174,13 +174,13 @@ function fedora_repository_ingest_form_submit($form, &$form_state) {
  */
 function fedora_repository_file_download($filepath)
 {
-  
-  $fullpath = file_create_url($filepath);
+  $filepath = urldecode($filepath);
+  $url = file_create_url($filepath);
   $files = variable_get('fedora_repository_uploads',array());
 
-  if(array_key_exists($fullpath, $files)) {
-    $headers = array('Content-type:' => $files[$filepath]);
-    unset($files[$filePath]);
+  if(array_key_exists($url, $files)) {
+    $headers = array('Content-type:' => $files[$url]);
+    unset($files[$url]);
     variable_set('fedora_repository_uploads', $files);
     return $headers;
   }
@@ -208,14 +208,6 @@ function fedora_repository_ingest_form_validate($form, &$form_state) {
           // save the file and then move it to the /files folder
           $fileObject = file_save_upload('ingest-file-location', $validators);
           file_move($fileObject->filepath, 0, 'FILE_EXISTS_RENAME');
-
-          // we have to save the filename when its a private download
-          if(variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PRIVATE)
-          {
-            $files = variable_get('fedora_repository_uploads', array());
-            $files[file_create_url($fileObject->filepath)] = $fileObject->filemime;
-            variable_set('fedora_repository_uploads', $files);
-          }
 
           $form_state['values']['ingest-file-location'] = $fileObject->filepath;
         }
@@ -2039,7 +2031,7 @@ function fedora_repository_batch_reingest_object($object, &$context) {
     
     if (!empty($datastreams) && is_array($datastreams)) {
       $label = !empty($object['label']) ? $object['label'] : '';
-      if (empty($object['foxml_file']) && !defined($new_item)) {
+      if (empty($object['foxml_file']) && !isset($new_item)) {
         $new_item = Fedora_Item::ingest_new_item($object['pid'], 'A', $label);
       }
       if (!empty($object['cmodel'])) {
@@ -2050,7 +2042,7 @@ function fedora_repository_batch_reingest_object($object, &$context) {
       }
       foreach($datastreams as $ds) {
         if ($ds['dsid'] == 'DC') {
-          $new_item->modify_datastream_by_value(file_get_contents($ds['datastream_file']), $ds['dsid'], $ds['label'], 'text/xml');
+          $new_item->modify_datastream_by_value(file_get_contents($ds['datastream_file']), $ds['dsid'], !empty($ds['label']) ? $ds['label'] : '', 'text/xml');
         }
         else {
           $new_item->add_datastream_from_file($ds['datastream_file'], $ds['dsid'], !empty($ds['label']) ? $ds['label'] : '', !empty($ds['mimetype']) ? $ds['mimetype'] : 'text/xml');

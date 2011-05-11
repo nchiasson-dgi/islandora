@@ -57,18 +57,22 @@ class Fedora_Item {
 
   function add_datastream_from_file($datastream_file, $datastream_id, $datastream_label = NULL, $datastream_mimetype = '', $controlGroup = 'M', $logMessage = null) {
     module_load_include('inc', 'fedora_repository', 'MimeClass');
+    module_load_include('inc', 'fedora_repository', 'api/fedora_utils');
+
     if (empty($datastream_mimetype)) {
       // Get mime type from the file extension.
       $mimetype_helper = new MimeClass();
       $datastream_mimetype = $mimetype_helper->getType($datastream_file);
     }
     $original_path = $datastream_file;
+
     // Temporarily move file to a web-accessible location.
     file_copy($datastream_file, file_directory_path());
-    $datastream_url = drupal_urlencode($datastream_file);
-    $url = file_create_url($datastream_url);
 
-    $return_value = $this->add_datastream_from_url($url, $datastream_id, $datastream_label, $datastream_mimetype, $controlGroup, $logMessage);
+    // Get a URL for the file
+    $datastream_url = islandora_create_url($datastream_file, $datastream_mimetype);
+
+    $return_value = $this->add_datastream_from_url($datastream_url, $datastream_id, $datastream_label, $datastream_mimetype, $controlGroup, $logMessage);
 
     if ($original_path != $datastream_file) {
       file_delete($datastream_file);
