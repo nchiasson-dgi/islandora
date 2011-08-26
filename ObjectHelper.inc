@@ -164,6 +164,7 @@ class ObjectHelper {
           }
 
           header('Content-Disposition: attachment; filename="' . $suggestedFileName . '"');
+          header('Cache-Control: private', TRUE);
         }
         
         if ( (isset($user) && $user->uid != 0) || $forceSoap || isset($_SERVER['HTTPS'])) {
