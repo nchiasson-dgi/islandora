@@ -21,7 +21,7 @@ class FedoraObject {
     $path = $base_path . drupal_get_path('module','fedora_repository');
 
     if (fedora_repository_access(OBJECTHELPER :: $EDIT_FEDORA_METADATA, $this->pid, $user)) {
-      $edit_link = "<a href='$base_path" . "formbuilder/edit/$this->pid/MODS'><img alt='edit' src='$path/images/Crystal_Clear_action_run.png' width=50/>Edit Metadata<p></a>";
+      $edit_link = "<a href='$base_path" . "formbuilder/edit/$this->pid/JWA'><img alt='edit' src='$path/images/Crystal_Clear_action_run.png' width=50/>Edit Metadata<p></a>";
     }
     else {
       $edit_link = '';
@@ -36,6 +36,7 @@ class FedoraObject {
     $tabset['fedora_object_details'] = array(
       '#type' => 'tabpage',
       '#title' => t('Object Details'),
+      '#weight' => -1,
       '#selected' => $show_purge_tab,
       '#content' => $dc_html . $ds_list . $edit_link . $purge_form,
     );

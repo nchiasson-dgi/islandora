@@ -31,16 +31,17 @@ class ShowSlideStreamsInFieldSets {
     $tabset['second_tab'] = array(
       '#type' => 'tabpage',
       '#title' => t('Full-size'),
+      '#weight' => -1,
       '#content' => $html);
 
-    $tabset['first_tab'] = array(
-      // #type and #title are the minimum requirements.
-      '#type' => 'tabpage',
-      '#title' => t('View'),
-      // This will be the content of the tab.
-      '#content' => '<img src="'. $base_url .
-        '/fedora/imageapi/'. $this->pid . '/JPG/JPG.jpg'. '" />'. '<p>'. drupal_get_form('fedora_repository_image_tagging_form', $this->pid) . '</p>',
-    );
+    //$tabset['first_tab'] = array(
+    //  // #type and #title are the minimum requirements.
+    //  '#type' => 'tabpage',
+    //  '#title' => t('View'),
+    //  // This will be the content of the tab.
+     // '#content' => '<img src="'. $base_url .
+     //   '/fedora/imageapi/'. $this->pid . '/JPG/JPG.jpg'. '" />'. '<p>'. drupal_get_form('fedora_repository_image_tagging_form', $this->pid) . '</p>',
+    //);
     
     return $tabset;
   }
