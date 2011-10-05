@@ -26,6 +26,13 @@ class FedoraObject {
     else {
       $edit_link = '';
     }
+
+    if (user_access('Edit XACML Policies')){
+      $edit_xacml = "<a href='$base_path" . "xacml/$this->pid/POLICY'>Edit Permissions</a><p>";
+    }
+    else {
+      $edit_xacml = '';
+    }
     
     $purge_form = drupal_get_form('fedora_repository_purge_object_form', $this->pid, check_plain(substr(request_uri(), strlen(base_path()))));
 
@@ -38,7 +45,7 @@ class FedoraObject {
       '#title' => t('Object Details'),
       '#weight' => -1,
       '#selected' => $show_purge_tab,
-      '#content' => $dc_html . $ds_list . $edit_link . $purge_form,
+      '#content' => $dc_html . $ds_list . $edit_link . $edit_xacml . $purge_form,
     );
     
     return $tabset;
