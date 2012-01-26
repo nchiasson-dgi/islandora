@@ -212,7 +212,7 @@ function solution_pack_add_form_association($content_model, $form_name, $dsid = 
       '%form_name' => $form_name
     )), 'status');
     }
-    elseif ($result === SAVED_UPDATED)
+    elseif ($result === SAVED_UPDATED) {
       drupal_set_message(t('Updated association between content model "%content_model" and form "%form_name".', array(
         '%content_model' => $content_model,
         '%form_name' => $form_name
