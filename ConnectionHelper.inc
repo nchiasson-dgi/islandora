@@ -42,11 +42,12 @@ class ConnectionHelper {
       'pass' => $_pass
     );
 
+    $toReturn = '';
     if ($parsed_url === FALSE) {  //ERROR: Failed parsing
       drupal_set_message(t('Bad URL "!url".', array(
         '%url' => $url
       )), 'error', FALSE);
-      return NULL;
+      $toReturn = NULL;
     }
     elseif (!in_array($scheme, $prots)) { //ERROR: unrecognized scheme
       drupal_set_message(t('Unrecognized scheme "%scheme" in URL "%url".  Must be one in: %allowed_schemes.', array(
@@ -54,21 +55,23 @@ class ConnectionHelper {
         '%scheme' => $scheme,
         '%allowed_schemes' => implode(', ', $prots)
       )), 'error', FALSE);
-      return NULL;
+      $toReturn = NULL;
     }
     else {  //SUCCESS!
       if (is_callable('http_build_url')) { //Nice little function provided by PECL, if available...
-        return http_build_url($parsed_url, $auth);
+        $toReturn = http_build_url($parsed_url, $auth);
       }
       else {  //Or what http_build_url essentially does...  Could probably be structured a little better.
         $u = array_merge($parsed_url, $auth);
-        return $u['scheme'] . '://' . urlencode($u['user']) . ':' . urlencode($u['pass']) . '@' . $u['host'] . 
-          array_key_exists('port', $u) ? ':' . $u['port'] : '' .
-          array_key_exists('path', $u) ? $u['path'] : '' .
-          array_key_exists('query', $u) ? '?' . $u['query'] : '' .
-          array_key_exists('fragment', $u) ? '#' . $u['fragment'] : '';
+        $toReturn = $u['scheme'] . '://' . urlencode($u['user']) . ':' . urlencode($u['pass']) . '@' . $u['host'] . 
+          (!empty($u['port']) ? ':' . $u['port'] : '') .
+          (!empty($u['path']) ? $u['path'] : '') .
+          (!empty($u['query']) ? '?' .  $u['query'] : '') .
+          (!empty($u['fragment']) ? '#' . $u['fragment'] : '');
       }
     }
+    //dsm($toReturn);
+    return $toReturn;
   }
 
   /**
