@@ -31,21 +31,35 @@ class ConnectionHelper {
     if (empty($url)) {
       $url = variable_get('fedora_soap_url', 'http://localhost:8080/fedora/services/access?wsdl');
     }
+    
+    $parsed_url = @parse_url($url);  //Parse the URL into an associative array (PHP built-in; 
+                                     // throws a warning on failure before 5.3.3)
+    $scheme = $parsed_url['scheme'];  //Grab the scheme from the URL
+    $prots = array('http', 'https');  //List of supported protocols...  is this really necessary?
+    
+    $auth = array( //Credentials to add into the url array (same format as parse_url)
+      'user' => $_name,
+      'pass' => $_pass
+    );
 
-    $creds = urlencode($_name) . ':' . urlencode($_pass);
-
-    if (strpos($url, 'http://') === 0) {
-      $new_url = 'http://' . $creds . '@' . substr($url, 7);
-    }
-    elseif (strpos($url, 'https://') === 0) {
-      $new_url = 'https://' . $creds . '@' . substr($url, 8);
-    }
-    else {
-      drupal_set_message(t('Invalid URL: !url', array('!url' => $url)));
+    if ($parsed_url === FALSE) {  //ERROR: Failed parsing
+      drupal_set_message(t('Bad URL "!url".', array(
+        '%url' => $url
+      )), 'error', FALSE);
       return NULL;
     }
-
-    return $new_url;
+    elseif (!in_array($scheme, $prots)) { //ERROR: unrecognized scheme
+      drupal_set_message(t('Unrecognized scheme "%scheme" in URL "%url".  Must be one in: %allowed_schemes.', array(
+        '%url' => $url,
+        '%scheme' => $scheme,
+        '%allowed_schemes' => implode(', ', $prots)
+      ), 'error', FALSE);
+      return NULL;
+    }
+    else {  //SUCCESS!
+      //PHP/PECL built-in
+      return http_build_url($parsed_url, $auth);
+    }
   }
 
   /**
