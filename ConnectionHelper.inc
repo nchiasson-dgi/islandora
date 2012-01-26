@@ -53,7 +53,7 @@ class ConnectionHelper {
         '%url' => $url,
         '%scheme' => $scheme,
         '%allowed_schemes' => implode(', ', $prots)
-      ), 'error', FALSE);
+      )), 'error', FALSE);
       return NULL;
     }
     else {  //SUCCESS!
