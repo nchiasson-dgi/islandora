@@ -1,7 +1,7 @@
 <?php
 
-
 /**
+ * @file
  * Invokes a hook to any dependent modules asking them if their installations require
  * any fedora objects to be present. Modules implementing this hook should return an array
  * of arrays of the form:
@@ -35,6 +35,11 @@ function fedora_repository_solution_packs_page() {
           break;
       }
     }
+    
+    //FIXME:  Something seems wrong here...  Shouldn't be adding forms to Islandora core for individual solution packs...
+    //  seems kinda like going very much in the wrong direction...  Wouldn't hook_form_alter in the implementing 
+    //  modules be the way to go for customization?  They could look inside the given form for the presence of their module
+    //  name in 'solution_pack_module' value within the form
     $output .= drupal_get_form('fedora_repository_solution_pack_form_' . $solution_pack_module, $solution_pack_module, $solution_pack_name, $objects);
   }
 
@@ -75,7 +80,7 @@ function fedora_repository_solution_pack_form(&$form_state, $solution_pack_modul
     $table_header = array('PID', 'Status');
     $table_rows = array();
 
-
+    //TODO:  Should probably be made to deal with (XML) forms as well...
     foreach ($objects as $object) {
       $datastreams = NULL;
       if (isset($object['pid'])) {
@@ -87,7 +92,8 @@ function fedora_repository_solution_pack_form(&$form_state, $solution_pack_modul
         if (!$item->exists()) {
           $object_status = 'Missing';
           $needs_install = TRUE;
-        } else {
+        }
+        else {
           if (isset($object['dsid']) && isset($object['datastream_file']) && isset($object['dsversion'])) {
             $datastreams = array(
               array(
@@ -96,7 +102,8 @@ function fedora_repository_solution_pack_form(&$form_state, $solution_pack_modul
                 'dsversion' => $object['dsversion'],
               ),
             );
-          } elseif (!empty($object['datastreams'])) {
+          }
+          elseif (!empty($object['datastreams'])) {
             $datastreams = $object['datastreams'];
           }
           if (!empty($datastreams) && is_array($datastreams)) {
@@ -118,7 +125,7 @@ function fedora_repository_solution_pack_form(&$form_state, $solution_pack_modul
                 }
               }
             }
-          }  
+          }
         }
         array_push($table_row, $object_status);
         $table_rows[] = $table_row;
@@ -137,7 +144,8 @@ function fedora_repository_solution_pack_form(&$form_state, $solution_pack_modul
   );
   if (!$needs_install && !$needs_update) {
     $form['install_status']['#value'] = theme_image('misc/watchdog-ok.png') . t('All required objects are installed and up-to-date.');
-  } else {
+  }
+  else {
     $form['install_status']['#value'] = theme_image('misc/watchdog-warning.png') . t('Some objects must be re-ingested. See Objects list for details.');
   }
   $form['submit'] = array(
@@ -156,7 +164,7 @@ function fedora_repository_solution_pack_form(&$form_state, $solution_pack_modul
 function fedora_repository_solution_pack_form_submit($form, &$form_state) {
   $what = $form_state;
   $module_name = $form_state['values']['solution_pack_module'];
-  $solution_pack_info = call_user_func($module_name . '_required_fedora_objects');
+  $solution_pack_info = module_invoke($module_name, 'required_fedora_objects');
   $batch = array(
     'title' => t('Installing / updating solution pack objects'),
     'file' => drupal_get_path('module', 'fedora_repository') . '/fedora_repository.module',
@@ -170,3 +178,52 @@ function fedora_repository_solution_pack_form_submit($form, &$form_state) {
   }
   batch_set($batch);
 }
+
+function solution_pack_add_form($form_name, $form_xml) {
+  $result = db_result(db_query('SELECT name FROM {xml_forms} WHERE name = "%s"', $form_name));
+  if (!$result) {
+    $object = new stdClass();
+    $object->name = $form_name;
+    $object->form = $form_xml;
+    $result = drupal_write_record('xml_forms', $object);
+    drupal_set_message(t('Added form "%name"', array('%name' => $form_name)));
+  }
+}
+
+function solution_pack_add_form_association($content_model, $form_name, $dsid = 'MODS', $title_field = "['titleInfo']['title']", $transform = 'mods_to_dc.xsl') {
+  $result = db_result(db_query('SELECT content_model FROM {islandora_content_model_forms} WHERE content_model = "%s" and form_name = "%s"', $content_model, $form_name));
+  if (!$result) { //If this association doesn't already exist...
+    $object = new stdClass();
+    $object->content_model = $content_model;
+    $object->form_name = $form_name;
+    $object->dsid = $dsid;
+    $object->title_field = $title_field;
+    $object->transform = $transform;
+    $result = drupal_write_record('islandora_content_model_forms', $object);
+    if ($result === FALSE) {
+      drupal_set_message(t('Failed to add association between content model "%content_model" and form "%form_name".', array(
+      '%content_model' => $content_model,
+      '%form_name' => $form_name
+    )), 'error');
+    }
+    elseif ($result === SAVED_NEW) {
+      drupal_set_message(t('Added association between content model "%content_model" and form "%form_name".', array(
+      '%content_model' => $content_model,
+      '%form_name' => $form_name
+    )), 'status');
+    }
+    elseif ($result === SAVED_UPDATED)
+      drupal_set_message(t('Updated association between content model "%content_model" and form "%form_name".', array(
+        '%content_model' => $content_model,
+        '%form_name' => $form_name
+      )), 'status');
+    }
+    else {
+      drupal_set_message(t('Unknown state encountered while associating content model "%content_model" and form "%form_name".', array(
+        '%content_model' => $content_model,
+        '%form_name' => $form_name
+      )), 'error');
+    }
+  }
+}
+
