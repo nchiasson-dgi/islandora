@@ -57,8 +57,17 @@ class ConnectionHelper {
       return NULL;
     }
     else {  //SUCCESS!
-      //PHP/PECL built-in
-      return http_build_url($parsed_url, $auth);
+      if (is_callable('http_build_url')) { //Nice little function provided by PECL, if available...
+        return http_build_url($parsed_url, $auth);
+      }
+      else {  //Or what http_build_url essentially does...  Could probably be structured a little better.
+        $u = array_merge($parsed_url, $auth);
+        return $u['scheme'] . '://' . urlencode($u['user']) . ':' . urlencode($u['pass']) . '@' . $u['host'] . 
+          array_key_exists('port', $u) ? ':' . $u['port'] : '' .
+          array_key_exists('path', $u) ? $u['path'] : '' .
+          array_key_exists('query', $u) ? '?' . $u['query'] : '' .
+          array_key_exists('fragment', $u) ? '#' . $u['fragment'] : '';
+      }
     }
   }
 
