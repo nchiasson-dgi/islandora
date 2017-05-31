@@ -398,7 +398,7 @@ function islandora_rules_datastream_load_domxpath($string) {
  *   to be namespace prefixes and descriptions are the namespace URIs.
  */
 function islandora_rules_datastream_load_namespace_vocab($xpath, $xpath_vocab) {
-  foreach (taxonomy_get_tree($xpath_vocab->vid, 0, 1, FALSE) as $term) {
+  foreach (\Drupal::entityManager()->getStorage("taxonomy_term")->loadTree($xpath_vocab->vid, 0, 1, FALSE) as $term) {
     $xpath->registerNamespace($term->name, $term->description);
   }
 }

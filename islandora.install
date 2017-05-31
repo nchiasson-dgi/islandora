@@ -12,12 +12,12 @@ function islandora_requirements($phase) {
   $requirements = array();
 
   // Ensure translations don't break at install time.
-  $t = get_t();
+  $t = 't';
 
   if (!class_exists('XSLTProcessor', FALSE)) {
     $requirements['islandora_xsltprocessor']['title'] = $t('Islandora XSLTProcessor Prerequisite');
     $requirements['islandora_xsltprocessor']['value'] = $t('Not installed');
-    $link = l($t('PHP XSL extension'), 'http://us2.php.net/manual/en/book.xsl.php', array('attributes' => array('target' => '_blank')));
+    $link = \Drupal::l($t('PHP XSL extension'), \Drupal\Core\Url::fromUri('http://us2.php.net/manual/en/book.xsl.php'));
     $requirements['islandora_xsltprocessor']['description'] = $t('The !xsllink is required. Check your installed PHP extensions and php.ini file.', array('!xsllink' => $link));
     $requirements['islandora_xsltprocessor']['severity'] = REQUIREMENT_ERROR;
   }
@@ -32,7 +32,7 @@ function islandora_requirements($phase) {
  */
 function islandora_install() {
   module_load_include('inc', 'islandora', 'includes/solution_packs');
-  islandora_install_solution_pack('islandora');
+  //islandora_install_solution_pack('islandora');
 }
 
 /**
@@ -42,7 +42,7 @@ function islandora_install() {
  */
 function islandora_uninstall() {
   module_load_include('inc', 'islandora', 'includes/solution_packs');
-  islandora_install_solution_pack('islandora', 'uninstall');
+  //islandora_install_solution_pack('islandora', 'uninstall');
   // Add new variables to clean up.
   $variables = array(
     'islandora_ds_replace_exclude_enforced',
@@ -129,6 +129,6 @@ function islandora_schema() {
  */
 function islandora_update_7001(&$sandbox) {
   drupal_install_schema('islandora');
-  $t = get_t();
+  $t = 't';
   return $t("Islandora database updates complete");
 }

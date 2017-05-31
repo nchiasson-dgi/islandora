@@ -22,15 +22,36 @@
 function hook_islandora_view_object($object, $user, $page_number, $page_size) {
   $output = array();
   if (in_array('islandora:sp_basic_image', $object->models)) {
-    $resource_url = url("islandora/object/{$object->id}/datastream/OBJ/view");
+    // @FIXME
+// url() expects a route name or an external URI.
+// $resource_url = url("islandora/object/{$object->id}/datastream/OBJ/view");
+
     $params = array(
       'title' => $object->label,
       'path' => $resource_url,
     );
     // Theme the image seperatly.
-    $variables['islandora_img'] = theme('image', $params);
-    $output = theme('islandora_default_print', array(
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $variables['islandora_img'] = theme('image', $params);
+
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $output = theme('islandora_default_print', array(
     'islandora_content' => $variables['islandora_img']));
+
   }
   return $output;
 }
@@ -628,7 +649,7 @@ function hook_cmodel_pid_islandora_datastream_access($op, $object, $user) {
  * Lets one add to the overview tab in object management.
  */
 function hook_islandora_overview_object(AbstractObject $object) {
-  return drupal_render(drupal_get_form('some_form', $object));
+  return \Drupal::service("renderer")->render(\Drupal::formBuilder()->getForm('some_form', $object));
 }
 
 /**
@@ -637,14 +658,14 @@ function hook_islandora_overview_object(AbstractObject $object) {
  * Content model specific.
  */
 function hook_cmodel_pid_islandora_overview_object(AbstractObject $object) {
-  return drupal_render(drupal_get_form('some_form', $object));
+  return \Drupal::service("renderer")->render(\Drupal::formBuilder()->getForm('some_form', $object));
 }
 
 /**
  * Lets one alter the overview tab in object management.
  */
 function hook_islandora_overview_object_alter(AbstractObject &$object, &$output) {
-  $output = $output . drupal_render(drupal_get_form('some_form', $object));
+  $output = $output . \Drupal::service("renderer")->render(\Drupal::formBuilder()->getForm('some_form', $object));
 }
 
 /**
@@ -653,7 +674,7 @@ function hook_islandora_overview_object_alter(AbstractObject &$object, &$output)
  * Content model specific.
  */
 function hook_cmodel_pid_islandora_overview_object_alter(AbstractObject &$object, &$output) {
-  $output = $output . drupal_render(drupal_get_form('some_form', $object));
+  $output = $output . \Drupal::service("renderer")->render(\Drupal::formBuilder()->getForm('some_form', $object));
 }
 
 /**

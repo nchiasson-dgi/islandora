@@ -97,7 +97,7 @@ function drush_islandora_solution_pack_install_required_objects() {
   module_load_include('inc', 'islandora', 'includes/solution_packs');
 
   $module = drush_get_option('module');
-  if (module_exists($module)) {
+  if (\Drupal::moduleHandler()->moduleExists($module)) {
     islandora_install_solution_pack(
         $module, 'install', drush_get_option('force', FALSE)
     );
@@ -116,7 +116,7 @@ function drush_islandora_solution_pack_uninstall_required_objects() {
   module_load_include('inc', 'islandora', 'includes/solution_packs');
 
   $module = drush_get_option('module');
-  if (module_exists($module)) {
+  if (\Drupal::moduleHandler()->moduleExists($module)) {
     islandora_uninstall_solution_pack(
         $module, drush_get_option('force', FALSE)
     );
@@ -136,7 +136,7 @@ function drush_islandora_solution_pack_required_objects_status() {
 
   $module = drush_get_option('module', FALSE);
   $required_objects = array();
-  if ($module && module_exists($module)) {
+  if ($module && \Drupal::moduleHandler()->moduleExists($module)) {
     $required_objects[$module] = islandora_solution_packs_get_required_objects($module);
   }
   elseif ($module === FALSE) {
@@ -172,7 +172,7 @@ function drush_islandora_solution_pack_required_objects_status() {
 function drush_islandora_solution_pack_install_content_models() {
   module_load_include('inc', 'islandora', 'includes/solution_packs');
   $module = drush_get_option('module');
-  if (module_exists($module)) {
+  if (\Drupal::moduleHandler()->moduleExists($module)) {
     $info = islandora_solution_packs_get_required_objects($module);
     $objects_to_add = array();
     foreach ($info['objects'] as $key => $candidate) {
