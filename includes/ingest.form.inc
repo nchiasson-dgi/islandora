@@ -57,15 +57,10 @@ function islandora_ingest_form(array $form, array &$form_state, array $configura
     return islandora_ingest_form_execute_step($form, $form_state);
   }
   catch (Exception $e) {
-    watchdog(
-      'islandora',
-      'Exception during ingest form processing with Message: "@exception",  and Trace: @trace',
-      array('@exception' => $e->getMessage(), '@trace' => $e->getTraceAsString()),
-      WATCHDOG_ERROR
-    );
+    \Drupal::logger('islandora')->error('Exception during ingest form processing with Message: "@exception",  and Trace: @trace', array('@exception' => $e->getMessage(), '@trace' => $e->getTraceAsString()));
     drupal_set_message($e->getMessage(), 'error');
     return array(array(
-        '#markup' => l(t('Back'), 'javascript:window.history.back();', array('external' => TRUE))));
+        '#markup' => \Drupal::l(t('Back'), \Drupal\Core\Url::fromUri('javascript:window.history.back();'))));
   }
 }
 
@@ -477,12 +472,12 @@ function islandora_ingest_form_stepify(array $form, array &$form_state, array $s
     $form['hidden_next']['#suffix'] = '</div>';
   }
 
-  if (variable_get('islandora_render_context_ingeststep', FALSE)) {
+  if (\Drupal::config('islandora.settings')->get('islandora_render_context_ingeststep')) {
     // Add active CModel header to the form.
     islandora_ingest_form_add_step_context($form, $form_state);
   }
   // Allow for a hook_form_FORM_ID_alter().
-  drupal_alter(array('form_' . $step['form_id'], 'form'), $form, $form_state, $step['form_id']);
+  \Drupal::moduleHandler()->alter(array('form_' . $step['form_id'], 'form'), $form, $form_state, $step['form_id']);
   return $form;
 }
 
@@ -794,7 +789,15 @@ function islandora_ingest_form_ingest_button_process(array $element) {
       'left' => 'auto',
     ),
   );
-  drupal_add_js($settings, 'setting');
+  // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+// 
+// 
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// drupal_add_js($settings, 'setting');
+
   $islandora_path = drupal_get_path('module', 'islandora');
   $element['#attached'] = array(
     'js' => array(
@@ -841,12 +844,7 @@ function islandora_ingest_form_submit(array $form, array &$form_state) {
     catch (Exception $e) {
       // If post hooks throws it may already exist at this point but may be
       // invalid, so don't say failed.
-      watchdog(
-        'islandora',
-        'Exception during ingest with Message: "@exception",  and Trace: @trace',
-        array('@exception' => $e->getMessage(), '@trace' => $e->getTraceAsString()),
-        WATCHDOG_ERROR
-      );
+      \Drupal::logger('islandora')->error('Exception during ingest with Message: "@exception",  and Trace: @trace', array('@exception' => $e->getMessage(), '@trace' => $e->getTraceAsString()));
       drupal_set_message(
         t('A problem occured while ingesting "@label" (ID: @pid), please notify the administrator.',
         array('@label' => $object->label, '@pid' => $object->id)),
@@ -937,14 +935,14 @@ function &islandora_ingest_form_get_shared_storage(array &$form_state) {
  *   The Drupal form state.
  */
 function islandora_ingest_form_load_include(array &$form_state) {
-  form_load_include($form_state, 'inc', 'islandora', 'includes/ingest.form');
+  $form_state->loadInclude('islandora', 'inc', 'includes/ingest.form');
   $step = islandora_ingest_form_get_step($form_state);
   // Load include files.
   if (isset($step['file']) && isset($step['module'])) {
     $matches = array();
     preg_match('/^(.*)\.(.*)$/', $step['file'], $matches);
     list($file, $name, $type) = $matches;
-    form_load_include($form_state, $type, $step['module'], $name);
+    $form_state->loadInclude($step['module'], $type, $name);
   }
 }
 
@@ -974,7 +972,7 @@ function islandora_ingest_form_get_steps(array &$form_state) {
     // Required for pass by reference.
     // @todo Change this around so that it isn't passed by reference, there
     // Is an alter below that can handle that requirement.
-    foreach (module_implements($hook) as $module) {
+    foreach (\Drupal::moduleHandler()->getImplementations($hook) as $module) {
       $function = $module . '_' . $hook;
       $module_steps = (array) $function($form_state);
       $steps = array_merge($steps, $module_steps);
@@ -982,7 +980,7 @@ function islandora_ingest_form_get_steps(array &$form_state) {
   }
   $steps = array_filter($steps);
   foreach (islandora_build_hook_list(ISLANDORA_INGEST_STEP_HOOK, $shared_storage['models']) as $hook) {
-    drupal_alter($hook, $steps, $form_state);
+    \Drupal::moduleHandler()->alter($hook, $steps, $form_state);
   }
   // Add any defaults.
   foreach ($steps as $key => &$step) {

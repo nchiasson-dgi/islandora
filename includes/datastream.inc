@@ -147,7 +147,7 @@ function islandora_parse_http_match_headers($header_value) {
  * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
  */
 function islandora_view_datastream_cache_check(AbstractDatastream $datastream) {
-  if (!variable_get('islandora_use_datastream_cache_headers', TRUE)) {
+  if (!\Drupal::config('islandora.settings')->get('islandora_use_datastream_cache_headers')) {
     return 200;
   }
 
@@ -215,7 +215,7 @@ function islandora_view_datastream_cache_check(AbstractDatastream $datastream) {
  *   The datastream being viewed/downloaded.
  */
 function islandora_view_datastream_set_cache_headers(AbstractDatastream $datastream) {
-  if (variable_get('islandora_use_datastream_cache_headers', TRUE)) {
+  if (\Drupal::config('islandora.settings')->get('islandora_use_datastream_cache_headers')) {
     // Force cache revalidation.
     header('Expires: Sun, 19 Nov 1978 05:00:00 GMT');
     $cache_control = array();
@@ -329,7 +329,10 @@ function islandora_edit_datastream(AbstractDatastream $datastream) {
 function islandora_edit_datastream_registry_render(array $edit_registry) {
   $markup = '';
   foreach ($edit_registry as $edit_route) {
-    $markup .= l($edit_route['name'], $edit_route['url']) . '<br/>';
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $markup .= l($edit_route['name'], $edit_route['url']) . '<br/>';
+
   }
   return array(
     '#type' => 'markup',
@@ -455,7 +458,7 @@ function islandora_view_datastream_retrieve_file_uri(AbstractDatastream $datastr
 
   $extension = islandora_get_extension_for_mimetype($datastream->mimetype);
   $file_uri = 'temporary://chunk_' . $datastream->parent->id . '_' . $datastream->id . '_' . $datastream->createdDate->getTimestamp() . '.' . $extension;
-  touch(drupal_realpath($file_uri));
+  touch(\Drupal::service("file_system")->realpath($file_uri));
   $fp = fopen($file_uri, 'r+b');
   if (flock($fp, LOCK_SH)) {
     try {

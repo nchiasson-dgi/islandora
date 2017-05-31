@@ -68,7 +68,7 @@ class IslandoraTuque {
    */
   public function __construct($user = NULL, $url = NULL) {
     if (!isset($user)) {
-      global $user;
+      $user = \Drupal::currentUser();
     }
 
     if ($user->uid == 0) {
@@ -81,7 +81,7 @@ class IslandoraTuque {
     }
 
     if (!isset($url)) {
-      $url = variable_get('islandora_base_url', 'http://localhost:8080/fedora');
+      $url = \Drupal::config('islandora.settings')->get('islandora_base_url');
     }
 
     if (self::exists()) {
@@ -108,9 +108,9 @@ class IslandoraTuque {
    * Displays and error for use when Tuque is not installed.
    */
   public static function getError() {
-    $islandora_doc_link = l(t('Islandora documentation'), 'https://wiki.duraspace.org/display/ISLANDORA/Islandora');
-    $tuque_link = l(t('Tuque Fedora API'), 'http://github.com/islandora/tuque');
+    $islandora_doc_link = \Drupal::l(t('Islandora documentation'), \Drupal\Core\Url::fromUri('https://wiki.duraspace.org/display/ISLANDORA/Islandora'));
+    $tuque_link = \Drupal::l(t('Tuque Fedora API'), \Drupal\Core\Url::fromUri('http://github.com/islandora/tuque'));
     $message = t('Islandora requires the !tuque_url. Please install in /sites/all/libraries/tuque before continuing. See the !islandora_url.', array('!tuque_url' => $tuque_link, '!islandora_url' => $islandora_doc_link));
-    drupal_set_message(filter_xss($message), 'error', FALSE);
+    drupal_set_message(\Drupal\Component\Utility\Xss::filter($message), 'error', FALSE);
   }
 }

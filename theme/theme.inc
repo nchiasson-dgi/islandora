@@ -21,7 +21,7 @@ function template_preprocess_islandora_default_edit(array &$variables) {
   $header[] = array('data' => t('Type'));
   $header[] = array('data' => t('Mime type'));
   $header[] = array('data' => t('Size'));
-  if (user_access(ISLANDORA_VIEW_DATASTREAM_HISTORY)) {
+  if (\Drupal::currentUser()->hasPermission(ISLANDORA_VIEW_DATASTREAM_HISTORY)) {
     $header[] = array('data' => t('Versions'));
   }
 
@@ -31,15 +31,24 @@ function template_preprocess_islandora_default_edit(array &$variables) {
   $rows = array();
   foreach ($islandora_object as $ds) {
     $row = array();
-    $row[] = array(
-      'class' => 'datastream-id',
-      'data' => theme('islandora_datastream_view_link', array(
-        'datastream' => $ds,
-      )),
-    );
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $row[] = array(
+//       'class' => 'datastream-id',
+//       'data' => theme('islandora_datastream_view_link', array(
+//         'datastream' => $ds,
+//       )),
+//     );
+
     $row[] = array(
       'class' => 'datastream-label',
-      'data' => filter_xss($ds->label),
+      'data' => \Drupal\Component\Utility\Xss::filter($ds->label),
     );
     $row[] = array(
       'class' => 'datastream-control',
@@ -47,62 +56,116 @@ function template_preprocess_islandora_default_edit(array &$variables) {
     );
     $row[] = array(
       'class' => 'datastream-mime',
-      'data' => filter_xss($ds->mimeType),
+      'data' => \Drupal\Component\Utility\Xss::filter($ds->mimeType),
     );
     $row[] = array(
       'class' => 'datastream-size',
       'data' => islandora_datastream_get_human_readable_size($ds),
     );
     if (islandora_datastream_access(ISLANDORA_VIEW_DATASTREAM_HISTORY, $ds)) {
-      $row[] = array(
-        'class' => 'datastream-versions',
-        'data' => theme('islandora_datastream_version_link', array(
-          'datastream' => $ds,
-        )),
-      );
+      // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $row[] = array(
+//         'class' => 'datastream-versions',
+//         'data' => theme('islandora_datastream_version_link', array(
+//           'datastream' => $ds,
+//         )),
+//       );
+
     }
-    elseif (user_access(ISLANDORA_VIEW_DATASTREAM_HISTORY)) {
+    elseif (\Drupal::currentUser()->hasPermission(ISLANDORA_VIEW_DATASTREAM_HISTORY)) {
       $row[] = array();
     }
     if (islandora_datastream_access(ISLANDORA_VIEW_DATASTREAM_HISTORY, $ds)) {
       // Add new datastream content as the lastest version.
-      $row[] = array(
-        'class' => 'datastream-replace',
-        'data' => theme('islandora_datastream_replace_link', array(
-          'datastream' => $ds,
-        )),
-      );
+      // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $row[] = array(
+//         'class' => 'datastream-replace',
+//         'data' => theme('islandora_datastream_replace_link', array(
+//           'datastream' => $ds,
+//         )),
+//       );
+
     }
     else {
       $row[] = array();
     }
-    $row[] = array(
-      'class' => 'datastream-download',
-      'data' => theme('islandora_datastream_download_link', array(
-        'datastream' => $ds,
-      )),
-    );
-    $row[] = array(
-      'class' => 'datstream-edit',
-      'data' => theme('islandora_datastream_edit_link', array(
-        'datastream' => $ds,
-      )),
-    );
-    $row[] = array(
-      'class' => 'datastream-delete',
-      'data' => theme('islandora_datastream_delete_link', array(
-        'datastream' => $ds,
-      )),
-    );
-    $row[] = array(
-      'class' => 'datastream-regenerate',
-      'data' => theme('islandora_datastream_regenerate_link', array(
-        'datastream' => $ds,
-      )),
-    );
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $row[] = array(
+//       'class' => 'datastream-download',
+//       'data' => theme('islandora_datastream_download_link', array(
+//         'datastream' => $ds,
+//       )),
+//     );
+
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $row[] = array(
+//       'class' => 'datstream-edit',
+//       'data' => theme('islandora_datastream_edit_link', array(
+//         'datastream' => $ds,
+//       )),
+//     );
+
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $row[] = array(
+//       'class' => 'datastream-delete',
+//       'data' => theme('islandora_datastream_delete_link', array(
+//         'datastream' => $ds,
+//       )),
+//     );
+
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $row[] = array(
+//       'class' => 'datastream-regenerate',
+//       'data' => theme('islandora_datastream_regenerate_link', array(
+//         'datastream' => $ds,
+//       )),
+//     );
+
     $rows[] = $row;
   }
-  $caption = filter_xss($islandora_object->label) . ' - ' . $islandora_object->id;
+  $caption = \Drupal\Component\Utility\Xss::filter($islandora_object->label) . ' - ' . $islandora_object->id;
   $table = array(
     'colgroups' => NULL,
     'sticky' => TRUE,
@@ -119,8 +182,23 @@ function template_preprocess_islandora_default_edit(array &$variables) {
  * Implements template_preprocess_HOOK().
  */
 function template_preprocess_islandora_default(&$variables) {
-  drupal_add_js('misc/form.js');
-  drupal_add_js('misc/collapse.js');
+  // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+//
+//
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// drupal_add_js('misc/form.js');
+
+  // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+//
+//
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// drupal_add_js('misc/collapse.js');
   $islandora_object = $variables['islandora_object'];
   module_load_include('inc', 'islandora', 'includes/utilities');
   module_load_include('inc', 'islandora', 'includes/datastream');
@@ -137,14 +215,17 @@ function template_preprocess_islandora_default(&$variables) {
       $download_path = islandora_datastream_get_url($ds, 'download');
       $datastreams[$id]['id'] = $id;
       $datastreams[$id]['label'] = $label;
-      $datastreams[$id]['label_link'] = islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $ds) ?
-        l($label, $download_path) :
-        $label;
+      // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $datastreams[$id]['label_link'] = islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $ds) ?
+//         l($label, $download_path) :
+//         $label;
+
       $datastreams[$id]['download_url'] = $download_path;
       $datastreams[$id]['mimetype'] = $ds->mimetype;
       $datastreams[$id]['size'] = islandora_datastream_get_human_readable_size($ds);
       $datastreams[$id]['created_date'] = $ds->createdDate->format("Y-m-d");
-      $datastreams[$id]['class'] = drupal_strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $id));
+      $datastreams[$id]['class'] = \Drupal\Component\Utility\Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $id));
     }
     catch (RepositoryException $e) {
 
@@ -165,7 +246,10 @@ function template_preprocess_islandora_default(&$variables) {
   $variables['description'] = islandora_retrieve_description_markup($islandora_object);
   $variables['islandora_object_label'] = $islandora_object->label;
   if (isset($islandora_object['TN']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $islandora_object['TN'])) {
-    $variables['islandora_thumbnail_url'] = url("islandora/object/{$islandora_object->id}/datastream/TN/view");
+    // @FIXME
+// url() expects a route name or an external URI.
+// $variables['islandora_thumbnail_url'] = url("islandora/object/{$islandora_object->id}/datastream/TN/view");
+
   }
 }
 
@@ -177,10 +261,26 @@ function template_preprocess_islandora_object_print(array &$variables) {
   $only_print_media = function($o) {
     return $o['media'] == 'print';
   };
-  $css = array_filter(drupal_add_css(), $only_print_media);
+  // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+//
+//
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// $css = array_filter(drupal_add_css(), $only_print_media);
+
   foreach ($css as $data => $options) {
     $options['media'] = 'all';
-    drupal_add_css($data, $options);
+    // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+//
+//
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// drupal_add_css($data, $options);
+
   }
   // Allow modules to define their own theme suggestions for the given object.
   // Suggestions are defined as islandora_object_print__CMODEL__PID. For
@@ -204,7 +304,7 @@ function template_preprocess_islandora_object_print(array &$variables) {
  * Implements theme_hook().
  */
 function theme_islandora_object_print(array &$variables) {
-  return drupal_render($variables['content']);
+  return \Drupal::service("renderer")->render($variables['content']);
 }
 
 /**
@@ -214,11 +314,11 @@ function template_preprocess_islandora_objects(array &$variables) {
   $display = (empty($_GET['display'])) ? 'grid' : $_GET['display'];
   $grid_display = $display == 'grid';
   $list_display = !$grid_display;
-  $query_params = drupal_get_query_parameters($_GET);
+  $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters($_GET);
   $variables['display_links'] = array(
     array(
       'title' => t('Grid view'),
-      'href' => current_path(),
+      'href' => \Drupal\Core\Url::fromRoute("<current>")->toString(),
       'attributes' => array(
         'class' => array(
           $grid_display ? 'active' : '',
@@ -228,7 +328,7 @@ function template_preprocess_islandora_objects(array &$variables) {
     ),
     array(
       'title' => t('List view'),
-      'href' => current_path(),
+      'href' => \Drupal\Core\Url::fromRoute("<current>")->toString(),
       'attributes' => array(
         'class' => array(
           $list_display ? 'active' : '',
@@ -242,13 +342,39 @@ function template_preprocess_islandora_objects(array &$variables) {
   $limit = $variables['limit'];
   $page = pager_default_initialize(count($objects), $limit);
   $objects = array_slice($objects, $page * $limit, $limit);
-  $variables['pager'] = theme('pager', array('quantity' => 10));
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $variables['pager'] = theme('pager', array('quantity' => 10));
+
 
   $objects = array_map('islandora_objects_object_mapper', $objects);
   $theme = $grid_display ? 'islandora_objects_grid' : 'islandora_objects_list';
-  $variables['content'] = theme($theme, array('objects' => $objects));
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $variables['content'] = theme($theme, array('objects' => $objects));
+
   $module_path = drupal_get_path('module', 'islandora');
-  drupal_add_css("$module_path/css/islandora.objects.css");
+  // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+//
+//
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// drupal_add_css("$module_path/css/islandora.objects.css");
+
 }
 
 /**
@@ -280,7 +406,7 @@ function islandora_objects_object_mapper($object_id) {
       "$module_path/images/folder.png"),
     '#attributes' => array(),
   );
-  $img = drupal_render($img);
+  $img = \Drupal::service("renderer")->render($img);
 
   if ($o) {
     $link_options = array('html' => TRUE, 'attributes' => array('title' => $o->label));
@@ -292,25 +418,31 @@ function islandora_objects_object_mapper($object_id) {
         $description = $dc['dc:description']['value'];
       }
     }
-    return array(
-      'label' => $o->label,
-      'class' => drupal_strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $o->id)),
-      'link' => l($o->label, $url, $link_options),
-      'thumb' => l($img, $url, $link_options),
-      'description' => $description,
-      'pid' => $o->id,
-    );
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// return array(
+//       'label' => $o->label,
+//       'class' => \Drupal\Component\Utility\Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $o->id)),
+//       'link' => l($o->label, $url, $link_options),
+//       'thumb' => l($img, $url, $link_options),
+//       'description' => $description,
+//       'pid' => $o->id,
+//     );
+
   }
   else {
     $link_options = array('html' => TRUE, 'attributes' => array('title' => t('(Unknown)')));
-    return array(
-      'label' => t('(Unknown)'),
-      'class' => drupal_strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $object_id)),
-      'link' => l(t('(Unknown)'), $url, $link_options),
-      'thumb' => '',
-      'description' => '',
-      'pid' => $object_id,
-    );
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// return array(
+//       'label' => t('(Unknown)'),
+//       'class' => \Drupal\Component\Utility\Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $object_id)),
+//       'link' => l(t('(Unknown)'), $url, $link_options),
+//       'thumb' => '',
+//       'description' => '',
+//       'pid' => $object_id,
+//     );
+
   }
 }
 
@@ -344,7 +476,7 @@ function template_preprocess_islandora_objects_subset(&$variables) {
   $display = (empty($_GET['display'])) ? $variables['display'] : $_GET['display'];
   $grid_display = $display == 'grid';
   $list_display = !$grid_display;
-  $query_params = drupal_get_query_parameters($_GET);
+  $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters($_GET);
 
   // XXX: In l(), Drupal automatically adds the "active" class if it looks like
   // you are generating a link to the same page, based on the path and language.
@@ -356,7 +488,7 @@ function template_preprocess_islandora_objects_subset(&$variables) {
   $variables['display_links'] = array(
     array(
       'title' => t('Grid view'),
-      'href' => current_path(),
+      'href' => \Drupal\Core\Url::fromRoute("<current>")->toString(),
       'attributes' => array(
         'class' => array(
           $grid_display ? 'active' : '',
@@ -367,7 +499,7 @@ function template_preprocess_islandora_objects_subset(&$variables) {
     ),
     array(
       'title' => t('List view'),
-      'href' => current_path(),
+      'href' => \Drupal\Core\Url::fromRoute("<current>")->toString(),
       'attributes' => array(
         'class' => array(
           $list_display ? 'active' : '',
@@ -399,9 +531,9 @@ function template_preprocess_islandora_objects_subset(&$variables) {
  */
 function template_process_islandora_objects_subset(&$variables) {
   pager_default_initialize($variables['total'], $variables['limit'], $variables['pager_element']);
-  $variables['pager'] = drupal_render($variables['pager']);
+  $variables['pager'] = \Drupal::service("renderer")->render($variables['pager']);
   $variables['content']['#objects'] = array_map('islandora_objects_object_mapper', $variables['content']['#objects']);
-  $variables['content'] = drupal_render($variables['content']);
+  $variables['content'] = \Drupal::service("renderer")->render($variables['content']);
 }
 
 /**
@@ -419,9 +551,12 @@ function theme_islandora_datastream_download_link(array $vars) {
   module_load_include('inc', 'islandora', 'includes/datastream');
 
   $label = t('download');
-  return islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $datastream) ?
-    l($label, islandora_datastream_get_url($datastream, 'download')) :
-    '';
+  // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// return islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $datastream) ?
+//     l($label, islandora_datastream_get_url($datastream, 'download')) :
+//     '';
+
 }
 
 /**
@@ -441,10 +576,10 @@ function theme_islandora_datastream_view_link(array $vars) {
   module_load_include('inc', 'islandora', 'includes/utilities');
 
   if ($vars['label'] === NULL) {
-    $label = check_plain($datastream->id);
+    $label = \Drupal\Component\Utility\Html::escape($datastream->id);
   }
   else {
-    $label = check_plain($vars['label']);
+    $label = \Drupal\Component\Utility\Html::escape($vars['label']);
   }
 
   if ($vars['version'] === NULL) {
@@ -455,7 +590,10 @@ function theme_islandora_datastream_view_link(array $vars) {
   }
 
   if (islandora_datastream_access($perm, $datastream)) {
-    return l($label, islandora_datastream_get_url($datastream, 'view', $vars['version']));
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// return l($label, islandora_datastream_get_url($datastream, 'view', $vars['version']));
+
   }
   else {
     return $label;
@@ -476,7 +614,7 @@ function theme_islandora_datastream_view_link(array $vars) {
 function theme_islandora_datastream_delete_link(array $vars) {
   $datastream = $vars['datastream'];
 
-  $datastreams = module_invoke_all('islandora_undeletable_datastreams', $datastream->parent->models);
+  $datastreams = \Drupal::moduleHandler()->invokeAll('islandora_undeletable_datastreams', [$datastream->parent->models]);
 
   $can_delete = !in_array($datastream->id, $datastreams) && islandora_datastream_access(ISLANDORA_PURGE, $datastream);
 
@@ -491,7 +629,10 @@ function theme_islandora_datastream_delete_link(array $vars) {
   }
 
   if ($can_delete) {
-    return l(t('delete'), $link);
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// return l(t('delete'), $link);
+
   }
   else {
     '';
@@ -525,7 +666,10 @@ function theme_islandora_datastream_revert_link(array $vars) {
   }
 
   if ($can_revert) {
-    return l(t('revert'), $link);
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// return l(t('revert'), $link);
+
   }
   else {
     return '';
@@ -550,9 +694,12 @@ function theme_islandora_datastream_edit_link(array $vars) {
 
   $can_edit = count($edit_registry) > 0 && islandora_datastream_access(ISLANDORA_METADATA_EDIT, $datastream);
 
-  return $can_edit ?
-    l(t('edit'), "islandora/object/{$datastream->parent->id}/datastream/{$datastream->id}/edit") :
-    '';
+  // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// return $can_edit ?
+//     l(t('edit'), "islandora/object/{$datastream->parent->id}/datastream/{$datastream->id}/edit") :
+//     '';
+
 }
 
 /**
@@ -573,7 +720,10 @@ function theme_islandora_datastream_version_link(array $vars) {
 
   if ($see_history) {
     if ($datastream->versionable) {
-      return l(count($datastream), "islandora/object/{$datastream->parent->id}/datastream/{$datastream->id}/version");
+      // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// return l(count($datastream), "islandora/object/{$datastream->parent->id}/datastream/{$datastream->id}/version");
+
     }
     else {
       return t('Not Versioned');
@@ -597,10 +747,13 @@ function theme_islandora_datastream_version_link(array $vars) {
 function theme_islandora_datastream_replace_link(array $vars) {
   $datastream = $vars['datastream'];
   if (islandora_datastream_access(ISLANDORA_REPLACE_DATASTREAM_CONTENT, $datastream)) {
-    $var_string = variable_get("islandora_ds_replace_exclude_enforced", "RELS-EXT,RELS-INT");
+    $var_string = \Drupal::config('islandora.settings')->get("islandora_ds_replace_exclude_enforced");
     $replace_exclude = explode(",", $var_string);
     if (!in_array($datastream->id, $replace_exclude)) {
-      return l(t('replace'), "islandora/object/{$datastream->parent->id}/datastream/{$datastream->id}/replace");
+      // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// return l(t('replace'), "islandora/object/{$datastream->parent->id}/datastream/{$datastream->id}/replace");
+
     }
   }
 }
@@ -618,7 +771,10 @@ function theme_islandora_datastream_replace_link(array $vars) {
 function theme_islandora_datastream_regenerate_link(array $vars) {
   $datastream = $vars['datastream'];
   if (islandora_datastream_access(ISLANDORA_REGENERATE_DERIVATIVES, $datastream)) {
-    return l(t('regenerate'), "islandora/object/{$datastream->parent->id}/datastream/{$datastream->id}/regenerate");
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// return l(t('regenerate'), "islandora/object/{$datastream->parent->id}/datastream/{$datastream->id}/regenerate");
+
   }
 }
 
@@ -655,7 +811,7 @@ function template_preprocess_islandora_dublin_core_description(array &$variables
   }
   $variables['dc_array'] = isset($dc_object) ? $dc_object->asArray() : array();
   if (isset($variables['dc_array']['dc:description']['value'])) {
-    $variables['dc_array']['dc:description']['value'] = nl2br(filter_xss($variables['dc_array']['dc:description']['value']));
+    $variables['dc_array']['dc:description']['value'] = nl2br(\Drupal\Component\Utility\Xss::filter($variables['dc_array']['dc:description']['value']));
   }
 }
 
@@ -670,14 +826,26 @@ function template_preprocess_islandora_object_overview(array &$variables) {
     if ($cmodel != 'fedora-system:FedoraObject-3.0') {
       $o = islandora_object_load($cmodel);
       if (is_object($o)) {
-        $links[] = array(l($o->label, "islandora/object/{$o->id}"));
+        // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $links[] = array(l($o->label, "islandora/object/{$o->id}"));
+
       }
       else {
         $links[] = array(t("@cmodel  - (This content model is not in this Islandora repository.)", array('@cmodel' => $cmodel)));
       }
     }
   }
-  $pluralized_identifier = format_plural(count($links), 'Islandora content model', 'Islandora content models');
+  $pluralized_identifier = \Drupal::translation()->formatPlural(count($links), 'Islandora content model', 'Islandora content models');
   $variables['header'] = t("This object's behavior is defined by the @identifier", array("@identifier" => $pluralized_identifier));
-  $variables['list'] = theme('item_list', array('items' => $links));
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $variables['list'] = theme('item_list', array('items' => $links));
+
 }

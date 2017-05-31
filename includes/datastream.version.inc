@@ -12,7 +12,14 @@ function islandora_datastream_version_table($datastream) {
   module_load_include('inc', 'islandora', 'includes/datastream');
   module_load_include('inc', 'islandora', 'includes/utilities');
   $parent = $datastream->parent;
-  drupal_set_title(t("@dsid Previous Versions", array('@dsid' => $datastream->id)));
+  // @FIXME
+// drupal_set_title() has been removed. There are now a few ways to set the title
+// dynamically, depending on the situation.
+// 
+// 
+// @see https://www.drupal.org/node/2067859
+// drupal_set_title(t("@dsid Previous Versions", array('@dsid' => $datastream->id)));
+
   $audit_values = islandora_get_audit_trail($parent->id, $datastream->id);
 
   $header = array();
@@ -36,19 +43,31 @@ function islandora_datastream_version_table($datastream) {
     $user = user_load_by_name($reponsibility);
     if ($user) {
       $user_id = $user->uid;
-      $user_val = l($reponsibility, "user/$user_id");
+      // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $user_val = l($reponsibility, "user/$user_id");
+
     }
     else {
       $user_val = $reponsibility;
     }
-    $row[] = array(
-      'class' => 'datastream-date',
-      'data' => theme('islandora_datastream_view_link', array(
-        'datastream' => $datastream,
-        'label' => $datastream_version->createdDate->format(DATE_RFC850),
-        'version' => $version,
-      )),
-    );
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $row[] = array(
+//       'class' => 'datastream-date',
+//       'data' => theme('islandora_datastream_view_link', array(
+//         'datastream' => $datastream,
+//         'label' => $datastream_version->createdDate->format(DATE_RFC850),
+//         'version' => $version,
+//       )),
+//     );
+
     $row[] = array(
       'class' => 'datastream-size',
       'data' => islandora_datastream_get_human_readable_size($datastream_version),
@@ -65,24 +84,51 @@ function islandora_datastream_version_table($datastream) {
       'class' => 'datastream-mime',
       'data' => $datastream_version->mimeType,
     );
-    $row[] = array(
-      'class' => 'datastream-delete',
-      'data' => theme('islandora_datastream_delete_link', array(
-        'datastream' => $datastream,
-        'version' => $version,
-      )),
-    );
-    $row[] = array(
-      'class' => 'datastream-revert',
-      'data' => theme('islandora_datastream_revert_link', array(
-        'datastream' => $datastream,
-        'version' => $version,
-      )),
-    );
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $row[] = array(
+//       'class' => 'datastream-delete',
+//       'data' => theme('islandora_datastream_delete_link', array(
+//         'datastream' => $datastream,
+//         'version' => $version,
+//       )),
+//     );
+
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $row[] = array(
+//       'class' => 'datastream-revert',
+//       'data' => theme('islandora_datastream_revert_link', array(
+//         'datastream' => $datastream,
+//         'version' => $version,
+//       )),
+//     );
+
     $rows[] = $row;
   }
 
-  return theme('table', array('header' => $header, 'rows' => $rows));
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// return theme('table', array('header' => $header, 'rows' => $rows));
+
 }
 
 /**
@@ -339,20 +385,16 @@ function islandora_datastream_version_replace_form_submit($form, &$form_state) {
     if ($ds->mimetype != $file->filemime) {
       $ds->mimetype = $file->filemime;
     }
-    $path = drupal_realpath($file->uri);
+    $path = \Drupal::service("file_system")->realpath($file->uri);
     $ds->setContentFromFile($path);
     file_delete($file);
   }
   catch (exception $e) {
     drupal_set_message(t('An error occurred during datastream updates. See watchlog for more information.'), 'error');
-    watchdog('islandora',
-      'Failed to add new versionable datastream.<br/>code: @code<br/>message: @msg',
-      array(
+    \Drupal::logger('islandora')->error('Failed to add new versionable datastream.<br/>code: @code<br/>message: @msg', array(
         '@code' => $e->getCode(),
         '@msg' => $e->getMessage(),
-      ),
-      WATCHDOG_ERROR
-    );
+      ));
     file_delete($file);
     return;
   }
@@ -369,7 +411,7 @@ function islandora_datastream_version_replace_form_submit($form, &$form_state) {
  *   Array of audit values
  */
 function islandora_get_audit_trail($pid, $dsid) {
-  $url = variable_get('islandora_base_url', 'http://localhost:8080/fedora');
+  $url = \Drupal::config('islandora.settings')->get('islandora_base_url');
   $connection = islandora_get_tuque_connection(NULL, $url);
   $xml = $connection->api->m->getObjectXml($pid);
   $simple_xml = simplexml_load_string($xml);

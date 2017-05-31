@@ -16,13 +16,13 @@
  *   Markup to be rendered for display on Islandora object pages.
  */
 function islandora_retrieve_metadata_markup(AbstractObject $object, $print = FALSE) {
-  $viewers = module_invoke_all('islandora_metadata_display_info');
-  $viewer = variable_get('islandora_metadata_display', 'dublin_core');
+  $viewers = \Drupal::moduleHandler()->invokeAll('islandora_metadata_display_info');
+  $viewer = \Drupal::config('islandora.settings')->get('islandora_metadata_display');
   $markup = '';
   if (isset($viewers[$viewer]['metadata callback'])) {
     module_load_include('inc', 'islandora', 'includes/utilities');
     $hooks = islandora_build_hook_list(ISLANDORA_METADATA_OBJECT_ALTER, $object->models);
-    drupal_alter($hooks, $object);
+    \Drupal::moduleHandler()->alter($hooks, $object);
     $markup = call_user_func($viewers[$viewer]['metadata callback'], $object, $print);
     // The callback doesn't have any markup provided for this particular object,
     // default back to the dublin_core display.
@@ -43,12 +43,12 @@ function islandora_retrieve_metadata_markup(AbstractObject $object, $print = FAL
  *   Markup to be rendered for description on Islandora object pages.
  */
 function islandora_retrieve_description_markup(AbstractObject $object) {
-  $viewers = module_invoke_all('islandora_metadata_display_info');
-  $viewer = variable_get('islandora_metadata_display', 'dublin_core');
+  $viewers = \Drupal::moduleHandler()->invokeAll('islandora_metadata_display_info');
+  $viewer = \Drupal::config('islandora.settings')->get('islandora_metadata_display');
   $markup = '';
   if (isset($viewers[$viewer]['description callback'])) {
     $hooks = islandora_build_hook_list(ISLANDORA_METADATA_OBJECT_DESCRIPTION_ALTER, $object->models);
-    drupal_alter($hooks, $object);
+    \Drupal::moduleHandler()->alter($hooks, $object);
     $markup = call_user_func($viewers[$viewer]['description callback'], $object);
     // The callback doesn't have any markup provided for this particular object,
     // default back to the dublin_core display.
@@ -73,7 +73,7 @@ function islandora_retrieve_description_markup(AbstractObject $object) {
 function islandora_metadata_display_form($form, $form_state) {
   module_load_include('inc', 'islandora', 'includes/solution_packs.inc');
   $form = array();
-  $defined_displays = module_invoke_all('islandora_metadata_display_info');
+  $defined_displays = \Drupal::moduleHandler()->invokeAll('islandora_metadata_display_info');
   if (!empty($defined_displays)) {
     $no_viewer = array();
     $no_viewer['none'] = array(
@@ -104,15 +104,18 @@ function islandora_metadata_display_form($form, $form_state) {
         '#type' => 'item',
         '#markup' => $profile['description'],
       );
-      $form['viewers']['configuration'][$name] = array(
-        '#type' => 'item',
-        '#markup' => (isset($profile['configuration']) AND $profile['configuration'] != '') ? l(t('configure'), $profile['configuration']) : '',
-      );
+      // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $form['viewers']['configuration'][$name] = array(
+//         '#type' => 'item',
+//         '#markup' => (isset($profile['configuration']) AND $profile['configuration'] != '') ? l(t('configure'), $profile['configuration']) : '',
+//       );
+
     }
     $form['viewers']['default'] = array(
       '#type' => 'radios',
       '#options' => isset($options) ? $options : array(),
-      '#default_value' => variable_get('islandora_metadata_display', 'dublin_core'),
+      '#default_value' => \Drupal::config('islandora.settings')->get('islandora_metadata_display'),
     );
   }
   else {
@@ -136,7 +139,7 @@ function islandora_metadata_display_form($form, $form_state) {
  *   An array containing the Drupal form state.
  */
 function islandora_metadata_display_form_submit($form, $form_state) {
-  variable_set('islandora_metadata_display', $form_state['values']['viewers']['default']);
+  \Drupal::configFactory()->getEditable('islandora.settings')->set('islandora_metadata_display', $form_state['values']['viewers']['default'])->save();
   drupal_set_message(t('The configuration options have been saved.'));
 }
 
@@ -156,7 +159,16 @@ function islandora_metadata_display_callback(AbstractObject $object, $print = FA
     'islandora_object' => $object,
     'print' => $print,
   );
-  return theme('islandora_dublin_core_display', $elements);
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// return theme('islandora_dublin_core_display', $elements);
+
 }
 
 /**
@@ -172,5 +184,14 @@ function islandora_metadata_description_callback(AbstractObject $islandora_objec
   $elements = array(
     'islandora_object' => $islandora_object,
   );
-  return theme('islandora_dublin_core_description', $elements);
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// return theme('islandora_dublin_core_description', $elements);
+
 }

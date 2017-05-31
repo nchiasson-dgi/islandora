@@ -97,7 +97,7 @@ class MimeDetect {
   public function getMimetype($filename, $debug = FALSE) {
 
     $file_name_and_extension = explode('.', $filename);
-    $ext = drupal_strtolower(array_pop($file_name_and_extension));
+    $ext = \Drupal\Component\Utility\Unicode::strtolower(array_pop($file_name_and_extension));
 
     if (!empty($this->protectedMimeTypes[$ext])) {
       if (TRUE === $debug) {

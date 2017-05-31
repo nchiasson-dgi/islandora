@@ -40,7 +40,7 @@ if (function_exists('drupal_get_path')) {
  */
 function islandora_alter_object(AbstractObject $object, array &$context) {
   module_load_include('inc', 'islandora', 'includes/utilities');
-  drupal_alter(islandora_build_hook_list('islandora_object', $object->models), $object, $context);
+  \Drupal::moduleHandler()->alter(islandora_build_hook_list('islandora_object', $object->models), $object, $context);
 }
 
 /**
@@ -52,7 +52,7 @@ function islandora_alter_datastream(AbstractObject $object, AbstractDatastream $
   foreach ($object->models as $model) {
     $types[] = "{$model}_{$datastream->id}";
   }
-  drupal_alter(islandora_build_hook_list('islandora_datastream', $types), $object, $datastream, $context);
+  \Drupal::moduleHandler()->alter(islandora_build_hook_list('islandora_datastream', $types), $object, $datastream, $context);
 }
 
 /**
@@ -118,10 +118,10 @@ class IslandoraFedoraRepository extends FedoraRepository {
       return $ret;
     }
     catch (Exception $e) {
-      watchdog('islandora', 'Failed to ingest object: @pid</br>code: @code<br/>message: @msg', array(
+      \Drupal::logger('islandora')->error('Failed to ingest object: @pid</br>code: @code<br/>message: @msg', array(
           '@pid' => $object->id,
           '@code' => $e->getCode(),
-          '@msg' => $e->getMessage()), WATCHDOG_ERROR);
+          '@msg' => $e->getMessage()));
       throw $e;
     }
   }
@@ -161,7 +161,7 @@ class IslandoraFedoraRepository extends FedoraRepository {
    */
   protected static function useUUIDs($to_create) {
     return is_null($to_create) ?
-      variable_get('islandora_basic_collection_generate_uuid', FALSE) :
+      \Drupal::config('islandora.settings')->get('islandora_basic_collection_generate_uuid') :
       $to_create;
   }
 }
@@ -240,12 +240,12 @@ class IslandoraFedoraObject extends FedoraObject {
       return $ret;
     }
     catch (Exception $e) {
-      watchdog('islandora', 'Failed to ingest datastream @datastream on object: @pid</br>code: @code<br/>message: @msg', array(
+      \Drupal::logger('islandora')->error('Failed to ingest datastream @datastream on object: @pid</br>code: @code<br/>message: @msg', array(
         '@pid' => $object->id,
         '@dsid' => $datastream->id,
         '@code' => $e->getCode(),
         '@msg' => $e->getMessage(),
-      ), WATCHDOG_ERROR);
+      ));
       throw $e;
     }
   }
@@ -266,10 +266,10 @@ class IslandoraFedoraObject extends FedoraObject {
       }
     }
     catch (Exception $e) {
-      watchdog('islandora', 'Failed to modify object: @pid</br>code: @code<br/>message: @msg', array(
+      \Drupal::logger('islandora')->error('Failed to modify object: @pid</br>code: @code<br/>message: @msg', array(
           '@pid' => $this->id,
           '@code' => $e->getCode(),
-          '@msg' => $e->getMessage()), WATCHDOG_ERROR);
+          '@msg' => $e->getMessage()));
       throw $e;
     }
   }
@@ -313,11 +313,11 @@ class IslandoraFedoraObject extends FedoraObject {
       }
     }
     catch (Exception $e) {
-      watchdog('islandora', 'Failed to purge datastream @dsid from @pid</br>code: @code<br/>message: @msg', array(
+      \Drupal::logger('islandora')->error('Failed to purge datastream @dsid from @pid</br>code: @code<br/>message: @msg', array(
           '@pid' => $this->id,
           '@dsid' => $id,
           '@code' => $e->getCode(),
-          '@msg' => $e->getMessage()), WATCHDOG_ERROR);
+          '@msg' => $e->getMessage()));
       throw $e;
     }
   }
@@ -335,7 +335,7 @@ class IslandoraRepositoryConnection extends RepositoryConnection {
       $url = static::FEDORA_URL;
     }
     parent::__construct($url, $username, $password);
-    drupal_alter('islandora_repository_connection_construction', $this);
+    \Drupal::moduleHandler()->alter('islandora_repository_connection_construction', $this);
   }
 }
 
@@ -443,10 +443,10 @@ class IslandoraFedoraApiM extends FedoraApiM {
       }
     }
     catch (Exception $e) {
-      watchdog('islandora', 'Failed to purge object @pid</br>code: @code<br/>message: @msg', array(
+      \Drupal::logger('islandora')->error('Failed to purge object @pid</br>code: @code<br/>message: @msg', array(
           '@pid' => $pid,
           '@code' => $e->getCode(),
-          '@msg' => $e->getMessage()), WATCHDOG_ERROR);
+          '@msg' => $e->getMessage()));
       throw $e;
     }
   }
@@ -506,11 +506,11 @@ class IslandoraFedoraApiM extends FedoraApiM {
     $args = array_slice(func_get_args(), 2);
     $locked = FALSE;
 
-    if (variable_get('islandora_use_object_semaphores', FALSE)) {
-      $lock_period = variable_get('islandora_semaphore_period', 600);
-      while (!lock_acquire($pid, $lock_period)) {
+    if (\Drupal::config('islandora.settings')->get('islandora_use_object_semaphores')) {
+      $lock_period = \Drupal::config('islandora.settings')->get('islandora_semaphore_period');
+      while (!\Drupal::lock()->acquire($pid, $lock_period)) {
         // Wait for the lock to be free. In the worst case forever.
-        while (lock_wait($pid)) {
+        while (\Drupal::lock()->wait($pid)) {
         }
       }
       $locked = TRUE;
@@ -522,10 +522,10 @@ class IslandoraFedoraApiM extends FedoraApiM {
       }
       catch (Exception $e) {
         // Release the lock in event of exception.
-        lock_release($pid);
+        \Drupal::lock()->release($pid);
         throw $e;
       }
-      lock_release($pid);
+      \Drupal::lock()->release($pid);
       return $to_return;
     }
     else {
@@ -601,11 +601,11 @@ class IslandoraFedoraDatastream extends FedoraDatastream {
       }
     }
     catch (Exception $e) {
-      watchdog('islandora', 'Failed to modify datastream @dsid from @pid</br>code: @code<br/>message: @msg', array(
+      \Drupal::logger('islandora')->error('Failed to modify datastream @dsid from @pid</br>code: @code<br/>message: @msg', array(
           '@pid' => $this->parent->id,
           '@dsid' => $this->id,
           '@code' => $e->getCode(),
-          '@msg' => $e->getMessage()), WATCHDOG_ERROR);
+          '@msg' => $e->getMessage()));
       throw $e;
     }
   }

@@ -160,7 +160,7 @@ function islandora_derivative_perform_batch_operation($function, $file, $pid, $f
     }
   }
   else {
-    watchdog('islandora', 'Unable to call derivative function @function as it was not found!', array('@function' => $function), WATCHDOG_ERROR);
+    \Drupal::logger('islandora')->error('Unable to call derivative function @function as it was not found!', array('@function' => $function));
   }
 }
 

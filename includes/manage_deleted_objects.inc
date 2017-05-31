@@ -138,10 +138,19 @@ function islandora_deleted_objects_manage_form($form, $form_state, $serialized_c
     '#type' => 'hidden',
     '#value' => $serialized_chosen,
   );
-  $form['pager'] = array(
-    '#type' => 'markup',
-    '#markup' => theme('pager', array('quantity', count($options))),
-  );
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $form['pager'] = array(
+//     '#type' => 'markup',
+//     '#markup' => theme('pager', array('quantity', count($options))),
+//   );
+
   $form['propogate'] = array(
     '#title' => t('Apply changes to related objects?'),
     '#default_value' => TRUE,
@@ -168,7 +177,7 @@ function islandora_deleted_objects_manage_form($form, $form_state, $serialized_c
     '#value' => t('Restore selected objects'),
     '#attributes' => array('source' => 'restore'),
   );
-  if (user_access(ISLANDORA_PURGE)) {
+  if (\Drupal::currentUser()->hasPermission(ISLANDORA_PURGE)) {
     $form['purge'] = array(
       '#type' => 'submit',
       '#value' => t('Irrevocably purge selected objects'),

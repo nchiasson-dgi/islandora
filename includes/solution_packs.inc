@@ -33,10 +33,10 @@ function islandora_solution_packs_get_required_objects($module = NULL) {
       // disabled before they can be uninstalled. We must manually load the
       // module file to use it's islandora_required_objects hook.
       module_load_include('module', $module, $module);
-      $required_objects = module_invoke($module, 'islandora_required_objects', $connection);
+      $required_objects = \Drupal::moduleHandler()->invoke($module, 'islandora_required_objects', [$connection]);
     }
     else {
-      $required_objects = module_invoke_all('islandora_required_objects', $connection);
+      $required_objects = \Drupal::moduleHandler()->invokeAll('islandora_required_objects', [$connection]);
     }
   }
 
@@ -45,7 +45,7 @@ function islandora_solution_packs_get_required_objects($module = NULL) {
       return $required_objects[$module];
     }
     else {
-      watchdog('islandora', 'Attempted to get required objects for %module... %module does not appear to have any required objects. Clear caches?', array(
+      \Drupal::logger('islandora')->notice('Attempted to get required objects for %module... %module does not appear to have any required objects. Clear caches?', array(
         '%module' => $module,
       ));
       throw new Exception(t('Module "@module" has no required objects!', array(
@@ -71,7 +71,15 @@ function islandora_solution_packs_admin() {
     return '';
   }
 
-  drupal_add_css(drupal_get_path('module', 'islandora') . '/css/islandora.admin.css');
+  // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+// 
+// 
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// drupal_add_css(drupal_get_path('module', 'islandora') . '/css/islandora.admin.css');
+
   $output = array();
   $enabled_solution_packs = islandora_solution_packs_get_required_objects();
   foreach ($enabled_solution_packs as $solution_pack_module => $solution_pack_info) {
@@ -79,7 +87,7 @@ function islandora_solution_packs_admin() {
     // systems table for consistency in the interface.
     $solution_pack_name = $solution_pack_info['title'];
     $objects = array_filter($solution_pack_info['objects']);
-    $output[$solution_pack_module] = drupal_get_form('islandora_solution_pack_form_' . $solution_pack_module, $solution_pack_module, $solution_pack_name, $objects);
+    $output[$solution_pack_module] = \Drupal::formBuilder()->getForm('islandora_solution_pack_form_' . $solution_pack_module, $solution_pack_module, $solution_pack_name, $objects);
   }
   return $output;
 }
@@ -156,7 +164,10 @@ function islandora_solution_pack_form(array $form, array &$form_state, $solution
     // the objects.
     $solution_pack_status_severity = max($solution_pack_status_severity, $object_status_severity);
     $exists = $object_status['status'] != 'missing';
-    $label = $exists ? l($object->label, "islandora/object/{$object->id}") : $object->label;
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $label = $exists ? l($object->label, "islandora/object/{$object->id}") : $object->label;
+
     $status_msg = "{$object_status_info['image']}&nbsp{$object_status['status_friendly']}";
     $object_info[] = array(
       'label' => $label,
@@ -245,7 +256,7 @@ function islandora_solution_pack_form_submit(array $form, array &$form_state) {
   // Hook to let solution pack objects be modified.
   // Not using module_invoke so solution packs can be expanded by other modules.
   // @todo shouldn't we send the object list along as well?
-  module_invoke_all('islandora_postprocess_solution_pack', $solution_pack_module);
+  \Drupal::moduleHandler()->invokeAll('islandora_postprocess_solution_pack', [$solution_pack_module]);
 }
 
 /**
@@ -297,8 +308,11 @@ function islandora_solution_pack_batch_operation_reingest_object(AbstractObject 
   if ($existing_object) {
     $deleted = islandora_delete_object($existing_object);
     if (!$deleted) {
-      $object_link = l($existing_object->label, "islandora/object/{$existing_object->id}");
-      drupal_set_message(filter_xss(t('Failed to purge existing object !object_link.', array(
+      // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $object_link = l($existing_object->label, "islandora/object/{$existing_object->id}");
+
+      drupal_set_message(\Drupal\Component\Utility\Xss::filter(t('Failed to purge existing object !object_link.', array(
             '!object_link' => $object_link,
           ))), 'error');
       // Failed to purge don't attempt to ingest.
@@ -309,7 +323,10 @@ function islandora_solution_pack_batch_operation_reingest_object(AbstractObject 
   // Object was deleted or did not exist.
   $pid = $object->id;
   $label = $object->label;
-  $object_link = l($label, "islandora/object/{$pid}");
+  // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $object_link = l($label, "islandora/object/{$pid}");
+
   $object = islandora_add_object($object);
   $params = array(
     '@pid' => $pid,
@@ -334,7 +351,7 @@ function islandora_solution_pack_batch_operation_reingest_object(AbstractObject 
   }
 
   $status = $object ? 'status' : 'error';
-  drupal_set_message(filter_xss($msg), $status);
+  drupal_set_message(\Drupal\Component\Utility\Xss::filter($msg), $status);
 }
 
 /**
@@ -364,11 +381,17 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
     return;
   }
 
-  $t = get_t();
+  $t = 't';
 
   // Some general replacements.
-  $admin_link = l($t('Solution Pack admin'), 'admin/islandora/solution_pack_config');
-  $config_link = l($t('Islandora configuration'), 'admin/islandora/configure');
+  // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $admin_link = l($t('Solution Pack admin'), 'admin/islandora/solution_pack_config');
+
+  // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $config_link = l($t('Islandora configuration'), 'admin/islandora/configure');
+
   $t_params = array(
     '@module' => $module,
     '!config_link' => $config_link,
@@ -383,7 +406,7 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
   $module_name = $info_array['name'];
   if (!islandora_describe_repository()) {
     $msg = $t('@module: Did not install any objects. Could not connect to the repository. Please check the settings on the !config_link page and install the required objects manually on the !admin_link page.', $t_params);
-    drupal_set_message(filter_xss($msg), 'error');
+    drupal_set_message(\Drupal\Component\Utility\Xss::filter($msg), 'error');
     return;
   }
   $required_objects = islandora_solution_packs_get_required_objects($module);
@@ -398,7 +421,10 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
     $already_exists = islandora_object_load($object->id);
 
     $label = $object->label;
-    $object_link = l($label, "islandora/object/{$object->id}");
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $object_link = l($label, "islandora/object/{$object->id}");
+
     $deleted = FALSE;
     if ($already_exists) {
       if (!$force) {
@@ -409,7 +435,7 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
             ) + $t_params),
           '!description' => $status_messages[$object_status['status']],
         );
-        drupal_set_message(filter_xss(format_string('!summary !description', $here_params)), 'warning');
+        drupal_set_message(\Drupal\Component\Utility\Xss::filter(format_string('!summary !description', $here_params)), 'warning');
         continue;
       }
       else {
@@ -421,12 +447,12 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
       $object = islandora_add_object($object);
       if ($object) {
         if ($deleted) {
-          drupal_set_message(filter_xss($t('@module: Successfully reinstalled. !object_link.', array(
+          drupal_set_message(\Drupal\Component\Utility\Xss::filter($t('@module: Successfully reinstalled. !object_link.', array(
               '!object_link' => $object_link,
             ) + $t_params)), 'status');
         }
         else {
-          drupal_set_message(filter_xss($t('@module: Successfully installed. !object_link.', array(
+          drupal_set_message(\Drupal\Component\Utility\Xss::filter($t('@module: Successfully installed. !object_link.', array(
               '!object_link' => $object_link,
             ) + $t_params)), 'status');
         }
@@ -457,11 +483,14 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
  *    directly for each solution pack.
  */
 function islandora_uninstall_solution_pack($module, $force = FALSE) {
-  $t = get_t();
+  $t = 't';
   drupal_load('module', 'islandora');
   module_load_include('inc', 'islandora', 'includes/utilities');
   drupal_load('module', $module);
-  $config_link = l($t('Islandora configuration'), 'admin/islandora/configure');
+  // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $config_link = l($t('Islandora configuration'), 'admin/islandora/configure');
+
   $info_file = drupal_get_path('module', $module) . "/{$module}.info";
   $info_array = drupal_parse_info_file($info_file);
   $module_name = $info_array['name'];
@@ -470,7 +499,7 @@ function islandora_uninstall_solution_pack($module, $force = FALSE) {
       '@module' => $module_name,
       '!config_link' => $config_link,
     ));
-    drupal_set_message(filter_xss($msg), 'error');
+    drupal_set_message(\Drupal\Component\Utility\Xss::filter($msg), 'error');
     return;
   }
   $required_objects = islandora_solution_packs_get_required_objects($module);
@@ -482,13 +511,16 @@ function islandora_uninstall_solution_pack($module, $force = FALSE) {
 
   if (!$force) {
     foreach ($existing_objects as $object) {
-      $object_link = l($object->label, "islandora/object/{$object->id}");
+      // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $object_link = l($object->label, "islandora/object/{$object->id}");
+
       $msg = $t('@module: Did not remove !object_link. It may be used by other sites.', array(
         '!object_link' => $object_link,
         '@module' => $module_name,
       ));
 
-      drupal_set_message(filter_xss($msg), 'warning');
+      drupal_set_message(\Drupal\Component\Utility\Xss::filter($msg), 'warning');
     }
   }
   else {
@@ -527,7 +559,7 @@ function islandora_check_object_status(AbstractObject $object_definition) {
   $expected_datastreams = array_keys(iterator_to_array($object_definition));
   $datastream_diff = array_diff($expected_datastreams, $existing_datastreams);
   if (!empty($datastream_diff)) {
-    $status_friendly = format_plural(count($datastream_diff), 'Missing Datastream: %dsids.', 'Missing Datastreams: %dsids.', array('%dsids' => implode(', ', $datastream_diff)));
+    $status_friendly = \Drupal::translation()->formatPlural(count($datastream_diff), 'Missing Datastream: %dsids.', 'Missing Datastreams: %dsids.', array('%dsids' => implode(', ', $datastream_diff)));
     return array(
       'status' => 'missing_datastream',
       'status_friendly' => $status_friendly,
@@ -549,7 +581,7 @@ function islandora_check_object_status(AbstractObject $object_definition) {
   }
 
   if (count($out_of_date_datastreams)) {
-    $status_friendly = format_plural(count($out_of_date_datastreams), 'Datastream out of date: %dsids.', 'Datastreams out of date: %dsids.', array('%dsids' => implode(', ', $out_of_date_datastreams)));
+    $status_friendly = \Drupal::translation()->formatPlural(count($out_of_date_datastreams), 'Datastream out of date: %dsids.', 'Datastreams out of date: %dsids.', array('%dsids' => implode(', ', $out_of_date_datastreams)));
     return array(
       'status' => 'out_of_date',
       'status_friendly' => $status_friendly,
@@ -599,7 +631,7 @@ function islandora_check_object_status(AbstractObject $object_definition) {
     }
   }
   if (count($modified_datastreams)) {
-    $status_friendly = format_plural(count($modified_datastreams), 'Modified Datastream: %dsids.', 'Modified Datastreams: %dsids.', array('%dsids' => implode(', ', $modified_datastreams)));
+    $status_friendly = \Drupal::translation()->formatPlural(count($modified_datastreams), 'Modified Datastream: %dsids.', 'Modified Datastreams: %dsids.', array('%dsids' => implode(', ', $modified_datastreams)));
     return array(
       'status' => 'modified_datastream',
       'data' => $modified_datastreams,
@@ -647,7 +679,12 @@ function islandora_viewers_form($variable_id = NULL, $mimetype = NULL, $model = 
     );
     $viewers = array_merge_recursive($no_viewer, $viewers);
   }
-  $viewers_config = variable_get($variable_id, array());
+  // @FIXME
+// // @FIXME
+// // The correct configuration object could not be determined. You'll need to
+// // rewrite this call manually.
+// $viewers_config = variable_get($variable_id, array());
+
   $form['viewers'] = array(
     '#type' => 'fieldset',
     '#title' => t('Viewers'),
@@ -678,10 +715,13 @@ function islandora_viewers_form($variable_id = NULL, $mimetype = NULL, $model = 
         '#type' => 'item',
         '#markup' => $profile['description'],
       );
-      $form['viewers'][$variable_id]['configuration'][$name] = array(
-        '#type' => 'item',
-        '#markup' => (isset($profile['configuration']) AND $profile['configuration'] != '') ? l(t('configure'), $profile['configuration']) : '',
-      );
+      // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $form['viewers'][$variable_id]['configuration'][$name] = array(
+//         '#type' => 'item',
+//         '#markup' => (isset($profile['configuration']) AND $profile['configuration'] != '') ? l(t('configure'), $profile['configuration']) : '',
+//       );
+
     }
     $form['viewers'][$variable_id]['default'] = array(
       '#type' => 'radios',
@@ -693,7 +733,12 @@ function islandora_viewers_form($variable_id = NULL, $mimetype = NULL, $model = 
     $form['viewers'][$variable_id . '_no_viewers'] = array(
       '#markup' => t('No viewers detected.'),
     );
-    variable_del($variable_id);
+    // @FIXME
+// // @FIXME
+// // The correct configuration object could not be determined. You'll need to
+// // rewrite this call manually.
+// variable_del($variable_id);
+
   }
   return $form;
 }
@@ -719,7 +764,7 @@ function islandora_viewers_form($variable_id = NULL, $mimetype = NULL, $model = 
  */
 function islandora_get_viewers($mimetype = array(), $content_model = NULL) {
   $viewers = array();
-  $defined_viewers = module_invoke_all('islandora_viewer_info');
+  $defined_viewers = \Drupal::moduleHandler()->invokeAll('islandora_viewer_info');
 
   if (!is_array($mimetype)) {
     $mimetype = array($mimetype);
@@ -746,12 +791,12 @@ function theme_islandora_viewers_table($variables) {
   $form = $variables['form'];
   $rows = array();
   foreach ($form['name'] as $key => $element) {
-    if (is_array($element) && element_child($key)) {
+    if (is_array($element) && \Drupal\Core\Render\Element::child($key)) {
       $row = array();
-      $row[] = array('data' => drupal_render($form['default'][$key]));
-      $row[] = array('data' => drupal_render($form['label'][$key]));
-      $row[] = array('data' => drupal_render($form['description'][$key]));
-      $row[] = array('data' => drupal_render($form['configuration'][$key]));
+      $row[] = array('data' => \Drupal::service("renderer")->render($form['default'][$key]));
+      $row[] = array('data' => \Drupal::service("renderer")->render($form['label'][$key]));
+      $row[] = array('data' => \Drupal::service("renderer")->render($form['description'][$key]));
+      $row[] = array('data' => \Drupal::service("renderer")->render($form['configuration'][$key]));
       $rows[] = array('data' => $row);
     }
   }
@@ -762,11 +807,20 @@ function theme_islandora_viewers_table($variables) {
   $header[] = array('data' => t('Configuration'));
 
   $output = '';
-  $output .= theme('table', array(
-               'header' => $header,
-               'rows' => $rows,
-               'attributes' => array('id' => 'islandora-viewers-table'),
-    ));
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $output .= theme('table', array(
+//                'header' => $header,
+//                'rows' => $rows,
+//                'attributes' => array('id' => 'islandora-viewers-table'),
+//     ));
+
   $output .= drupal_render_children($form);
   return $output;
 }
@@ -786,7 +840,12 @@ function theme_islandora_viewers_table($variables) {
  *   if no viewer is set.
  */
 function islandora_get_viewer($params = NULL, $variable_id = NULL, $fedora_object = NULL) {
-  $settings = variable_get($variable_id, array());
+  // @FIXME
+// // @FIXME
+// // The correct configuration object could not be determined. You'll need to
+// // rewrite this call manually.
+// $settings = variable_get($variable_id, array());
+
   if (!empty($settings) AND $settings['default'] !== 'none') {
     $viewer_id = islandora_get_viewer_id($variable_id);
     if ($viewer_id AND $params !== NULL) {
@@ -809,7 +868,12 @@ function islandora_get_viewer($params = NULL, $variable_id = NULL, $fedora_objec
  *   The enabled viewer id. Returns FALSE if no viewer config is set.
  */
 function islandora_get_viewer_id($variable_id) {
-  $viewers_config = variable_get($variable_id, array());
+  // @FIXME
+// // @FIXME
+// // The correct configuration object could not be determined. You'll need to
+// // rewrite this call manually.
+// $viewers_config = variable_get($variable_id, array());
+
   if (!empty($viewers_config)) {
     return $viewers_config['default'];
   }
@@ -827,7 +891,7 @@ function islandora_get_viewer_id($variable_id) {
  */
 function islandora_get_viewer_callback($viewer_id = NULL) {
   if ($viewer_id !== NULL) {
-    $viewers = module_invoke_all('islandora_viewer_info');
+    $viewers = \Drupal::moduleHandler()->invokeAll('islandora_viewer_info');
     if (isset($viewers[$viewer_id]['callback'])) {
       return $viewers[$viewer_id]['callback'];
     }

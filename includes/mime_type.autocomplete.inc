@@ -14,7 +14,7 @@
  *   The rendered JSON results.
  */
 function islandora_mime_type_autocomplete($string) {
-  require_once DRUPAL_ROOT . "/includes/file.mimetypes.inc";
+  require_once \Drupal::root() . "/includes/file.mimetypes.inc";
   $mime_types = file_mimetype_mapping();
   $output = array();
   foreach ($mime_types as $mime_type) {
