@@ -102,7 +102,6 @@ class DefaultController extends ControllerBase {
 
     arsort($output);
     \Drupal::moduleHandler()->alter($hooks, $object, $output);
-    islandora_as_renderable_array($output);
     return $output;
   }
 

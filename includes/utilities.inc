@@ -323,7 +323,6 @@ function islandora_namespace_accessible($id) {
  *   (isMemberOf, isMemberOfCollection) relationship with.
  */
 function islandora_get_parents_from_rels_ext(AbstractObject $object) {
-  dd($object->id, 'object');
   try {
     $collections = array_merge(
       $object->relationships->get(FEDORA_RELS_EXT_URI, 'isMemberOfCollection'),

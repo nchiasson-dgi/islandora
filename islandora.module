@@ -1164,8 +1164,8 @@ function islandora_default_islandora_view_object($object) {
     // Themeing expects islandora_object to be an AbstractObject but it's coming
     // through as a markup, so this won't render anything.
     'Default output' => array(
-      //'#theme' => 'islandora_default',
-      //'#islandora_object' => $object,
+      '#theme' => 'islandora_default',
+      '#islandora_object' => $object,
     ),
   );
 }
@@ -1586,7 +1586,7 @@ function islandora_entity_info() {
       'label' => 'label',
     ),
   );
-
+  $entites = array();
   return $entities;
 }
 
@@ -1744,8 +1744,6 @@ function islandora_object_access($op, $object, $account) {
  */
 function islandora_islandora_object_access($op, $object, $user) {
   module_load_include('inc', 'islandora', 'includes/utilities');
-  ksm($op);
-  ksm(islandora_namespace_accessible($object->id));
   return islandora_namespace_accessible($object->id) && $user->hasPermission($op);
 }
 

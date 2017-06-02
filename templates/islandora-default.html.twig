@@ -1,0 +1,50 @@
+{# <?php #}
+
+<div class="islandora-object islandora">
+    <h2>{{ 'Details'|t }}</h2>
+    {{ kint() }}
+    {% if islandora_thumbnail_url %}
+    <dl class="islandora-object-tn">
+        <dt>
+            <img src="{{ islandora_thumbnail_url }}"/>
+        </dt>
+    </dl>
+    {% endif %}
+    <div class="islandora-default-metadata">
+        {{ description }}
+        {{ metadata }}
+    </div>
+</div>
+<details open="open">
+    <summary>{{ 'File Details'|t }}</summary>
+    <div class="details-wrapper">
+        <table>
+            <tr>
+                <th>{{ 'ID'|t }}</th>
+                <th>{{ 'Label'|t }}</th>
+                <th>{{ 'Size'|t }}</th>
+                <th>{{ 'Mimetype'|t }}</th>
+                <th>{{ 'Created'|t }}</th>
+            </tr>
+            {% for key, value in datastreams %}
+            <tr>
+                <td>{% if value.id %} {{ value.id }} {% endif %}</td>
+                <td>{% if value.label_link %} {{ value.label_link }} {% endif %}</td>
+                <td>{% if value.size %} {{ value.size }} {% endif %}</td>
+                <td>{% if value.mimetype %} {{ value.mimetype }} {% endif %}</td>
+                <td>{% if value.created_date %} {{ value.created_date }} {% endif %}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</details>
+{% if parent_collections %}
+<div>
+    <h2>{{ 'In collections'|t }}</h2>
+    <ul>
+        {% for collection in parent_collections %}
+            <li> <a href="{{ path('islandora.view_object', {'object': collection.id}) }}">{{ collection.label }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{%  endif %}

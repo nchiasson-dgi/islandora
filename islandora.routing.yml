@@ -140,12 +140,11 @@ islandora.add_datastream_form_autocomplete_callback:
   requirements:
     _custom_access: '\Drupal\islandora\Controller\DefaultController::islandora_object_access_callback'
 islandora.view_datastream:
-  path: '/islandora/object/%islandora_object/datastream/{datastream}/version/{version}/view'
+  path: '/islandora/object/{object}/datastream/{datastream}'
   defaults:
     perms: 'ISLANDORA_VIEW_DATASTREAM_HISTORY'
     download: false
-    version: null
-    _title: 'View datastream version'
+    _title: 'View datastream'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_datastream'
   requirements:
     _custom_access: '\Drupal\islandora\Controller\DefaultController::islandora_datastream_access'

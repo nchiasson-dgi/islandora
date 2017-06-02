@@ -5,6 +5,9 @@
  * This file contains all theme and preprocess functions.
  */
 
+use Drupal\islandora\DublinCore;
+use Drupal\Core\Url;
+
 /**
  * Implements template_preprocess_HOOK().
  */
@@ -220,7 +223,7 @@ function template_preprocess_islandora_default(&$variables) {
 // $datastreams[$id]['label_link'] = islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $ds) ?
 //         l($label, $download_path) :
 //         $label;
-
+      //$datastreams[$id]['label_link'] = islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $ds) ? \Drupal\Core\Link::createFromRoute($label, $download_path) : $label;
       $datastreams[$id]['download_url'] = $download_path;
       $datastreams[$id]['mimetype'] = $ds->mimetype;
       $datastreams[$id]['size'] = islandora_datastream_get_human_readable_size($ds);
@@ -234,7 +237,7 @@ function template_preprocess_islandora_default(&$variables) {
   $variables['datastreams'] = $datastreams;
   // Objects in fcrepo4 don't always contain a DC datastream.
   if (isset($islandora_object['DC']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $islandora_object['DC'])) {
-    $dc_object = DublinCore::importFromXMLString($islandora_object['DC']->content);
+    $dc_object = \Drupal\islandora\DublinCore::importFromXMLString($islandora_object['DC']->content);
     $dc_array = $dc_object->asArray();
   }
   // We should eventually remove the DC object and dc_array code as it only
@@ -249,7 +252,7 @@ function template_preprocess_islandora_default(&$variables) {
     // @FIXME
 // url() expects a route name or an external URI.
 // $variables['islandora_thumbnail_url'] = url("islandora/object/{$islandora_object->id}/datastream/TN/view");
-
+  //$variables['islandora_thumbnail_url'] = URL::fromRoute('islandora.view_datastream', array('object' => $islandora_object->id, 'datastream' => 'TN'));
   }
 }
 
