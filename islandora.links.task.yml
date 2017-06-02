@@ -1,0 +1,34 @@
+islandora.printer_object:
+  route_name: islandora.printer_object
+  title: 'Print Object'
+  weight: 20
+  base_route: islandora.view_object
+islandora.view_object:
+  route_name: islandora.view_object
+  title: View
+  weight: -1
+  base_route: islandora.view_object
+islandora.view_object_0:
+  route_name: islandora.view_object
+  title: View
+  weight: -1
+  parent_id: islandora.view_object
+islandora.manage_overview_object:
+  route_name: islandora.manage_overview_object
+  title: Manage
+  base_route: islandora.view_object
+islandora.manage_overview_object_0:
+  route_name: islandora.manage_overview_object
+  title: Overview
+  weight: -20
+  parent_id: islandora.manage_overview_object
+islandora.edit_object:
+  route_name: islandora.edit_object
+  title: Datastreams
+  weight: -10
+  parent_id: islandora.manage_overview_object
+islandora.object_properties_form:
+  route_name: islandora.object_properties_form
+  title: Properties
+  weight: -5
+  parent_id: islandora.manage_overview_object

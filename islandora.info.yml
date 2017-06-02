@@ -1,0 +1,13 @@
+name: Islandora
+description: 'View and manage Fedora objects'
+package: Islandora
+dependencies:
+  - image
+  - file
+core: 8.x
+stylesheets:
+  all:
+    - css/islandora.base.css
+    - css/islandora.theme.css
+php: '5.3'
+type: module

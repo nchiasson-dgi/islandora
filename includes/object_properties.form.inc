@@ -87,7 +87,7 @@ function islandora_object_properties_form(array $form, array &$form_state, Abstr
       '#type' => 'submit',
       '#access' => islandora_object_access(ISLANDORA_PURGE, $object),
       '#value' => t("Permanently remove '@label' from repository", array(
-        '@label' => truncate_utf8($object->label, 32, TRUE, TRUE))
+        '@label' => \Drupal\Component\Utility\Unicode::truncate($object->label, 32, TRUE, TRUE))
       ),
       '#submit' => array('islandora_object_properties_form_delete'),
       '#limit_validation_errors' => array(array('pid')),
@@ -131,7 +131,7 @@ function islandora_object_properties_form_submit(array $form, array &$form_state
   if (isset($label) && $label != $object->label) {
     try {
       $object->label = $label;
-      drupal_set_message(t('Successfully updated label %s', array('%s' => check_plain($label))));
+      drupal_set_message(t('Successfully updated label %s', array('%s' => \Drupal\Component\Utility\Html::escape($label))));
     }
     catch (Exception $e) {
       form_set_error(t('Error updating label %s', array('%s' => $e->getMessage())));

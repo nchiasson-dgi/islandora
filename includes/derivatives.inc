@@ -96,12 +96,7 @@ function islandora_do_derivatives(AbstractObject $object, array $options) {
         }
       }
       else {
-        watchdog(
-          'islandora',
-          'Unable to call derivative function @function as it was not found!',
-          array('@function' => $function),
-          WATCHDOG_ERROR
-        );
+        \Drupal::logger('islandora')->error('Unable to call derivative function @function as it was not found!', array('@function' => $function));
       }
     }
   }
@@ -131,17 +126,20 @@ function islandora_derivative_logging(array $logging_results) {
     foreach ($result['messages'] as $message) {
       if ($message['type'] === 'dsm') {
         if (isset($message['severity']) && $message['severity'] != 'status') {
-          drupal_set_message(filter_xss(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : array())), $message['severity']);
+          drupal_set_message(\Drupal\Component\Utility\Xss::filter(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : array())), $message['severity']);
         }
         else {
           if (!isset($_SESSION['islandora_event_messages'])) {
             $_SESSION['islandora_event_messages'] = array();
           }
           $_SESSION['islandora_event_messages'][] = array(
-            'message' => filter_xss(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : array())),
+            'message' => \Drupal\Component\Utility\Xss::filter(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : array())),
             'severity' => 'status',
           );
-          drupal_set_message(l(t('Derivatives successfully created.'), 'islandora/event-status'), 'status', FALSE);
+          // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// drupal_set_message(l(t('Derivatives successfully created.'), 'islandora/event-status'), 'status', FALSE);
+
         }
       }
       else {
@@ -303,7 +301,7 @@ function islandora_get_derivative_list(AbstractObject $object, &$options) {
   );
 
   foreach (islandora_build_hook_list(ISLANDORA_DERIVATIVE_CREATION_HOOK, $object->models) as $hook) {
-    drupal_alter($hook, $derivatives, $object, $ds_modified_params);
+    \Drupal::moduleHandler()->alter($hook, $derivatives, $object, $ds_modified_params);
   }
 
   uasort($derivatives, 'drupal_sort_weight');

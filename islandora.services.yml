@@ -1,0 +1,9 @@
+services:
+  object:
+    class: Drupal\islandora\ParamConverter\IslandoraObjectParamConverter
+    tags:
+      - { name: paramconverter }
+  access_check.object:
+    class: Drupal\islandora\Access\IslandoraObjectAccess
+    tags:
+      - { name: access_check, applies_to: _islandora_object_access }

@@ -26,9 +26,13 @@
  */
 function islandora_get_breadcrumbs(AbstractObject $object) {
   $breadcrumbs = array();
-  if (variable_get('islandora_render_drupal_breadcrumbs', TRUE)) {
-    $backend = variable_get('islandora_breadcrumbs_backends', ISLANDORA_BREADCRUMB_LEGACY_BACKEND);
-    $backends = module_invoke_all('islandora_breadcrumbs_backends');
+  if (\Drupal::config('islandora.settings')->get('islandora_render_drupal_breadcrumbs')) {
+    // @FIXME
+// Could not extract the default value because it is either indeterminate, or
+// not scalar. You'll need to provide a default value in
+// config/install/islandora.settings.yml and config/schema/islandora.schema.yml.
+$backend = \Drupal::config('islandora.settings')->get('islandora_breadcrumbs_backends');
+    $backends = \Drupal::moduleHandler()->invokeAll('islandora_breadcrumbs_backends');
     if ($backend === ISLANDORA_BREADCRUMB_LEGACY_BACKEND || !isset($backends[$backend])) {
       $breadcrumbs = islandora_get_breadcrumbs_legacy($object->id, $object->repository);
     }
@@ -39,7 +43,7 @@ function islandora_get_breadcrumbs(AbstractObject $object) {
       $breadcrumbs = call_user_func($backends[$backend]['callable'], $object);
     }
     $context = 'islandora';
-    drupal_alter('islandora_breadcrumbs', $breadcrumbs, $context, $object);
+    \Drupal::moduleHandler()->alter('islandora_breadcrumbs', $breadcrumbs, $context, $object);
   }
   return $breadcrumbs;
 }
@@ -88,7 +92,7 @@ function islandora_get_breadcrumbs_recursive($pid, FedoraRepository $repository,
     $context['level'] = 10;
   }
 
-  $root = variable_get('islandora_repository_pid', 'islandora:root');
+  $root = \Drupal::config('islandora.settings')->get('islandora_repository_pid');
   if ($pid == $root) {
     $title = 'Islandora Repository';
     $mlid = db_select('menu_links', 'ml')
@@ -102,10 +106,13 @@ function islandora_get_breadcrumbs_recursive($pid, FedoraRepository $repository,
       $title = (isset($link['title']) ? $link['title'] : $title);
     }
 
-    return array(
-      l(t('Home'), '<front>'),
-      l($title, 'islandora'),
-    );
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// return array(
+//       l(t('Home'), '<front>'),
+//       l($title, 'islandora'),
+//     );
+
   }
   else {
 
@@ -125,8 +132,8 @@ function islandora_get_breadcrumbs_recursive($pid, FedoraRepository $repository,
         !order
 EOQ;
 
-    $query_optionals = (array) module_invoke('islandora_xacml_api', 'islandora_basic_collection_get_query_optionals', 'view');
-    $query_filters = (array) module_invoke('islandora_xacml_api', 'islandora_basic_collection_get_query_filters');
+    $query_optionals = (array) \Drupal::moduleHandler()->invoke('islandora_xacml_api', 'islandora_basic_collection_get_query_optionals', ['view']);
+    $query_filters = (array) \Drupal::moduleHandler()->invoke('islandora_xacml_api', 'islandora_basic_collection_get_query_filters');
     $filter_map = function ($filter) {
       return "FILTER($filter)";
     };
@@ -157,9 +164,12 @@ EOQ;
       }
 
       $context['level']--;
-      return array_merge(islandora_get_breadcrumbs_recursive($parent, $repository, $context), array(
-        l($this_label, "islandora/object/$pid"),
-      ));
+      // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// return array_merge(islandora_get_breadcrumbs_recursive($parent, $repository, $context), array(
+//         l($this_label, "islandora/object/$pid"),
+//       ));
+
     }
     else {
       // Add an non-link, as we don't know how to get back to the root, and

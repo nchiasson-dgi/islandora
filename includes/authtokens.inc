@@ -34,9 +34,9 @@ define('ISLANDORA_AUTHTOKEN_TOKEN_TIMEOUT', 300);
  *   The generated authentication token.
  */
 function islandora_get_object_token($pid, $dsid, $uses = 1) {
-  global $user;
+  $user = \Drupal::currentUser();
   $time = time();
-  $token = bin2hex(drupal_random_bytes(32));
+  $token = bin2hex(\Drupal\Component\Utility\Crypt::randomBytes(32));
   $id = db_insert("islandora_authtokens")->fields(
     array(
       'token' => $token,

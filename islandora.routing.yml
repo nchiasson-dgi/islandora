@@ -1,0 +1,249 @@
+islandora.repository_admin:
+  path: '/admin/islandora/configure'
+  defaults:
+    _title: 'Configuration'
+    _form: '\Drupal\islandora\Form\IslandoraRepositoryAdmin'
+  requirements:
+    _permission: 'administer site configuration'
+islandora.metadata_display_form:
+  path: '/admin/islandora/metadata'
+  defaults:
+    _title: 'Metadata Display'
+    _form: '\Drupal\islandora\Form\IslandoraMetadataDisplayForm'
+  requirements:
+    _permission: 'administer site configuration'
+islandora.solution_packs_admin:
+  path: '/admin/islandora/solution_pack_config/solution_packs'
+  defaults:
+    _title: 'Solution packs required objects'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_solution_packs_admin'
+  requirements:
+    _permission: 'ISLANDORA_ADD_DS'
+islandora.view_default_object:
+  path: '/islandora'
+  defaults:
+    _title: 'Islandora Repository'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_default_object'
+  requirements:
+    _permission: 'ISLANDORA_VIEW_OBJECTS'
+islandora.view_object:
+  path: '/islandora/object/{object}'
+  defaults:
+    perms: 'ISLANDORA_VIEW_OBJECTS'
+    _title_callback: '\Drupal\islandora\Controller\DefaultController::islandora_drupal_title'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_object'
+    object: 'root'
+  requirements:
+    _islandora_object_access: '{object}'
+  options:
+    parameters:
+      object:
+        type: object
+islandora.printer_object:
+  path: '/islandora/object/{object}/print_object'
+  defaults:
+    perms: 'ISLANDORA_VIEW_OBJECTS'
+    _title: 'Print Object'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_printer_object'
+    object: ~
+  requirements:
+    _islandora_object_access: '{object}'
+  options:
+    parameters:
+      object:
+        type: object
+islandora.print_object:
+  path: '/islandora/object/{object}/print'
+  defaults:
+    perms: 'ISLANDORA_VIEW_OBJECTS'
+    _title: 'Print Object'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_print_object'
+    object: ~
+  requirements:
+    _islandora_object_access: '{object}'
+  options:
+    parameters:
+      object:
+        type: object
+islandora.manage_overview_object:
+  path: '/islandora/object/{object}/manage'
+  defaults:
+    perms:
+      - 'ISLANDORA_MANAGE_PROPERTIES'
+      - 'ISLANDORA_METADATA_EDIT'
+      - 'ISLANDORA_ADD_DS'
+      - 'ISLANDORA_PURGE'
+      - 'ISLANDORA_INGEST'
+    _title: 'Manage'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_manage_overview_object'
+    object: ~
+  requirements:
+    _islandora_object_access: '{object}'
+  options:
+    parameters:
+      object:
+        type: object
+islandora.edit_object:
+  path: '/islandora/object/{object}/manage/datastreams'
+  defaults:
+    perms:
+      - 'ISLANDORA_METADATA_EDIT'
+      - 'ISLANDORA_ADD_DS'
+      - 'ISLANDORA_PURGE'
+    _title: 'Datastreams'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_edit_object'
+    object: ~
+  requirements:
+    _islandora_object_access: '{object}'
+  options:
+    parameters:
+      object:
+        type: object
+
+islandora.object_properties_form:
+  path: '/islandora/object/{object}/manage/properties'
+  defaults:
+    perm: 'ISLANDORA_MANAGE_PROPERTIES'
+    _title: 'Properties'
+    _form: '\Drupal\islandora\Form\IslandoraObjectPropertiesForm'
+  requirements:
+    _custom_access: '\Drupal\islandora\Form\IslandoraObjectPropertiesForm::islandora_object_access_callback'
+islandora.delete_object_form:
+  path: '/islandora/object/{object}/delete'
+  defaults:
+    perm: 'ISLANDORA_PURGE'
+    _title: 'Delete object'
+    _form: '\Drupal\islandora\Form\IslandoraDeleteObjectForm'
+  requirements:
+    _custom_access: '\Drupal\islandora\Form\IslandoraDeleteObjectForm::islandora_object_access_callback'
+islandora.regenerate_object_derivatives_form:
+  path: '/islandora/object/{object}/regenerate'
+  defaults:
+    perm: 'ISLANDORA_REGENERATE_DERIVATIVES'
+    _title: 'Regenerate all derivatives on an object'
+    _form: '\Drupal\islandora\Form\IslandoraRegenerateObjectDerivativesForm'
+  requirements:
+    _custom_access: '\Drupal\islandora\Form\IslandoraRegenerateObjectDerivativesForm::islandora_object_access_callback'
+islandora.add_datastream_form:
+  path: '/islandora/object/{object}/manage/datastreams/add'
+  defaults:
+    perm: 'ISLANDORA_ADD_DS'
+    _title: 'Add a datastream'
+    _form: '\Drupal\islandora\Form\IslandoraAddDatastreamForm'
+  requirements:
+    _custom_access: '\Drupal\islandora\Form\IslandoraAddDatastreamForm::islandora_object_access_callback'
+islandora.add_datastream_form_autocomplete_callback:
+  path: '/islandora/object/{object}/manage/datastreams/add/autocomplete'
+  defaults:
+    perm: 'ISLANDORA_ADD_DS'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_add_datastream_form_autocomplete_callback'
+  requirements:
+    _custom_access: '\Drupal\islandora\Controller\DefaultController::islandora_object_access_callback'
+islandora.view_datastream:
+  path: '/islandora/object/{object}/datastream/{datastream}'
+  defaults:
+    perms: 'ISLANDORA_VIEW_DATASTREAM_HISTORY'
+    download: false
+    _title: 'View datastream'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_datastream'
+  requirements:
+    _custom_access: '\Drupal\islandora\Controller\DefaultController::islandora_datastream_access'
+islandora.download_datastream:
+  path: '/islandora/object/%islandora_object/datastream/{datastream}/download'
+  defaults:
+    perms: 'ISLANDORA_VIEW_OBJECTS'
+    _title: 'Download datastream'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_download_datastream'
+  requirements:
+    _custom_access: '\Drupal\islandora\Controller\DefaultController::islandora_datastream_access'
+islandora.edit_datastream:
+  path: '/islandora/object/%islandora_object/datastream/{datastream}/edit'
+  defaults:
+    perms: 'ISLANDORA_METADATA_EDIT'
+    _title: 'Edit datastream'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_edit_datastream'
+  requirements:
+    _custom_access: '\Drupal\islandora\Controller\DefaultController::islandora_datastream_access'
+islandora.delete_datastream_form:
+  path: '/islandora/object/%islandora_object/datastream/{datastream}/delete'
+  defaults:
+    perms: 'ISLANDORA_PURGE'
+    _title: 'Delete data stream'
+    _form: '\Drupal\islandora\Form\IslandoraDeleteDatastreamForm'
+  requirements:
+    _custom_access: '\Drupal\islandora\Form\IslandoraDeleteDatastreamForm::islandora_datastream_access'
+islandora.datastream_version_table:
+  path: '/islandora/object/%islandora_object/datastream/{datastream}/version'
+  defaults:
+    perms: 'ISLANDORA_VIEW_DATASTREAM_HISTORY'
+    _title: 'Datastream Versions'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_datastream_version_table'
+  requirements:
+    _custom_access: '\Drupal\islandora\Controller\DefaultController::islandora_datastream_access'
+islandora.datastream_version_replace_form:
+  path: '/islandora/object/%islandora_object/datastream/{datastream}/replace'
+  defaults:
+    perms: 'ISLANDORA_REPLACE_DATASTREAM_CONTENT'
+    _title: 'Replace Datastream'
+    _form: '\Drupal\islandora\Form\IslandoraDatastreamVersionReplaceForm'
+  requirements:
+    _custom_access: '\Drupal\islandora\Form\IslandoraDatastreamVersionReplaceForm::islandora_datastream_access'
+islandora.delete_datastream_version_form:
+  path: '/islandora/object/%islandora_object/datastream/{datastream}/version/{version}/delete'
+  defaults:
+    perms: 'ISLANDORA_PURGE'
+    _title: 'Delete datastream version'
+    _form: '\Drupal\islandora\Form\IslandoraDeleteDatastreamVersionForm'
+  requirements:
+    _custom_access: '\Drupal\islandora\Form\IslandoraDeleteDatastreamVersionForm::islandora_datastream_access'
+islandora.revert_datastream_version_form:
+  path: '/islandora/object/%islandora_object/datastream/{datastream}/version/{version}/revert'
+  defaults:
+    perms: 'ISLANDORA_REVERT_DATASTREAM'
+    _title: 'Revert to datastream version'
+    _form: '\Drupal\islandora\Form\IslandoraRevertDatastreamVersionForm'
+  requirements:
+    _custom_access: '\Drupal\islandora\Form\IslandoraRevertDatastreamVersionForm::islandora_datastream_access'
+islandora.regenerate_datastream_derivative_form:
+  path: '/islandora/object/%islandora_object/datastream/{datastream}/regenerate'
+  defaults:
+    perms: 'ISLANDORA_REGENERATE_DERIVATIVES'
+    _title: 'Regenrate datastream derivative'
+    _form: '\Drupal\islandora\Form\IslandoraRegenerateDatastreamDerivativeForm'
+  requirements:
+    _custom_access: '\Drupal\islandora\Form\IslandoraRegenerateDatastreamDerivativeForm::islandora_datastream_access'
+islandora.event_status:
+  path: '/islandora/event-status'
+  defaults:
+    _title: 'Event Status'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_event_status'
+  requirements:
+    _access: 'true'
+islandora.content_model_autocomplete:
+  path: '/ISLANDORA_CONTENT_MODELS_AUTOCOMPLETE/{string}'
+  defaults:
+    _title: 'Autocomplete callback'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_content_model_autocomplete'
+  requirements:
+    _permission: 'administer site configuration'
+islandora.mime_type_autocomplete:
+  path: '/ISLANDORA_MIME_TYPES_AUTOCOMPLETE/{string}'
+  defaults:
+    _title: 'Autocomplete callback'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_mime_type_autocomplete'
+  requirements:
+    _permission: 'administer site configuration'
+islandora.deleted_objects_prep_form:
+  path: '/admin/islandora/restore/prep'
+  defaults:
+    _title: 'Manage Deleted Objects'
+    _form: '\Drupal\islandora\Form\IslandoraDeletedObjectsPrepForm'
+  requirements:
+    _permission: 'ISLANDORA_MANAGE_DELETED_OBJECTS'
+islandora.deleted_objects_manage_form:
+  path: '/admin/islandora/restore/manage'
+  defaults:
+    _title: 'Manage Deleted Objects'
+    _form: '\Drupal\islandora\Form\IslandoraDeletedObjectsManageForm'
+  requirements:
+    _permission: 'ISLANDORA_MANAGE_DELETED_OBJECTS'

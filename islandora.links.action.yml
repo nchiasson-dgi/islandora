@@ -1,0 +1,5 @@
+islandora.add_datastream_form:
+  route_name: islandora.add_datastream_form
+  title: 'Add a datastream'
+  appears_on:
+    - islandora.add_datastream_form

@@ -681,8 +681,24 @@ function islandora_i18n_string_list($group) {
  *   A renderable array.
  */
 function islandora_print_object(AbstractObject $object) {
-  drupal_set_title($object->label);
-  return theme('islandora_object_print', array('object' => $object));
+  // @FIXME
+// drupal_set_title() has been removed. There are now a few ways to set the title
+// dynamically, depending on the situation.
+//
+//
+// @see https://www.drupal.org/node/2067859
+// drupal_set_title($object->label);
+
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// return theme('islandora_object_print', array('object' => $object));
+
 }
 
 /**
@@ -703,7 +719,7 @@ function islandora_print_object(AbstractObject $object) {
  *   configuraton.
  */
 function islandora_print_object_access($op, $object) {
-  if (!variable_get('islandora_show_print_option', FALSE)) {
+  if (!\Drupal::config('islandora.settings')->get('islandora_show_print_option')) {
     return FALSE;
   }
   $access = islandora_object_access($op, $object);
@@ -787,11 +803,11 @@ function islandora_user_access($object_or_datastream, array $permissions, $conte
       module_load_include('inc', 'islandora', 'includes/authtokens');
       $token_user = islandora_validate_object_token($object->id, $datastream->id, $token);
       if ($user) {
-        $user = user_load($token_user->uid);
+        $user = \Drupal::entityManager()->getStorage('user')->load($token_user->uid);
       }
     }
     else {
-      global $user;
+      $user = \Drupal::currentUser();
     }
   }
 
@@ -879,7 +895,7 @@ function islandora_object_datastream_tokened_access_callback($perm, $object = NU
   if ($token) {
     $user = islandora_validate_object_token($object->id, $datastream->id, $token);
     if ($user) {
-      $token_account = user_load($user->uid);
+      $token_account = \Drupal::entityManager()->getStorage('user')->load($user->uid);
     }
   }
 
@@ -931,14 +947,14 @@ function islandora_manage_overview_object(AbstractObject $object) {
   $output = islandora_create_manage_overview($object);
   $hooks = islandora_build_hook_list(ISLANDORA_OVERVIEW_HOOK, $object->models);
   foreach ($hooks as $hook) {
-    $temp = module_invoke_all($hook, $object);
+    $temp = \Drupal::moduleHandler()->invokeAll($hook, [$object]);
     islandora_as_renderable_array($temp);
     if (!empty($temp)) {
       arsort($temp);
       $output = array_merge_recursive($output, $temp);
     }
   }
-  drupal_alter($hooks, $object, $output);
+  \Drupal::moduleHandler()->alter($hooks, $object, $output);
   islandora_as_renderable_array($output);
   return $output;
 }
@@ -963,7 +979,7 @@ function islandora_edit_object(AbstractObject $object) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   $output = array();
   foreach (islandora_build_hook_list(ISLANDORA_EDIT_HOOK, $object->models) as $hook) {
-    $temp = module_invoke_all($hook, $object);
+    $temp = \Drupal::moduleHandler()->invokeAll($hook, [$object]);
     islandora_as_renderable_array($temp);
     if (!empty($temp)) {
       $output = array_merge_recursive($output, $temp);
@@ -974,7 +990,7 @@ function islandora_edit_object(AbstractObject $object) {
     $output = islandora_default_islandora_edit_object($object);
   }
   arsort($output);
-  drupal_alter(ISLANDORA_EDIT_HOOK, $object, $output);
+  \Drupal::moduleHandler()->alter(ISLANDORA_EDIT_HOOK, $object, $output);
   islandora_as_renderable_array($output);
   return $output;
 }
@@ -990,7 +1006,16 @@ function islandora_edit_object(AbstractObject $object) {
  *   'Default Edit output'.
  */
 function islandora_default_islandora_edit_object(AbstractObject $object) {
-  $output = theme('islandora_default_edit', array('islandora_object' => $object));
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $output = theme('islandora_default_edit', array('islandora_object' => $object));
+
   return array('Default Edit output' => array('#markup' => $output));
 }
 
@@ -1001,7 +1026,7 @@ function islandora_default_islandora_edit_object(AbstractObject $object) {
  * 'islandora_repository_pid'.
  */
 function islandora_view_default_object() {
-  $pid = variable_get('islandora_repository_pid', 'islandora:root');
+  $pid = \Drupal::config('islandora.settings')->get('islandora_repository_pid');
   drupal_goto("islandora/object/$pid");
 }
 
@@ -1036,7 +1061,7 @@ function islandora_view_object(AbstractObject $object) {
   foreach ($hooks as $hook) {
     // @todo Remove page number and size from this hook, implementers of the
     // hook should use drupal page handling directly.
-    $temp = module_invoke_all($hook, $object, $page_number, $page_size);
+    $temp = \Drupal::moduleHandler()->invokeAll($hook, [$object, $page_number, $page_size]);
     islandora_as_renderable_array($temp);
     if (!empty($temp)) {
       $output = array_merge_recursive($output, $temp);
@@ -1048,7 +1073,7 @@ function islandora_view_object(AbstractObject $object) {
   }
 
   arsort($output);
-  drupal_alter($hooks, $object, $output);
+  \Drupal::moduleHandler()->alter($hooks, $object, $output);
   islandora_as_renderable_array($output);
   return $output;
 }
@@ -1072,18 +1097,26 @@ function islandora_printer_object(AbstractObject $object) {
 
   // Dispatch print hook.
   foreach (islandora_build_hook_list(ISLANDORA_PRINT_HOOK, $object->models) as $hook) {
-    $temp = module_invoke_all($hook, $object);
+    $temp = \Drupal::moduleHandler()->invokeAll($hook, [$object]);
     islandora_as_renderable_array($temp);
     if (!empty($temp)) {
       $temp_arr = array_merge_recursive($temp_arr, $temp);
     }
   }
-  $output = islandora_default_islandora_printer_object($object, drupal_render($temp_arr));
+  $output = islandora_default_islandora_printer_object($object, \Drupal::service("renderer")->render($temp_arr));
   arsort($output);
   islandora_as_renderable_array($output);
 
   // Prompt to print.
-  drupal_add_js('jQuery(document).ready(function () { window.print(); });', 'inline');
+  // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+//
+//
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// drupal_add_js('jQuery(document).ready(function () { window.print(); });', 'inline');
+
   return $output;
 }
 
@@ -1117,8 +1150,24 @@ function islandora_drupal_title(AbstractObject $object) {
  *   The default rendering of the object view page, indexed at 'Default output'.
  */
 function islandora_default_islandora_view_object($object) {
-  $output = theme('islandora_default', array('islandora_object' => $object));
-  return array('Default output' => array('#markup' => $output));
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $output = theme('islandora_default', array('islandora_object' => $object));
+  return array(
+    // @FIXME
+    // Themeing expects islandora_object to be an AbstractObject but it's coming
+    // through as a markup, so this won't render anything.
+    'Default output' => array(
+      '#theme' => 'islandora_default',
+      '#islandora_object' => $object,
+    ),
+  );
 }
 
 /**
@@ -1138,7 +1187,15 @@ function islandora_default_islandora_printer_object($object, $alter) {
   module_load_include('inc', 'islandora', 'includes/metadata');
 
   $path = drupal_get_path('module', 'islandora');
-  drupal_add_css($path . '/css/islandora.print.css');
+  // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+//
+//
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// drupal_add_css($path . '/css/islandora.print.css');
+
 
   $islandora_object = islandora_object_load($object->id);
   $repository = $islandora_object->repository;
@@ -1152,11 +1209,20 @@ function islandora_default_islandora_printer_object($object, $alter) {
   }
   $metadata = islandora_retrieve_metadata_markup($object, TRUE);
   $variables = isset($dc_object) ? $dc_object->asArray() : array();
-  $output = theme('islandora_object_print_object', array(
-    'object' => $object,
-    'dc_array' => $variables,
-    'metadata' => $metadata,
-    'islandora_content' => $alter));
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $output = theme('islandora_object_print_object', array(
+//     'object' => $object,
+//     'dc_array' => $variables,
+//     'metadata' => $metadata,
+//     'islandora_content' => $alter));
+
 
   return array('Default output' => array('#markup' => $output));
 }
@@ -1254,7 +1320,7 @@ function islandora_tokened_object_load($object_id, $map) {
     if ($token) {
       module_load_include('inc', 'islandora', 'includes/authtokens');
       $token_user = islandora_validate_object_token($object_id, $map[4], $token);
-      $token_user = $token_user ? user_load($token_user->uid) : NULL;
+      $token_user = $token_user ? \Drupal::entityManager()->getStorage('user')->load($token_user->uid) : NULL;
       islandora_get_tuque_connection($token_user);
     }
   }
@@ -1438,10 +1504,10 @@ function islandora_copy_object(AbstractObject $object) {
     }
     else {
       // Get the content into a file, and add the file.
-      $temp_file = drupal_tempnam('temporary://', 'datastream');
+      $temp_file = \Drupal::service("file_system")->tempnam('temporary://', 'datastream');
       $datastream->getContent($temp_file);
       $clone[$dsid]->setContentFromFile($temp_file);
-      drupal_unlink($temp_file);
+      \Drupal::service("file_system")->unlink($temp_file);
     }
   }
   return $clone;
@@ -1520,7 +1586,7 @@ function islandora_entity_info() {
       'label' => 'label',
     ),
   );
-
+  $entites = array();
   return $entities;
 }
 
@@ -1648,33 +1714,26 @@ function islandora_file_mimetype_mapping_alter(&$mapping) {
  *   TRUE if at least one implementation of hook_islandora_object_access()
  *   returned TRUE, and no implementation return FALSE; FALSE otherwise.
  */
-function islandora_object_access($op, $object, $user = NULL) {
+function islandora_object_access($op, $object, $account) {
   $cache = &drupal_static(__FUNCTION__);
-
   if (!is_object($object)) {
     // The object could not be loaded... Presumably, we don't have
     // permission.
     return FALSE;
   }
-  if ($user === NULL) {
-    global $user;
-  }
-
   // Populate the cache on a miss.
-  if (!isset($cache[$op][$object->id][$user->uid])) {
+  if (!isset($cache[$op][$object->id][$account->id()])) {
     module_load_include('inc', 'islandora', 'includes/utilities');
 
     $results = islandora_invoke_hook_list('islandora_object_access', $object->models, array(
       $op,
       $object,
-      $user,
+      $account,
     ));
-
     // Nothing returned FALSE, and something returned TRUE.
-    $cache[$op][$object->id][$user->uid] = (!in_array(FALSE, $results, TRUE) && in_array(TRUE, $results, TRUE));
+    $cache[$op][$object->id][$account->id()] = (!in_array(FALSE, $results, TRUE) && in_array(TRUE, $results, TRUE));
   }
-
-  return $cache[$op][$object->id][$user->uid];
+  return $cache[$op][$object->id][$account->id()];
 }
 
 /**
@@ -1685,8 +1744,7 @@ function islandora_object_access($op, $object, $user = NULL) {
  */
 function islandora_islandora_object_access($op, $object, $user) {
   module_load_include('inc', 'islandora', 'includes/utilities');
-
-  return islandora_namespace_accessible($object->id) && user_access($op, $user);
+  return islandora_namespace_accessible($object->id) && $user->hasPermission($op);
 }
 
 /**
@@ -1703,7 +1761,7 @@ function islandora_datastream_access($op, $datastream, $user = NULL) {
     return NULL;
   }
   if ($user === NULL) {
-    global $user;
+    $user = \Drupal::currentUser();
   }
 
   // Populate the cache on a miss.
@@ -1737,7 +1795,7 @@ function islandora_datastream_access($op, $datastream, $user = NULL) {
  */
 function islandora_islandora_basic_collection_get_query_filters() {
   module_load_include('inc', 'islandora', 'includes/utilities');
-  $enforced = variable_get('islandora_namespace_restriction_enforced', FALSE);
+  $enforced = \Drupal::config('islandora.settings')->get('islandora_namespace_restriction_enforced');
   if ($enforced) {
     $namespace_array = islandora_get_allowed_namespaces();
     $namespace_sparql = implode('|', $namespace_array);
@@ -1864,8 +1922,8 @@ function islandora_form_simpletest_test_form_alter(array &$form) {
     foreach ($tests as $class => $info) {
       $form['tests']['table'][$group][$class] = array(
         '#type' => 'checkbox',
-        '#title' => filter_xss($info['name']),
-        '#description' => filter_xss($info['description']),
+        '#title' => \Drupal\Component\Utility\Xss::filter($info['name']),
+        '#description' => \Drupal\Component\Utility\Xss::filter($info['description']),
       );
       if (is_subclass_of($class, 'IslandoraWebTestCase', TRUE) && !$filter_status) {
         $form['tests']['table'][$group][$class]['#disabled'] = TRUE;
@@ -1929,7 +1987,7 @@ function islandora_repair_drupal_filter() {
     drupal_set_message(t("No simpletest entries were found in the Drupal filter."));
   }
   else {
-    drupal_set_message(format_plural($entries, "Removed 1 simpletest entry from the Drupal filter.", "Removed @count simpletest entries from the Drupal filter."));
+    drupal_set_message(\Drupal::translation()->formatPlural($entries, "Removed 1 simpletest entry from the Drupal filter.", "Removed @count simpletest entries from the Drupal filter."));
   }
 }
 
@@ -1952,7 +2010,7 @@ function islandora_islandora_metadata_display_info() {
  */
 function islandora_islandora_datastream_access($op, AbstractDatastream $datastream, $user) {
   module_load_include('inc', 'islandora', 'includes/utilities');
-  $result = islandora_namespace_accessible($datastream->parent->id) && user_access($op, $user);
+  $result = islandora_namespace_accessible($datastream->parent->id) && $user->hasPermission($op);
 
   if ($result && $op == ISLANDORA_REGENERATE_DERIVATIVES) {
     module_load_include('inc', 'islandora', 'includes/derivatives');
@@ -1992,7 +2050,7 @@ function islandora_find_package($package_name) {
       break;
     }
   }
-  return $found && user_access('administer site configuration');
+  return $found && \Drupal::currentUser()->hasPermission('administer site configuration');
 }
 
 /**
@@ -2024,13 +2082,22 @@ function islandora_menu_local_tasks_alter(&$data, $router_item, $root_path) {
             $tab['#prefix'] = '<li class="islandora-print">';
             $tab['#suffix'] = '</li>';
             $tab['#theme'] = 'link';
-            $tab['#text'] = theme('image', array(
-              'path' => "$islandora_path/images/print-icon.png",
-              'alt' => t('Print Object'),
-              'attributes' => array(
-                'id' => 'print_btn',
-              ),
-            ));
+            // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $tab['#text'] = theme('image', array(
+//               'path' => "$islandora_path/images/print-icon.png",
+//               'alt' => t('Print Object'),
+//               'attributes' => array(
+//                 'id' => 'print_btn',
+//               ),
+//             ));
+
             $tab['#path'] = "{$router_item['href']}/print_object";
             $tab['#options'] = array(
               'attributes' => array(),
@@ -2052,7 +2119,7 @@ function islandora_menu_local_tasks_alter(&$data, $router_item, $root_path) {
  */
 function islandora_islandora_object_alter(AbstractObject $object, array &$context) {
   // Prevent derivative creation during ingest if var is set.
-  if ($context['action'] == 'ingest' && variable_get('islandora_defer_derivatives_on_ingest', FALSE)) {
+  if ($context['action'] == 'ingest' && \Drupal::config('islandora.settings')->get('islandora_defer_derivatives_on_ingest')) {
     module_load_include('inc', 'islandora', 'includes/derivatives');
     islandora_set_defer_derivatives_flag($object);
   }
@@ -2083,11 +2150,16 @@ function islandora_conditionally_clear_cache() {
     $clear =& drupal_static(__FUNCTION__, FALSE);
   }
 
-  if ($clear || !variable_get('cache', 0)) {
-    // Already set, no need to do so again, or page caching is disabled... Let's
-    // avoid a call to attempt to clear it.
-    return;
-  }
+  // @FIXME
+// // @FIXME
+// // This looks like another module's variable. You'll need to rewrite this call
+// // to ensure that it uses the correct configuration object.
+// if ($clear || !variable_get('cache', 0)) {
+//     // Already set, no need to do so again, or page caching is disabled... Let's
+//     // avoid a call to attempt to clear it.
+//     return;
+//   }
+
 
   $functions = array(
     // Object changes in response to a form.
@@ -2174,7 +2246,16 @@ function islandora_islandora_get_breadcrumb_query_predicates(AbstractObject $obj
  *   themed output
  */
 function islandora_create_manage_overview(AbstractObject $object) {
-  $output = theme('islandora_object_overview', array('islandora_object' => $object));
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+//
+//
+// @see https://www.drupal.org/node/2195739
+// $output = theme('islandora_object_overview', array('islandora_object' => $object));
+
   return array('cmodels' => $output);
 }
 

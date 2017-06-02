@@ -68,7 +68,7 @@ function islandora_temp_file_entry($file_uri, $mime = NULL) {
   else {
     $file = new stdClass();
     $file->uri = $file_uri;
-    $file->filename = drupal_basename($file_uri);
+    $file->filename = \Drupal::service("file_system")->basename($file_uri);
     if (isset($mime)) {
       $file->filemime = $mime;
     }
@@ -112,7 +112,7 @@ function islandora_control_group_to_human_readable($control_group) {
  *   TRUE if valid, FALSE otherwise.
  */
 function islandora_is_valid_pid($pid) {
-  return drupal_strlen(trim($pid)) <= 64 && preg_match('/^([A-Za-z0-9]|-|\.)+:(([A-Za-z0-9])|-|\.|~|_|(%[0-9A-F]{2}))+$/', trim($pid));
+  return \Drupal\Component\Utility\Unicode::strlen(trim($pid)) <= 64 && preg_match('/^([A-Za-z0-9]|-|\.)+:(([A-Za-z0-9])|-|\.|~|_|(%[0-9A-F]{2}))+$/', trim($pid));
 }
 
 /**
@@ -125,7 +125,7 @@ function islandora_is_valid_pid($pid) {
  *   TRUE if valid, FALSE otherwise.
  */
 function islandora_is_valid_namespace($namespace) {
-  return drupal_strlen(trim($namespace)) <= 64 && preg_match('/^([A-Za-z0-9]|-|\.)+$/', trim($namespace));
+  return \Drupal\Component\Utility\Unicode::strlen(trim($namespace)) <= 64 && preg_match('/^([A-Za-z0-9]|-|\.)+$/', trim($namespace));
 }
 
 /**
@@ -138,7 +138,7 @@ function islandora_is_valid_namespace($namespace) {
  *   TRUE if valid, FALSE otherwise.
  */
 function islandora_is_valid_dsid($dsid) {
-  return drupal_strlen(trim($dsid)) <= 64 && preg_match('/^[a-zA-Z0-9\_\-\.]+$/', trim($dsid));
+  return \Drupal\Component\Utility\Unicode::strlen(trim($dsid)) <= 64 && preg_match('/^[a-zA-Z0-9\_\-\.]+$/', trim($dsid));
 }
 
 /**
@@ -154,7 +154,7 @@ function islandora_is_valid_dsid($dsid) {
  *   or if the url is incorrect.
  */
 function islandora_describe_repository($url = NULL) {
-  $url = isset($url) ? $url : variable_get('islandora_base_url', 'http://localhost:8080/fedora');
+  $url = isset($url) ? $url : \Drupal::config('islandora.settings')->get('islandora_base_url');
   $connection = islandora_get_tuque_connection();
   if ($connection) {
     try {
@@ -192,12 +192,11 @@ function islandora_describe_repository($url = NULL) {
 function islandora_invoke_hook_list($hook, array $refinements, array $args) {
   $return = array();
   foreach (islandora_build_hook_list($hook, $refinements) as $refined_hook) {
-    array_unshift($args, $refined_hook);
-    $result = call_user_func_array('module_invoke_all', $args);
+    $result = \Drupal::moduleHandler()->invokeAll($refined_hook, $args);
     $return = array_merge_recursive($return, $result);
     array_shift($args);
   }
-  if (module_exists('rules')) {
+  if (\Drupal::moduleHandler()->moduleExists('rules')) {
     $event_info = rules_get_event_info($hook);
     if (isset($event_info['module'])) {
       $parameters = $event_info['variables'];
@@ -300,7 +299,7 @@ function islandora_get_namespace($id) {
  *   TRUE if accessible, FALSE otherwise.
  */
 function islandora_namespace_accessible($id) {
-  if (variable_get('islandora_namespace_restriction_enforced', FALSE)) {
+  if (\Drupal::config('islandora.settings')->get('islandora_namespace_restriction_enforced')) {
     $namespace = islandora_get_namespace($id);
     $allowed_namespaces = islandora_get_allowed_namespaces();
     return in_array($namespace, $allowed_namespaces);
@@ -485,7 +484,7 @@ function islandora_get_datastreams_requirements_from_content_model(AbstractObjec
  *   An ingestable NewFedoraObject.
  */
 function islandora_prepare_new_object($name_source = NULL, $label = NULL, $datastreams = array(), $content_models = array(), $relationships = array()) {
-  global $user;
+  $user = \Drupal::currentUser();
   $tuque = islandora_get_tuque_connection();
   $object = isset($name_source) ? $tuque->repository->constructObject($name_source) : new IslandoraNewFedoraObject(NULL, $tuque->repository);
   $object->owner = isset($user->name) ? $user->name : $object->owner;
@@ -515,7 +514,7 @@ function islandora_prepare_new_object($name_source = NULL, $label = NULL, $datas
     }
     elseif (is_readable($ds['datastream_file'])) {
       // A local file as a filesystem path.
-      $datastream_file = drupal_realpath($ds['datastream_file']);
+      $datastream_file = \Drupal::service("file_system")->realpath($ds['datastream_file']);
       $as_file = TRUE;
     }
     else {
@@ -529,13 +528,11 @@ function islandora_prepare_new_object($name_source = NULL, $label = NULL, $datas
         // Schema does not match available php stream wrapper. Attempt to
         // set datastream_file by url for the given scheme. Https (SSL) can
         // cause this to fail, and trigger an output log in watchdog.
-        $datastream_file = url($ds['datastream_file'], array('absolute' => TRUE));
-        watchdog(
-          'islandora',
-          'Attempting to ingest %file in islandora_prepare_new_object(), but it does not appear to be readable. We will pass the path through url(), and pass along as such.',
-          array('%file' => $datastream_file),
-          WATCHDOG_WARNING
-        );
+        // @FIXME
+// url() expects a route name or an external URI.
+// $datastream_file = url($ds['datastream_file'], array('absolute' => TRUE));
+
+        \Drupal::logger('islandora')->warning('Attempting to ingest %file in islandora_prepare_new_object(), but it does not appear to be readable. We will pass the path through url(), and pass along as such.', array('%file' => $datastream_file));
       }
     }
 
@@ -571,10 +568,13 @@ function islandora_prepare_new_object($name_source = NULL, $label = NULL, $datas
  */
 function islandora_display_repository_inaccessible_message() {
   $text = t('Islandora configuration');
-  $link = l($text, 'admin/islandora/configure', array('attributes' => array('title' => $text)));
+  // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $link = l($text, 'admin/islandora/configure', array('attributes' => array('title' => $text)));
+
   $message = t('Could not connect to the repository. Please check the settings on the !link page.',
   array('!link' => $link));
-  drupal_set_message(filter_xss($message), 'error', FALSE);
+  drupal_set_message(\Drupal\Component\Utility\Xss::filter($message), 'error', FALSE);
 
 }
 
@@ -658,7 +658,12 @@ function islandora_directory_exists_message($path) {
  *   The default value for use in a the system_settings_form().
  */
 function islandora_system_settings_form_default_value($name, $default_value, array &$form_state) {
-  return isset($form_state['values'][$name]) ? $form_state['values'][$name] : variable_get($name, $default_value);
+  // @FIXME
+// // @FIXME
+// // The correct configuration object could not be determined. You'll need to
+// // rewrite this call manually.
+// return isset($form_state['values'][$name]) ? $form_state['values'][$name] : variable_get($name, $default_value);
+
 }
 
 /**
@@ -669,7 +674,7 @@ function islandora_system_settings_form_default_value($name, $default_value, arr
  */
 function islandora_get_allowed_namespaces() {
   $matches = array();
-  $allowed_namespaces = variable_get('islandora_pids_allowed', 'default: demo: changeme: islandora:');
+  $allowed_namespaces = \Drupal::config('islandora.settings')->get('islandora_pids_allowed');
   preg_match_all('/([A-Za-z0-9-\.]+):/', $allowed_namespaces, $matches);
   $accessible_namespaces = $matches[1];
   // Ensure that the "islandora" namespace is explicitly allowed
@@ -751,7 +756,12 @@ function islandora_content_model_select_table_form_element($drupal_variable, $de
     $content_models[$option['pid']] = $option['label'];
   }
 
-  $selected = array_values(variable_get($drupal_variable, $default_values_array));
+  // @FIXME
+// // @FIXME
+// // The correct configuration object could not be determined. You'll need to
+// // rewrite this call manually.
+// $selected = array_values(variable_get($drupal_variable, $default_values_array));
+
   $comparator = function ($a, $b) use ($selected) {
     $a_val = $b_val = 0;
     if (in_array($a, $selected)) {
@@ -909,7 +919,7 @@ function islandora_event_status() {
  *   TRUE if successful, FALSE otherwise.
  */
 function islandora_scale_thumbnail($file, $width, $height) {
-  $real_path = drupal_realpath($file->uri);
+  $real_path = \Drupal::service("file_system")->realpath($file->uri);
   $image = image_load($real_path);
   try {
     if (!empty($image)) {
@@ -923,12 +933,7 @@ function islandora_scale_thumbnail($file, $width, $height) {
     drupal_set_message(t(
         "Islandora failed to scale image with message: '@message'",
         array("@message" => $e->getMessage())));
-    watchdog(
-      'islandora',
-      'Islandora failed to scale image.<br/> With stack: @trace',
-      array('@trace' => $e->getTraceAsString()),
-      WATCHDOG_ERROR
-    );
+    \Drupal::logger('islandora')->error('Islandora failed to scale image.<br/> With stack: @trace', array('@trace' => $e->getTraceAsString()));
   }
   return FALSE;
 }
@@ -957,12 +962,12 @@ function islandora_deployed_on_windows() {
  *   The built edit registry array.
  */
 function islandora_build_datastream_edit_registry(AbstractDatastream $datastream) {
-  $edit_registry = module_invoke_all(ISLANDORA_EDIT_DATASTREAM_REGISTRY_HOOK, $datastream->parent, $datastream);
+  $edit_registry = \Drupal::moduleHandler()->invokeAll(ISLANDORA_EDIT_DATASTREAM_REGISTRY_HOOK, [$datastream->parent, $datastream]);
   $context = array(
     'object' => $datastream->parent,
     'datastream' => $datastream,
     'original_edit_registry' => $edit_registry,
   );
-  drupal_alter(ISLANDORA_EDIT_DATASTREAM_REGISTRY_HOOK, $edit_registry, $context);
+  \Drupal::moduleHandler()->alter(ISLANDORA_EDIT_DATASTREAM_REGISTRY_HOOK, $edit_registry, $context);
   return $edit_registry;
 }

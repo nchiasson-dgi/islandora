@@ -21,7 +21,7 @@
 function islandora_add_datastream_form(array $form, array &$form_state, AbstractObject $object) {
   module_load_include('inc', 'islandora', 'includes/content_model');
   module_load_include('inc', 'islandora', 'includes/utilities');
-  form_load_include($form_state, 'inc', 'islandora', 'includes/add_datastream.form');
+  $form_state->loadInclude('islandora', 'inc', 'includes/add_datastream.form');
   $form_state['object_id'] = $object->id;
 
   // @deprecated Storing objects in $form_state is asking for a bad time...
@@ -195,13 +195,13 @@ function islandora_add_datastream_form_submit(array $form, array &$form_state) {
     $ds = $object->constructDatastream($form_state['values']['dsid'], 'M');
     $ds->label = $form_state['values']['label'];
     $ds->mimetype = $file->filemime;
-    $path = drupal_realpath($file->uri);
+    $path = \Drupal::service("file_system")->realpath($file->uri);
     $ds->setContentFromFile($path);
     $object->ingestDatastream($ds);
     file_delete($file);
   }
   catch (exception $e) {
-    drupal_set_message(t('@message', array('@message' => check_plain($e->getMessage()))), 'error');
+    drupal_set_message(t('@message', array('@message' => \Drupal\Component\Utility\Html::escape($e->getMessage()))), 'error');
     // Make sure to delete anyways.
     file_delete($file);
     return;

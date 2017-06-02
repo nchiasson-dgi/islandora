@@ -129,13 +129,13 @@ class DublinCore {
             $value = $values;
           }
           $dc_label = explode(':', $field);
-          $element_label = drupal_ucfirst($dc_label[1]);
-          $i18n_object_id = drupal_strtolower($element_label);
+          $element_label = \Drupal\Component\Utility\Unicode::ucfirst($dc_label[1]);
+          $i18n_object_id = \Drupal\Component\Utility\Unicode::strtolower($element_label);
           $dc_array[$field]['label'] = function_exists('i18n_string') ?
             i18n_string("islandora:dc:{$i18n_object_id}:label", $element_label) :
             $element_label;
-          $dc_array[$field]['value'] = filter_xss($value);
-          $dc_array[$field]['class'] = drupal_strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $field));
+          $dc_array[$field]['value'] = \Drupal\Component\Utility\Xss::filter($value);
+          $dc_array[$field]['class'] = \Drupal\Component\Utility\Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $field));
           $dc_array[$field]['dcterms'] = preg_replace('/^dc/', 'dcterms', $field);
         }
       }
