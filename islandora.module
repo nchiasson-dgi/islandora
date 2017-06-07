@@ -768,8 +768,7 @@ function islandora_forms($form_id) {
  *   TRUE if the user is allowed to access this object/datastream, FALSE
  *   otherwise.
  */
-function islandora_user_access($object_or_datastream, array $permissions, $content_models = array(), $access_any = TRUE, $user = NULL) {
-
+function islandora_user_access_check($object_or_datastream, array $permissions, $content_models = array(), $access_any = TRUE, $user = NULL) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   $is_repository_accessible = &drupal_static(__FUNCTION__);
 
