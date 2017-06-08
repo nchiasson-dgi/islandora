@@ -435,7 +435,7 @@ function islandora_theme() {
     // Default object template.
     'islandora_default' => array(
       'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-object',
+      'template' => 'islandora-default',
       'variables' => array('islandora_object' => NULL),
     ),
     // Default edit page.
