@@ -25,11 +25,11 @@ islandora.view_default_object:
     _title: 'Islandora Repository'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_default_object'
   requirements:
-    _permission: 'ISLANDORA_VIEW_OBJECTS'
+    _permission: 'view fedora repository objects'
 islandora.view_object:
   path: '/islandora/object/{object}'
   defaults:
-    perms: 'ISLANDORA_VIEW_OBJECTS'
+    perms: 'view fedora repository objects'
     _title_callback: '\Drupal\islandora\Controller\DefaultController::islandora_drupal_title'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_object'
     object: 'root'
@@ -42,7 +42,7 @@ islandora.view_object:
 islandora.printer_object:
   path: '/islandora/object/{object}/print_object'
   defaults:
-    perms: 'ISLANDORA_VIEW_OBJECTS'
+    perms: 'view fedora repository objects'
     _title: 'Print Object'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_printer_object'
     object: ~
@@ -55,7 +55,7 @@ islandora.printer_object:
 islandora.print_object:
   path: '/islandora/object/{object}/print'
   defaults:
-    perms: 'ISLANDORA_VIEW_OBJECTS'
+    perms: 'view fedora repository objects'
     _title: 'Print Object'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_print_object'
     object: ~
@@ -151,7 +151,7 @@ islandora.view_datastream:
 islandora.download_datastream:
   path: '/islandora/object/%islandora_object/datastream/{datastream}/download'
   defaults:
-    perms: 'ISLANDORA_VIEW_OBJECTS'
+    perms: 'view fedora repository objects'
     _title: 'Download datastream'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_download_datastream'
   requirements:
