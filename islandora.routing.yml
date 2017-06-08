@@ -18,7 +18,7 @@ islandora.solution_packs_admin:
     _title: 'Solution packs required objects'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_solution_packs_admin'
   requirements:
-    _permission: 'ISLANDORA_ADD_DS'
+    _permission: 'add fedora datastreams'
 islandora.view_default_object:
   path: '/islandora'
   defaults:
@@ -69,11 +69,11 @@ islandora.manage_overview_object:
   path: '/islandora/object/{object}/manage'
   defaults:
     perms:
-      - 'ISLANDORA_MANAGE_PROPERTIES'
-      - 'ISLANDORA_METADATA_EDIT'
-      - 'ISLANDORA_ADD_DS'
-      - 'ISLANDORA_PURGE'
-      - 'ISLANDORA_INGEST'
+      - 'manage object properties'
+      - 'edit fedora metadata'
+      - 'add fedora datastreams'
+      - 'delete fedora objects and datastreams'
+      - 'ingest fedora objects'
     _title: 'Manage'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_manage_overview_object'
     object: ~
@@ -87,9 +87,9 @@ islandora.edit_object:
   path: '/islandora/object/{object}/manage/datastreams'
   defaults:
     perms:
-      - 'ISLANDORA_METADATA_EDIT'
-      - 'ISLANDORA_ADD_DS'
-      - 'ISLANDORA_PURGE'
+      - 'edit fedora metadata'
+      - 'add fedora datastreams'
+      - 'delete fedora objects and datastreams'
     _title: 'Datastreams'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_edit_object'
     object: ~
@@ -103,7 +103,7 @@ islandora.edit_object:
 islandora.object_properties_form:
   path: '/islandora/object/{object}/manage/properties'
   defaults:
-    perm: 'ISLANDORA_MANAGE_PROPERTIES'
+    perm: 'manage object properties'
     _title: 'Properties'
     _form: '\Drupal\islandora\Form\IslandoraObjectPropertiesForm'
   requirements:
@@ -111,7 +111,7 @@ islandora.object_properties_form:
 islandora.delete_object_form:
   path: '/islandora/object/{object}/delete'
   defaults:
-    perm: 'ISLANDORA_PURGE'
+    perm: 'delete fedora objects and datastreams'
     _title: 'Delete object'
     _form: '\Drupal\islandora\Form\IslandoraDeleteObjectForm'
   requirements:
@@ -119,7 +119,7 @@ islandora.delete_object_form:
 islandora.regenerate_object_derivatives_form:
   path: '/islandora/object/{object}/regenerate'
   defaults:
-    perm: 'ISLANDORA_REGENERATE_DERIVATIVES'
+    perm: 'regenerate derivatives for an object'
     _title: 'Regenerate all derivatives on an object'
     _form: '\Drupal\islandora\Form\IslandoraRegenerateObjectDerivativesForm'
   requirements:
@@ -127,7 +127,7 @@ islandora.regenerate_object_derivatives_form:
 islandora.add_datastream_form:
   path: '/islandora/object/{object}/manage/datastreams/add'
   defaults:
-    perm: 'ISLANDORA_ADD_DS'
+    perm: 'add fedora datastreams'
     _title: 'Add a datastream'
     _form: '\Drupal\islandora\Form\IslandoraAddDatastreamForm'
   requirements:
@@ -135,14 +135,14 @@ islandora.add_datastream_form:
 islandora.add_datastream_form_autocomplete_callback:
   path: '/islandora/object/{object}/manage/datastreams/add/autocomplete'
   defaults:
-    perm: 'ISLANDORA_ADD_DS'
+    perm: 'add fedora datastreams'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_add_datastream_form_autocomplete_callback'
   requirements:
     _custom_access: '\Drupal\islandora\Controller\DefaultController::islandora_object_access_callback'
 islandora.view_datastream:
   path: '/islandora/object/{object}/datastream/{datastream}'
   defaults:
-    perms: 'ISLANDORA_VIEW_DATASTREAM_HISTORY'
+    perms: 'view old datastream versions'
     download: false
     _title: 'View datastream'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_datastream'
@@ -159,7 +159,7 @@ islandora.download_datastream:
 islandora.edit_datastream:
   path: '/islandora/object/%islandora_object/datastream/{datastream}/edit'
   defaults:
-    perms: 'ISLANDORA_METADATA_EDIT'
+    perms: 'edit fedora metadata'
     _title: 'Edit datastream'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_edit_datastream'
   requirements:
@@ -167,7 +167,7 @@ islandora.edit_datastream:
 islandora.delete_datastream_form:
   path: '/islandora/object/%islandora_object/datastream/{datastream}/delete'
   defaults:
-    perms: 'ISLANDORA_PURGE'
+    perms: 'delete fedora objects and datastreams'
     _title: 'Delete data stream'
     _form: '\Drupal\islandora\Form\IslandoraDeleteDatastreamForm'
   requirements:
@@ -175,7 +175,7 @@ islandora.delete_datastream_form:
 islandora.datastream_version_table:
   path: '/islandora/object/%islandora_object/datastream/{datastream}/version'
   defaults:
-    perms: 'ISLANDORA_VIEW_DATASTREAM_HISTORY'
+    perms: 'view old datastream versions'
     _title: 'Datastream Versions'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_datastream_version_table'
   requirements:
@@ -183,7 +183,7 @@ islandora.datastream_version_table:
 islandora.datastream_version_replace_form:
   path: '/islandora/object/%islandora_object/datastream/{datastream}/replace'
   defaults:
-    perms: 'ISLANDORA_REPLACE_DATASTREAM_CONTENT'
+    perms: 'replace a datastream with new content, preserving version history'
     _title: 'Replace Datastream'
     _form: '\Drupal\islandora\Form\IslandoraDatastreamVersionReplaceForm'
   requirements:
@@ -191,7 +191,7 @@ islandora.datastream_version_replace_form:
 islandora.delete_datastream_version_form:
   path: '/islandora/object/%islandora_object/datastream/{datastream}/version/{version}/delete'
   defaults:
-    perms: 'ISLANDORA_PURGE'
+    perms: 'delete fedora objects and datastreams'
     _title: 'Delete datastream version'
     _form: '\Drupal\islandora\Form\IslandoraDeleteDatastreamVersionForm'
   requirements:
@@ -199,7 +199,7 @@ islandora.delete_datastream_version_form:
 islandora.revert_datastream_version_form:
   path: '/islandora/object/%islandora_object/datastream/{datastream}/version/{version}/revert'
   defaults:
-    perms: 'ISLANDORA_REVERT_DATASTREAM'
+    perms: 'revert to old datastream'
     _title: 'Revert to datastream version'
     _form: '\Drupal\islandora\Form\IslandoraRevertDatastreamVersionForm'
   requirements:
@@ -207,7 +207,7 @@ islandora.revert_datastream_version_form:
 islandora.regenerate_datastream_derivative_form:
   path: '/islandora/object/%islandora_object/datastream/{datastream}/regenerate'
   defaults:
-    perms: 'ISLANDORA_REGENERATE_DERIVATIVES'
+    perms: 'regenerate derivatives for an object'
     _title: 'Regenrate datastream derivative'
     _form: '\Drupal\islandora\Form\IslandoraRegenerateDatastreamDerivativeForm'
   requirements:
@@ -239,11 +239,11 @@ islandora.deleted_objects_prep_form:
     _title: 'Manage Deleted Objects'
     _form: '\Drupal\islandora\Form\IslandoraDeletedObjectsPrepForm'
   requirements:
-    _permission: 'ISLANDORA_MANAGE_DELETED_OBJECTS'
+    _permission: 'manage deleted objects'
 islandora.deleted_objects_manage_form:
   path: '/admin/islandora/restore/manage'
   defaults:
     _title: 'Manage Deleted Objects'
     _form: '\Drupal\islandora\Form\IslandoraDeletedObjectsManageForm'
   requirements:
-    _permission: 'ISLANDORA_MANAGE_DELETED_OBJECTS'
+    _permission: 'manage deleted objects'
