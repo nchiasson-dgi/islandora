@@ -1,4 +1,4 @@
-# Islandora [![Build Status](https://travis-ci.org/Islandora/islandora.png?branch=7.x)](https://travis-ci.org/Islandora/islandora)
+# Islandora
 
 ## Introduction
 
@@ -60,12 +60,6 @@ Having problems or solved a problem? Check out the Islandora google groups for a
 * [Islandora Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/islandora)
 * [Islandora Dev Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/islandora-dev)
 
-## Maintainers/Sponsors
-
-Current maintainers:
-
-* [Diego Pino](https://github.com/DiegoPino)
-
 ## Development
 
 If you would like to contribute to this module, please check out [CONTRIBUTING.md](CONTRIBUTING.md). In addition, we have helpful [Documentation for Developers](https://github.com/Islandora/islandora/wiki#wiki-documentation-for-developers) info, as well as our [Developers](http://islandora.ca/developers) section on the [Islandora.ca](http://islandora.ca) site.
@@ -73,4 +67,3 @@ If you would like to contribute to this module, please check out [CONTRIBUTING.m
 ## License
 
 [GPLv3](http://www.gnu.org/licenses/gpl-3.0.txt)
-
