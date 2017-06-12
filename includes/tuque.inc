@@ -71,13 +71,14 @@ class IslandoraTuque {
       $user = \Drupal::currentUser();
     }
 
-    if ($user->uid == 0) {
+    if ($user->isAnonymous()) {
       $user_string = 'anonymous';
       $pass_string = 'anonymous';
     }
     else {
-      $user_string = $user->name;
-      $pass_string = $user->pass;
+      $user_entity = \Drupal\user\Entity\User::load($user->id());
+      $user_string = $user_entity->getAccountName();
+      $pass_string = $user_entity->getPassword();
     }
 
     if (!isset($url)) {
