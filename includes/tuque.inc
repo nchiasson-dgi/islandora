@@ -68,16 +68,17 @@ class IslandoraTuque {
    */
   public function __construct($user = NULL, $url = NULL) {
     if (!isset($user)) {
-      $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+      $user = \Drupal::currentUser();
     }
 
-    if ($user->id() == 0) {
+    if ($user->isAnonymous()) {
       $user_string = 'anonymous';
       $pass_string = 'anonymous';
     }
     else {
-      $user_string = $user->getAccountName();
-      $pass_string = $user->getPassword();
+      $user_entity = \Drupal\user\Entity\User::load($user->id());
+      $user_string = $user_entity->getAccountName();
+      $pass_string = $user_entity->getPassword();
     }
 
     if (!isset($url)) {
