@@ -22,6 +22,8 @@ class IslandoraDeletedObjectsPrepForm extends FormBase {
 
   public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state, $serialized_chosen = NULL) {
     module_load_include('inc', 'islandora', 'includes/utilities');
+    module_load_include('inc', 'islandora', 'includes/manage_deleted_objects');
+
     $chosen_contentmodels = [];
     if ($serialized_chosen) {
       $chosen_contentmodels = unserialize($serialized_chosen);

@@ -143,8 +143,8 @@ function islandora_deleted_objects_manage_form($form, $form_state, $serialized_c
 // Calling _theme() directly can alter the expected output and potentially
 // introduce security issues (see https://www.drupal.org/node/2195739). You
 // should use renderable arrays instead.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2195739
 // $form['pager'] = array(
 //     '#type' => 'markup',
@@ -270,7 +270,7 @@ function islandora_get_deleted_objects($content_models, $limit, $offset) {
  *   array of content model pids
  */
 function islandora_get_contentmodels_with_deleted_members() {
-  $tuque = new IslandoraTuque();
+  $tuque = islandora_get_tuque_connection();
   $repository = $tuque->repository;
   $query = "PREFIX fm: <info:fedora/fedora-system:def/model#>
     SELECT DISTINCT ?object ?label FROM <#ri>
