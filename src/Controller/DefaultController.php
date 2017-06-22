@@ -18,6 +18,8 @@ class DefaultController extends ControllerBase {
 
   public function islandora_solution_packs_admin() {
     module_load_include('inc', 'islandora', 'includes/utilities');
+    module_load_include('inc', 'islandora', 'includes/solution_packs');
+
     if (!islandora_describe_repository()) {
       islandora_display_repository_inaccessible_message();
       return '';
