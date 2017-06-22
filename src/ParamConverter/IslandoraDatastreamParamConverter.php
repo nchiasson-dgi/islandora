@@ -12,7 +12,6 @@ class IslandoraDatastreamParamConverter implements ParamConverterInterface {
     // in Drupal as defaults this needs to be the case. If it's possible to get
     // around this by making the empty slug route in YAML or a custom Routing
     // object we can remove this.
-    //$object = ?
     return islandora_datastream_load($value, $defaults['object']->id);
   }
 

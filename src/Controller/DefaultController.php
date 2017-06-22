@@ -1,5 +1,4 @@
-<?php
-/**
+<?php /**
  * @file
  * Contains \Drupal\islandora\Controller\DefaultController.
  */
@@ -10,6 +9,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
 use AbstractObject;
+use AbstractDatastream;
 
 /**
  * Default controller for the islandora module.
@@ -49,7 +49,7 @@ class DefaultController extends ControllerBase {
     return $this->redirect('islandora.view_object', array('object' => $pid));
   }
 
-  public function islandora_drupal_title($object) {
+  public function islandora_drupal_title(AbstractObject $object) {
     module_load_include('inc', 'islandora', 'includes/breadcrumb');
     //drupal_set_breadcrumb(islandora_get_breadcrumbs($object));
 
@@ -65,7 +65,7 @@ class DefaultController extends ControllerBase {
     return AccessResult::allowedIf(islandora_object_access($perm, $object, $account));
   }
 
-  public function islandora_view_object($object) {
+  public function islandora_view_object(AbstractObject $object) {
     module_load_include('inc', 'islandora', 'includes/breadcrumb');
     module_load_include('inc', 'islandora', 'includes/utilities');
     // XXX: This seems so very dumb but given how empty slugs don't play nice
@@ -259,7 +259,7 @@ class DefaultController extends ControllerBase {
       $dsids = array_filter($dsids, $filter);
     }
     drupal_json_output($dsids);
-    drupal_set_message();
+
   }
 
   public function islandora_datastream_access($op, $datastream, $user = NULL, AccountInterface $account) {
@@ -299,10 +299,10 @@ class DefaultController extends ControllerBase {
     return $cache[$op][$datastream->parent->id][$datastream->id][$user->uid];
   }
 
-  public function islandora_view_datastream($object, $datastream, $download = FALSE, $version = NULL) {
+  public function islandora_view_datastream($object, AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
     module_load_include('inc', 'islandora', 'includes/mimetype.utils');
     module_load_include('inc', 'islandora', 'includes/datastream');
-    $datastream = islandora_datastream_load($datastream, $object);
+    //$datastream = islandora_datastream_load($datastream, $object);
     // XXX: Certain features of the Devel module rely on the use of "shutdown
     // handlers", such as query logging... The problem is that they might blindly
     // add additional output which will break things if what is actually being
@@ -349,8 +349,6 @@ class DefaultController extends ControllerBase {
     }
     islandora_view_datastream_set_cache_headers($datastream);
 
-    //drupal_page_is_cacheable(FALSE);
-
     // New content needed.
     if ($cache_check === 200) {
       // We need to see if the chunking is being requested. This will mainly
@@ -379,11 +377,11 @@ class DefaultController extends ControllerBase {
     exit();
   }
 
-  public function islandora_download_datastream($datastream) {
+  public function islandora_download_datastream(AbstractDatastream $datastream) {
     islandora_view_datastream($datastream, TRUE);
   }
 
-  public function islandora_edit_datastream($datastream) {
+  public function islandora_edit_datastream(AbstractDatastream $datastream) {
     module_load_include('inc', 'islandora', 'includes/utilities');
 
     $edit_registry = islandora_build_datastream_edit_registry($datastream);
@@ -407,7 +405,7 @@ class DefaultController extends ControllerBase {
     }
   }
 
-  public function islandora_datastream_version_table($datastream) {
+  public function islandora_datastream_version_table(AbstractDatastream $datastream) {
     module_load_include('inc', 'islandora', 'includes/datastream');
     module_load_include('inc', 'islandora', 'includes/utilities');
     $parent = $datastream->parent;
