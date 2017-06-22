@@ -302,7 +302,7 @@ class DefaultController extends ControllerBase {
   public function islandora_view_datastream($object, AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
     module_load_include('inc', 'islandora', 'includes/mimetype.utils');
     module_load_include('inc', 'islandora', 'includes/datastream');
-    //$datastream = islandora_datastream_load($datastream, $object);
+
     // XXX: Certain features of the Devel module rely on the use of "shutdown
     // handlers", such as query logging... The problem is that they might blindly
     // add additional output which will break things if what is actually being
