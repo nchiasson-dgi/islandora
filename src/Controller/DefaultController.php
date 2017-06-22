@@ -1,4 +1,5 @@
-<?php /**
+<?php
+/**
  * @file
  * Contains \Drupal\islandora\Controller\DefaultController.
  */
@@ -8,6 +9,7 @@ namespace Drupal\islandora\Controller;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
+use AbstractObject;
 
 /**
  * Default controller for the islandora module.
