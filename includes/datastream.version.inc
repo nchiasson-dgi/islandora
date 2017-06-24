@@ -15,8 +15,8 @@ function islandora_datastream_version_table($datastream) {
   // @FIXME
 // drupal_set_title() has been removed. There are now a few ways to set the title
 // dynamically, depending on the situation.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2067859
 // drupal_set_title(t("@dsid Previous Versions", array('@dsid' => $datastream->id)));
 
@@ -42,7 +42,7 @@ function islandora_datastream_version_table($datastream) {
     }
     $user = user_load_by_name($reponsibility);
     if ($user) {
-      $user_id = $user->uid;
+      $user_id = $user->id();
       // @FIXME
 // l() expects a Url object, created from a route name or external URI.
 // $user_val = l($reponsibility, "user/$user_id");
@@ -56,8 +56,8 @@ function islandora_datastream_version_table($datastream) {
 // Calling _theme() directly can alter the expected output and potentially
 // introduce security issues (see https://www.drupal.org/node/2195739). You
 // should use renderable arrays instead.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2195739
 // $row[] = array(
 //       'class' => 'datastream-date',
@@ -89,8 +89,8 @@ function islandora_datastream_version_table($datastream) {
 // Calling _theme() directly can alter the expected output and potentially
 // introduce security issues (see https://www.drupal.org/node/2195739). You
 // should use renderable arrays instead.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2195739
 // $row[] = array(
 //       'class' => 'datastream-delete',
@@ -105,8 +105,8 @@ function islandora_datastream_version_table($datastream) {
 // Calling _theme() directly can alter the expected output and potentially
 // introduce security issues (see https://www.drupal.org/node/2195739). You
 // should use renderable arrays instead.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2195739
 // $row[] = array(
 //       'class' => 'datastream-revert',
@@ -124,8 +124,8 @@ function islandora_datastream_version_table($datastream) {
 // Calling _theme() directly can alter the expected output and potentially
 // introduce security issues (see https://www.drupal.org/node/2195739). You
 // should use renderable arrays instead.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2195739
 // return theme('table', array('header' => $header, 'rows' => $rows));
 

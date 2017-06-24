@@ -40,7 +40,7 @@ function islandora_get_object_token($pid, $dsid, $uses = 1) {
   $id = db_insert("islandora_authtokens")->fields(
     array(
       'token' => $token,
-      'uid' => $user->uid,
+      'uid' => $user->id(),
       'pid' => $pid,
       'dsid' => $dsid,
       'time' => $time,
