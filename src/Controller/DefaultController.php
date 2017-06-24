@@ -299,7 +299,7 @@ class DefaultController extends ControllerBase {
     return $cache[$op][$datastream->parent->id][$datastream->id][$user->uid];
   }
 
-  public function islandora_view_datastream($object, AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
+  public function islandora_view_datastream(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
     module_load_include('inc', 'islandora', 'includes/mimetype.utils');
     module_load_include('inc', 'islandora', 'includes/datastream');
 
