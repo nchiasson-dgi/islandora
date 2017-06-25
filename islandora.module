@@ -404,9 +404,7 @@ function islandora_forms($form_id) {
  * user permissions, content models.
  *
  * Will check the given user or the user repersented by the GET token parameter,
- * failing that it will use the global user.
- *
- * @global $user
+ * failing that it will use the current user.
  *
  * @param mixed $object_or_datastream
  *   The AbstractObject or AbstractDatastream to test for accessibility, if NULL
@@ -1366,8 +1364,8 @@ function islandora_file_mimetype_mapping_alter(&$mapping) {
  *   permission declared via hook_permission().
  * @param AbstractObject $object
  *   An object to check for permissions.
- * @param object $user
- *   An optional loaded user object. Defaults to the global $user.
+ * @param object $account
+ *   An optional loaded user object. Defaults to the current user.
  *
  * @return bool
  *   TRUE if at least one implementation of hook_islandora_object_access()
