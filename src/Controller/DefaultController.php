@@ -1,5 +1,4 @@
-<?php
-/**
+<?php /**
  * @file
  * Contains \Drupal\islandora\Controller\DefaultController.
  */
@@ -10,6 +9,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
 use AbstractObject;
+use AbstractDatastream;
 
 /**
  * Default controller for the islandora module.
@@ -261,6 +261,7 @@ class DefaultController extends ControllerBase {
       $dsids = array_filter($dsids, $filter);
     }
     drupal_json_output($dsids);
+
   }
 
   public function islandora_datastream_access($op, $datastream, $user = NULL, AccountInterface $account) {
@@ -302,6 +303,8 @@ class DefaultController extends ControllerBase {
 
   public function islandora_view_datastream(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
     module_load_include('inc', 'islandora', 'includes/mimetype.utils');
+    module_load_include('inc', 'islandora', 'includes/datastream');
+
     // XXX: Certain features of the Devel module rely on the use of "shutdown
     // handlers", such as query logging... The problem is that they might blindly
     // add additional output which will break things if what is actually being
@@ -347,8 +350,6 @@ class DefaultController extends ControllerBase {
       }
     }
     islandora_view_datastream_set_cache_headers($datastream);
-
-    drupal_page_is_cacheable(FALSE);
 
     // New content needed.
     if ($cache_check === 200) {
@@ -406,7 +407,7 @@ class DefaultController extends ControllerBase {
     }
   }
 
-  public function islandora_datastream_version_table($datastream) {
+  public function islandora_datastream_version_table(AbstractDatastream $datastream) {
     module_load_include('inc', 'islandora', 'includes/datastream');
     module_load_include('inc', 'islandora', 'includes/utilities');
     $parent = $datastream->parent;

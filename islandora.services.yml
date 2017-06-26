@@ -7,3 +7,11 @@ services:
     class: Drupal\islandora\Access\IslandoraObjectAccess
     tags:
       - { name: access_check, applies_to: _islandora_object_access }
+  datastream:
+    class: Drupal\islandora\ParamConverter\IslandoraDatastreamParamConverter
+    tags:
+      - { name: paramconverter }
+  access_check.datastream:
+    class: Drupal\islandora\Access\IslandoraDatastreamAccess
+    tags:
+      - { name: access_check, applies_to: _islandora_datastream_access }

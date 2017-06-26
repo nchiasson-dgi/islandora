@@ -26,6 +26,19 @@ islandora.view_default_object:
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_default_object'
   requirements:
     _permission: 'view fedora repository objects'
+islandora.view_root_object:
+  path: '/islandora/object'
+  defaults:
+    perms: 'view fedora repository objects'
+    _title_callback: '\Drupal\islandora\Controller\DefaultController::islandora_drupal_title'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_object'
+    object: 'root'
+  requirements:
+    _islandora_object_access: '{object}'
+  options:
+    parameters:
+      object:
+        type: object
 islandora.view_object:
   path: '/islandora/object/{object}'
   defaults:
@@ -132,6 +145,10 @@ islandora.add_datastream_form:
     _form: '\Drupal\islandora\Form\IslandoraAddDatastreamForm'
   requirements:
     _custom_access: '\Drupal\islandora\Form\IslandoraAddDatastreamForm::islandora_object_access_callback'
+  options:
+    parameters:
+      object:
+        type: object
 islandora.add_datastream_form_autocomplete_callback:
   path: '/islandora/object/{object}/manage/datastreams/add/autocomplete'
   defaults:
@@ -147,71 +164,125 @@ islandora.view_datastream:
     _title: 'View datastream'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_datastream'
   requirements:
-    _custom_access: '\Drupal\islandora\Controller\DefaultController::islandora_datastream_access'
+    _islandora_object_access: '{object}'
+    _islandora_datastream_access: '{datastream}'
+  options:
+    parameters:
+      object:
+        type: object
+      datastream:
+        type: datastream
 islandora.download_datastream:
-  path: '/islandora/object/%islandora_object/datastream/{datastream}/download'
+  path: '/islandora/object/{object}/datastream/{datastream}/download'
   defaults:
     perms: 'view fedora repository objects'
     _title: 'Download datastream'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_download_datastream'
-  requirements:
-    _custom_access: '\Drupal\islandora\Controller\DefaultController::islandora_datastream_access'
+  options:
+    parameters:
+      object:
+        type: object
+      datastream:
+        type: datastream
 islandora.edit_datastream:
-  path: '/islandora/object/%islandora_object/datastream/{datastream}/edit'
+  path: '/islandora/object/{object}/datastream/{datastream}/edit'
   defaults:
     perms: 'edit fedora metadata'
     _title: 'Edit datastream'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_edit_datastream'
   requirements:
-    _custom_access: '\Drupal\islandora\Controller\DefaultController::islandora_datastream_access'
+    _islandora_object_access: '{object}'
+    _islandora_datastream_access: '{datastream}'
+  options:
+    parameters:
+      object:
+        type: object
+      datastream:
+        type: datastream
 islandora.delete_datastream_form:
-  path: '/islandora/object/%islandora_object/datastream/{datastream}/delete'
+  path: '/islandora/object/{object}/datastream/{datastream}/delete'
   defaults:
     perms: 'delete fedora objects and datastreams'
     _title: 'Delete data stream'
     _form: '\Drupal\islandora\Form\IslandoraDeleteDatastreamForm'
   requirements:
     _custom_access: '\Drupal\islandora\Form\IslandoraDeleteDatastreamForm::islandora_datastream_access'
+  options:
+    parameters:
+      object:
+        type: object
+      datastream:
+        type: datastream
 islandora.datastream_version_table:
-  path: '/islandora/object/%islandora_object/datastream/{datastream}/version'
+  path: '/islandora/object/{object}/datastream/{datastream}/version'
   defaults:
     perms: 'view old datastream versions'
     _title: 'Datastream Versions'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_datastream_version_table'
   requirements:
     _custom_access: '\Drupal\islandora\Controller\DefaultController::islandora_datastream_access'
+  options:
+    parameters:
+      object:
+        type: object
+      datastream:
+        type: datastream
 islandora.datastream_version_replace_form:
-  path: '/islandora/object/%islandora_object/datastream/{datastream}/replace'
+  path: '/islandora/object/{object}/datastream/{datastream}/replace'
   defaults:
     perms: 'replace a datastream with new content, preserving version history'
     _title: 'Replace Datastream'
     _form: '\Drupal\islandora\Form\IslandoraDatastreamVersionReplaceForm'
   requirements:
     _custom_access: '\Drupal\islandora\Form\IslandoraDatastreamVersionReplaceForm::islandora_datastream_access'
+  options:
+    parameters:
+      object:
+        type: object
+      datastream:
+        type: datastream
 islandora.delete_datastream_version_form:
-  path: '/islandora/object/%islandora_object/datastream/{datastream}/version/{version}/delete'
+  path: '/islandora/object/{object}/datastream/{datastream}/version/{version}/delete'
   defaults:
     perms: 'delete fedora objects and datastreams'
     _title: 'Delete datastream version'
     _form: '\Drupal\islandora\Form\IslandoraDeleteDatastreamVersionForm'
   requirements:
     _custom_access: '\Drupal\islandora\Form\IslandoraDeleteDatastreamVersionForm::islandora_datastream_access'
+  options:
+    parameters:
+      object:
+        type: object
+      datastream:
+        type: datastream
 islandora.revert_datastream_version_form:
-  path: '/islandora/object/%islandora_object/datastream/{datastream}/version/{version}/revert'
+  path: '/islandora/object/{object}/datastream/{datastream}/version/{version}/revert'
   defaults:
     perms: 'revert to old datastream'
     _title: 'Revert to datastream version'
     _form: '\Drupal\islandora\Form\IslandoraRevertDatastreamVersionForm'
   requirements:
     _custom_access: '\Drupal\islandora\Form\IslandoraRevertDatastreamVersionForm::islandora_datastream_access'
+  options:
+    parameters:
+      object:
+        type: object
+      datastream:
+        type: datastream
 islandora.regenerate_datastream_derivative_form:
-  path: '/islandora/object/%islandora_object/datastream/{datastream}/regenerate'
+  path: '/islandora/object/{object}/datastream/{datastream}/regenerate'
   defaults:
     perms: 'regenerate derivatives for an object'
     _title: 'Regenrate datastream derivative'
     _form: '\Drupal\islandora\Form\IslandoraRegenerateDatastreamDerivativeForm'
   requirements:
     _custom_access: '\Drupal\islandora\Form\IslandoraRegenerateDatastreamDerivativeForm::islandora_datastream_access'
+  options:
+    parameters:
+      object:
+        type: object
+      datastream:
+        type: datastream
 islandora.event_status:
   path: '/islandora/event-status'
   defaults:
