@@ -158,7 +158,7 @@ class DefaultController extends ControllerBase {
     }
 
     // Populate the cache on a miss.
-    if (!isset($cache[$op][$object->id][$user->uid])) {
+    if (!isset($cache[$op][$object->id][$user->id()])) {
       module_load_include('inc', 'islandora', 'includes/utilities');
 
       $results = islandora_invoke_hook_list('islandora_object_access', $object->models, [
@@ -167,10 +167,10 @@ class DefaultController extends ControllerBase {
         $user,
       ]);
       // Nothing returned FALSE, and something returned TRUE.
-      $cache[$op][$object->id][$user->uid] = (!in_array(FALSE, $results, TRUE) && in_array(TRUE, $results, TRUE));
+      $cache[$op][$object->id][$user->id()] = (!in_array(FALSE, $results, TRUE) && in_array(TRUE, $results, TRUE));
     }
     ksm($cache);
-    return $cache[$op][$object->id][$user->uid];
+    return $cache[$op][$object->id][$user->id()];
   }
 
   public function islandora_print_object(AbstractObject $object) {
@@ -276,7 +276,7 @@ class DefaultController extends ControllerBase {
     }
 
     // Populate the cache on a miss.
-    if (!isset($cache[$op][$datastream->parent->id][$datastream->id][$user->uid])) {
+    if (!isset($cache[$op][$datastream->parent->id][$datastream->id][$user->id()])) {
       module_load_include('inc', 'islandora', 'includes/utilities');
       $object_results = islandora_invoke_hook_list('islandora_object_access', $datastream->parent->models, [
         $op,
@@ -292,12 +292,12 @@ class DefaultController extends ControllerBase {
 
       // The datastream check returned FALSE, and one in the object or datastream
       // checks returned TRUE.
-      $cache[$op][$datastream->parent->id][$datastream->id][$user->uid] = (
+      $cache[$op][$datastream->parent->id][$datastream->id][$user->id()] = (
         !in_array(FALSE, $datastream_results, TRUE) && (in_array(TRUE, $object_results, TRUE) || in_array(TRUE, $datastream_results, TRUE))
         );
     }
 
-    return $cache[$op][$datastream->parent->id][$datastream->id][$user->uid];
+    return $cache[$op][$datastream->parent->id][$datastream->id][$user->id()];
   }
 
   public function islandora_view_datastream(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
@@ -440,7 +440,7 @@ class DefaultController extends ControllerBase {
       }
       $user = user_load_by_name($reponsibility);
       if ($user) {
-        $user_id = $user->uid;
+        $user_id = $user->id();
         // @FIXME
         // l() expects a Url object, created from a route name or external URI.
         // $user_val = l($reponsibility, "user/$user_id");

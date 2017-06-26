@@ -404,9 +404,7 @@ function islandora_forms($form_id) {
  * user permissions, content models.
  *
  * Will check the given user or the user repersented by the GET token parameter,
- * failing that it will use the global user.
- *
- * @global $user
+ * failing that it will use the current user.
  *
  * @param mixed $object_or_datastream
  *   The AbstractObject or AbstractDatastream to test for accessibility, if NULL
@@ -462,7 +460,7 @@ function islandora_user_access_check($object_or_datastream, array $permissions, 
       module_load_include('inc', 'islandora', 'includes/authtokens');
       $token_user = islandora_validate_object_token($object->id, $datastream->id, $token);
       if ($user) {
-        $user = \Drupal::entityManager()->getStorage('user')->load($token_user->uid);
+        $user = \Drupal::entityManager()->getStorage('user')->load($token_user->id());
       }
     }
     else {
@@ -554,7 +552,7 @@ function islandora_object_datastream_tokened_access_callback($perm, $object = NU
   if ($token) {
     $user = islandora_validate_object_token($object->id, $datastream->id, $token);
     if ($user) {
-      $token_account = \Drupal::entityManager()->getStorage('user')->load($user->uid);
+      $token_account = \Drupal::entityManager()->getStorage('user')->load($user->id());
     }
   }
 
@@ -979,7 +977,7 @@ function islandora_tokened_object_load($object_id, $map) {
     if ($token) {
       module_load_include('inc', 'islandora', 'includes/authtokens');
       $token_user = islandora_validate_object_token($object_id, $map[4], $token);
-      $token_user = $token_user ? \Drupal::entityManager()->getStorage('user')->load($token_user->uid) : NULL;
+      $token_user = $token_user ? \Drupal::entityManager()->getStorage('user')->load($token_user->id()) : NULL;
       islandora_get_tuque_connection($token_user);
     }
   }
@@ -1366,8 +1364,8 @@ function islandora_file_mimetype_mapping_alter(&$mapping) {
  *   permission declared via hook_permission().
  * @param AbstractObject $object
  *   An object to check for permissions.
- * @param object $user
- *   An optional loaded user object. Defaults to the global $user.
+ * @param object $account
+ *   An optional loaded user object. Defaults to the current user.
  *
  * @return bool
  *   TRUE if at least one implementation of hook_islandora_object_access()
@@ -1413,7 +1411,6 @@ function islandora_islandora_object_access($op, $object, $user) {
  */
 function islandora_datastream_access($op, $datastream, $user = NULL) {
   $cache = &drupal_static(__FUNCTION__);
-
   if (!is_object($datastream)) {
     // The object could not be loaded... Presumably, we don't have
     // permission.
@@ -1424,7 +1421,7 @@ function islandora_datastream_access($op, $datastream, $user = NULL) {
   }
 
   // Populate the cache on a miss.
-  if (!isset($cache[$op][$datastream->parent->id][$datastream->id][$user->uid])) {
+  if (!isset($cache[$op][$datastream->parent->id][$datastream->id][$user->id()])) {
     module_load_include('inc', 'islandora', 'includes/utilities');
     $object_results = islandora_invoke_hook_list('islandora_object_access', $datastream->parent->models, array(
       $op,
@@ -1440,13 +1437,13 @@ function islandora_datastream_access($op, $datastream, $user = NULL) {
 
     // The datastream check returned FALSE, and one in the object or datastream
     // checks returned TRUE.
-    $cache[$op][$datastream->parent->id][$datastream->id][$user->uid] = (
+    $cache[$op][$datastream->parent->id][$datastream->id][$user->id()] = (
       !in_array(FALSE, $datastream_results, TRUE) &&
       (in_array(TRUE, $object_results, TRUE) || in_array(TRUE, $datastream_results, TRUE))
     );
   }
 
-  return $cache[$op][$datastream->parent->id][$datastream->id][$user->uid];
+  return $cache[$op][$datastream->parent->id][$datastream->id][$user->id()];
 }
 
 /**

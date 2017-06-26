@@ -36,8 +36,8 @@ function hook_islandora_view_object($object, $user, $page_number, $page_size) {
 // Calling _theme() directly can alter the expected output and potentially
 // introduce security issues (see https://www.drupal.org/node/2195739). You
 // should use renderable arrays instead.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2195739
 // $variables['islandora_img'] = theme('image', $params);
 
@@ -46,8 +46,8 @@ function hook_islandora_view_object($object, $user, $page_number, $page_size) {
 // Calling _theme() directly can alter the expected output and potentially
 // introduce security issues (see https://www.drupal.org/node/2195739). You
 // should use renderable arrays instead.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2195739
 // $output = theme('islandora_default_print', array(
     'islandora_content' => $variables['islandora_img']));
@@ -576,7 +576,7 @@ function hook_cmodel_pid_islandora_ingest_steps_alter(array &$steps, array &$for
  * @param AbstractObject $object
  *   An object to check the operation on.
  * @param object $user
- *   A loaded user object, as the global $user variable might contain.
+ *   A loaded user object.
  *
  * @return bool|NULL|array
  *   Either boolean TRUE or FALSE to explicitly allow or deny the operation on
@@ -615,7 +615,7 @@ function hook_cmodel_pid_islandora_object_access($op, $object, $user) {
  * @param AbstractDatastream $object
  *   An object to check the operation on.
  * @param object $user
- *   A loaded user object, as the global $user variable might contain.
+ *   A loaded user object.
  *
  * @return bool|NULL|array
  *   Either boolean TRUE or FALSE to explicitly allow or deny the operation on
