@@ -5,6 +5,8 @@
  * Mimetype specific utility functions.
  */
 
+use Drupal\islandora\IslandoraMimeTypeMapper;
+
 /**
  * Retrieve the correct file extension for a give mimetype.
  *
@@ -12,27 +14,11 @@
  *   The mimetype whose extension is required.
  *
  * @return string
- *   The extension mapped to the given mimetype. Defaults to 'bin'.
+ *   The extension mapped to the given mimetype.
  */
 function islandora_get_extension_for_mimetype($mimetype) {
-  // file.mimetypes.inc is a part of Drupal core, however is not
-  // automatically loaded. Manually require it.
-  require_once \Drupal::root() . "/includes/file.mimetypes.inc";
-  $extension = 'bin';
-  $mimetype_mapping = file_mimetype_mapping();
-  $extension_index = array_search($mimetype, $mimetype_mapping['mimetypes']);
-  if ($extension_index !== FALSE) {
-    // Reversing such that any altered values take precedence over the default
-    // mappings.
-    $mime_array_flipped = array_reverse($mimetype_mapping['extensions']);
-    $extension = array_search($extension_index, $mime_array_flipped);
-  }
-
-  // We can only have one mapping in drupal for 'xml'.
-  if ($mimetype == "text/xml") {
-    return "xml";
-  }
-  return $extension;
+  $mapper = new IslandoraMimeTypeMapper(\Drupal::service('file.mime_type.guesser'));
+  return reset($mapper->getExtensionsForMimeType($mimetype));
 }
 
 /**
@@ -45,20 +31,8 @@ function islandora_get_extension_for_mimetype($mimetype) {
  *   All known legal extensions.
  */
 function islandora_get_extensions_for_mimetype($mimetype) {
-  // file.mimetypes.inc is a part of Drupal core, however is not
-  // automatically loaded. Manually require it.
-  require_once \Drupal::root() . "/includes/file.mimetypes.inc";
-  $mimetype_mapping = file_mimetype_mapping();
-  $index = array_search($mimetype, $mimetype_mapping['mimetypes']);
-  $extensions = array();
-  if ($index !== FALSE) {
-    $extensions = array_keys($mimetype_mapping['extensions'], $index);
-  }
-  // We can only have one mapping in drupal for 'xml'.
-  if ($mimetype == "text/xml") {
-    $extensions[] = 'xml';
-  }
-  return $extensions;
+  $mapper = new IslandoraMimeTypeMapper(\Drupal::service('file.mime_type.guesser'));
+  return $mapper->getExtensionsForMimeType($mimetype);
 }
 
 /**
@@ -75,14 +49,14 @@ function islandora_get_extensions_for_mimetype($mimetype) {
 function islandora_get_extensions_for_datastream(AbstractObject $object, $dsid) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   $datastream_mime_map = islandora_get_datastreams_requirements_from_models($object->models);
-  $mimes = isset($datastream_mime_map[$dsid]) ? $datastream_mime_map[$dsid]['mime'] : array();
+  $mimes = isset($datastream_mime_map[$dsid]) ? $datastream_mime_map[$dsid]['mime'] : [];
   if (isset($object[$dsid])) {
     $current_mime = $object[$dsid]->mimetype;
     if (!in_array($current_mime, $mimes)) {
       $mimes[] = $current_mime;
     }
   }
-  $extensions = array();
+  $extensions = [];
   foreach ($mimes as $mime) {
     $extensions = array_merge($extensions, islandora_get_extensions_for_mimetype($mime));
   }
@@ -95,7 +69,7 @@ function islandora_get_extensions_for_datastream(AbstractObject $object, $dsid) 
  * Our mime needs are rather extreme and we need to modify/extend Drupal's map.
  */
 function islandora_mime_mapping() {
-  return array(
+  return [
     // Openoffice:
     'odb' => 'application/vnd.oasis.opendocument.database',
     'odc' => 'application/vnd.oasis.opendocument.chart',
@@ -268,5 +242,5 @@ function islandora_mime_mapping() {
     // Web Archives:
     "warc" => "application/warc",
     "json" => "application/json",
-  );
+  ];
 }
