@@ -38,10 +38,13 @@ class DefaultController extends ControllerBase {
     $enabled_solution_packs = islandora_solution_packs_get_required_objects();
     foreach ($enabled_solution_packs as $solution_pack_module => $solution_pack_info) {
       // @todo We should probably get the title of the solution pack from the
-    // systems table for consistency in the interface.
+      // systems table for consistency in the interface.
       $solution_pack_name = $solution_pack_info['title'];
       $objects = array_filter($solution_pack_info['objects']);
-      $output[$solution_pack_module] = \Drupal::formBuilder()->getForm('islandora_solution_pack_form_' . $solution_pack_module, $solution_pack_module, $solution_pack_name, $objects);
+      $class_name = "\\Drupal\\islandora\\Form\\IslandoraSolutionPackForm".ucfirst($solution_pack_name);
+
+      $output[$solution_pack_module] = \Drupal::formBuilder()->getForm(new $class_name(), $solution_pack_module, $solution_pack_name, $objects);
+
     }
     return $output;
   }

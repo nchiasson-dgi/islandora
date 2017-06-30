@@ -11,6 +11,8 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 
+use AbstractDatastream;
+
 class IslandoraRevertDatastreamVersionForm extends FormBase {
 
   /**
