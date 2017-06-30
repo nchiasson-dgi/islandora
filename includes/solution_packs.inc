@@ -27,7 +27,7 @@ function islandora_solution_packs_get_required_objects($module = NULL) {
   $required_objects = array();
 
   if (!$required_objects) {
-      $connection = islandora_get_tuque_connection();
+    $connection = islandora_get_tuque_connection();
     if (isset($module)) {
       // The module may be disabled when this function runs, as modules must be
       // disabled before they can be uninstalled. We must manually load the
@@ -241,7 +241,6 @@ function islandora_solution_pack_form_submit(array $form, array &$form_state) {
   $object_info = json_decode($form_state['values']['tablevalue']);
   if (isset($form_state['values']['table'])) {
     foreach ($form_state['values']['table'] as $key => $value) {
-
       if ($value === 0) {
         $not_checked[] = $object_info[$key]->pid;
       }
