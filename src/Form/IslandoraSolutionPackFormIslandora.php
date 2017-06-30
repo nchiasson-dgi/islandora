@@ -10,6 +10,7 @@ namespace Drupal\islandora\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
+use AbstractObject;
 
 class IslandoraSolutionPackFormIslandora extends FormBase {
 
@@ -23,7 +24,7 @@ class IslandoraSolutionPackFormIslandora extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $not_checked = array();
     $object_info = json_decode($form_state->getValue('tablevalue'));
     $table = $form_state->getValue('table');
@@ -35,7 +36,7 @@ class IslandoraSolutionPackFormIslandora extends FormBase {
       }
     }
     $solution_pack_module = $form_state->getValue('solution_pack_module');
-
+    drupal_set_message($solution_pack_module);
     // Use not_checked instead of checked. Remove not checked item from betch. so
     // that get batch function can get all object ingest batch if not checked list
     // is empty.
@@ -44,10 +45,10 @@ class IslandoraSolutionPackFormIslandora extends FormBase {
     // Hook to let solution pack objects be modified.
     // Not using module_invoke so solution packs can be expanded by other modules.
     // @todo shouldn't we send the object list along as well?
-    \Drupal::moduleHandler()->invokeAll('islandora_postprocess_solution_pack', [$solution_pack_module]);
+    //\Drupal::moduleHandler()->invokeAll('islandora_postprocess_solution_pack', [$solution_pack_module]);
 
   }
-
+  
   /**
    * {@inheritdoc}
    */
@@ -103,8 +104,9 @@ class IslandoraSolutionPackFormIslandora extends FormBase {
       );
 
     $object_info = array();
-    foreach ($objects as $key => $value) {
-      $object_status = islandora_check_object_status($value);
+    foreach ($objects as $object) {
+
+      $object_status = islandora_check_object_status($object);
       $object_status_info = $status_info[$object_status['status']];
       $object_status_severity = array_search($object_status['status'], $status_severities);
       // The solution pack status severity will be the highest severity of
@@ -114,16 +116,12 @@ class IslandoraSolutionPackFormIslandora extends FormBase {
       // l() expects a Url object, created from a route name or external URI.
       // $label = $exists ? l($object->label, "islandora/object/{$object->id}") : $object->label;
 
-      // XXX: This is a kludge, probably want to apply css pseudo-selector
+      // XXX: Probably want to apply css pseudo-selector
       // to this TD directly. Drupal 8 uses glyphs instead of images for things
       // like 'warning' and 'ok'.
       $object_info[] = [
-        'label'=> [
-          '#markup' => $value->label,
-        ],
-        'pid' => [
-          '#markup' => $value->id,
-        ],
+        'label'=> $object->label,
+        'pid' => $object->id,
         'status' => [
           '#markup' => t('<strong>Object status:</strong> @image @status', [
             '@image' => \Drupal::service("renderer")->renderRoot($object_status_info['image']),
@@ -181,14 +179,7 @@ class IslandoraSolutionPackFormIslandora extends FormBase {
         ),
         'tablevalue' => array(
           '#type' => 'hidden',
-          '#value' => json_encode(function () use ($object_info) {
-            // XXX: Removed status from the returned $object_info as it
-            // now contains HTML tags which are always rendered by the browser?
-            if(($key = array_search('status', $object_info, TRUE)) !== FALSE) {
-              unset($object_info[$key]);
-            }
-            return $object_info;
-          }),
+          '#value' => json_encode($object_info),
         ),
         'submit' => array(
           '#type' => 'submit',
@@ -199,5 +190,65 @@ class IslandoraSolutionPackFormIslandora extends FormBase {
       ),
     );
     return $form;
+  }
+
+  /**
+   * Batch operation to ingest/reingest required object(s).
+   *
+   * @param AbstractObject $object
+   *   The object to ingest/reingest.
+   * @param array $context
+   *   The context of this batch operation.
+   */
+  function islandora_solution_pack_batch_operation_reingest_object(AbstractObject $object, array &$context) {
+    $existing_object = islandora_object_load($object->id);
+    $deleted = FALSE;
+    if ($existing_object) {
+      $deleted = islandora_delete_object($existing_object);
+      if (!$deleted) {
+        // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $object_link = l($existing_object->label, "islandora/object/{$existing_object->id}");
+
+        drupal_set_message(\Drupal\Component\Utility\Xss::filter(t('Failed to purge existing object !object_link.', array(
+          '!object_link' => $object_link,
+        ))), 'error');
+        // Failed to purge don't attempt to ingest.
+        return;
+      }
+    }
+
+    // Object was deleted or did not exist.
+    $pid = $object->id;
+    $label = $object->label;
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $object_link = l($label, "islandora/object/{$pid}");
+
+    $object = islandora_add_object($object);
+    $params = array(
+      '@pid' => $pid,
+      '@label' => $label,
+      '!object_link' => $object_link,
+    );
+
+    $msg = '';
+    if ($object) {
+      if ($deleted) {
+        $msg = t('Successfully reinstalled !object_link.', $params);
+      }
+      else {
+        $msg = t('Successfully installed !object_link.', $params);
+      }
+    }
+    elseif ($deleted) {
+      $msg = t('Failed to reinstall @label, identified by @pid.', $params);
+    }
+    else {
+      $msg = t('Failed to install @label, identified by @pid.', $params);
+    }
+
+    $status = $object ? 'status' : 'error';
+    drupal_set_message(\Drupal\Component\Utility\Xss::filter($msg), $status);
   }
 }

@@ -5,6 +5,8 @@
  * Admin and callback functions for solution pack management.
  */
 
+use AbstractObject;
+
 /**
  * Get the information about required object.
  *
@@ -27,7 +29,7 @@ function islandora_solution_packs_get_required_objects($module = NULL) {
   $required_objects = array();
 
   if (!$required_objects) {
-    $connection = islandora_get_tuque_connection();
+      $connection = islandora_get_tuque_connection();
     if (isset($module)) {
       // The module may be disabled when this function runs, as modules must be
       // disabled before they can be uninstalled. We must manually load the
@@ -241,6 +243,7 @@ function islandora_solution_pack_form_submit(array $form, array &$form_state) {
   $object_info = json_decode($form_state['values']['tablevalue']);
   if (isset($form_state['values']['table'])) {
     foreach ($form_state['values']['table'] as $key => $value) {
+
       if ($value === 0) {
         $not_checked[] = $object_info[$key]->pid;
       }
@@ -302,7 +305,7 @@ function islandora_solution_pack_get_batch($module, $not_checked = array()) {
  * @param array $context
  *   The context of this batch operation.
  */
-function islandora_solution_pack_batch_operation_reingest_object(AbstractObject $object, array &$context) {
+/*function islandora_solution_pack_batch_operation_reingest_object(AbstractObject $object, array &$context) {
   $existing_object = islandora_object_load($object->id);
   $deleted = FALSE;
   if ($existing_object) {
@@ -352,7 +355,7 @@ function islandora_solution_pack_batch_operation_reingest_object(AbstractObject 
 
   $status = $object ? 'status' : 'error';
   drupal_set_message(\Drupal\Component\Utility\Xss::filter($msg), $status);
-}
+}*/
 
 /**
  * Install the given solution pack.
