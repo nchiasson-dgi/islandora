@@ -5,8 +5,6 @@
  * Admin and callback functions for solution pack management.
  */
 
-use AbstractObject;
-
 /**
  * Get the information about required object.
  *
