@@ -5,6 +5,8 @@ namespace Drupal\islandora\Access;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+use AbstractObject;
+use AbstractDatastream;
 
 /**
  * Access checking for datastreams on objects within Islandora.
