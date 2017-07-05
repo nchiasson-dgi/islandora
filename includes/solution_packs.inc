@@ -165,9 +165,8 @@ function islandora_solution_pack_form(array $form, array &$form_state, $solution
     $solution_pack_status_severity = max($solution_pack_status_severity, $object_status_severity);
     $exists = $object_status['status'] != 'missing';
     // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $label = $exists ? l($object->label, "islandora/object/{$object->id}") : $object->label;
-
+    // l() expects a Url object, created from a route name or external URI.
+    $label = $exists ? l($object->label, "islandora/object/{$object->id}") : $object->label;
     $status_msg = "{$object_status_info['image']}&nbsp{$object_status['status_friendly']}";
     $object_info[] = array(
       'label' => $label,
@@ -259,100 +258,7 @@ function islandora_solution_pack_form_submit(array $form, array &$form_state) {
   \Drupal::moduleHandler()->invokeAll('islandora_postprocess_solution_pack', [$solution_pack_module]);
 }
 
-/**
- * Get the batch definition to reinstall all the objects for a given module.
- *
- * @param string $module
- *   The name of the modules of which to grab the required objects for to setup
- *   the batch.
- * @param array $not_checked
- *   The object that will bot be install.
- *
- * @return array
- *   An array defining a batch which can be passed on to batch_set().
- */
-function islandora_solution_pack_get_batch($module, $not_checked = array()) {
-  $batch = array(
-    'title' => t('Installing / Updating solution pack objects'),
-    'file' => drupal_get_path('module', 'islandora') . '/includes/solution_packs.inc',
-    'operations' => array(),
-  );
 
-  $info = islandora_solution_packs_get_required_objects($module);
-  foreach ($info['objects'] as $key => $object) {
-    foreach ($not_checked as $not) {
-      if ($object->id == $not) {
-        unset($info['objects'][$key]);
-      }
-    }
-  }
-
-  foreach ($info['objects'] as $object) {
-    $batch['operations'][] = array('islandora_solution_pack_batch_operation_reingest_object', array($object));
-  }
-
-  return $batch;
-}
-
-/**
- * Batch operation to ingest/reingest required object(s).
- *
- * @param AbstractObject $object
- *   The object to ingest/reingest.
- * @param array $context
- *   The context of this batch operation.
- */
-/*function islandora_solution_pack_batch_operation_reingest_object(AbstractObject $object, array &$context) {
-  $existing_object = islandora_object_load($object->id);
-  $deleted = FALSE;
-  if ($existing_object) {
-    $deleted = islandora_delete_object($existing_object);
-    if (!$deleted) {
-      // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $object_link = l($existing_object->label, "islandora/object/{$existing_object->id}");
-
-      drupal_set_message(\Drupal\Component\Utility\Xss::filter(t('Failed to purge existing object !object_link.', array(
-            '!object_link' => $object_link,
-          ))), 'error');
-      // Failed to purge don't attempt to ingest.
-      return;
-    }
-  }
-
-  // Object was deleted or did not exist.
-  $pid = $object->id;
-  $label = $object->label;
-  // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $object_link = l($label, "islandora/object/{$pid}");
-
-  $object = islandora_add_object($object);
-  $params = array(
-    '@pid' => $pid,
-    '@label' => $label,
-    '!object_link' => $object_link,
-  );
-
-  $msg = '';
-  if ($object) {
-    if ($deleted) {
-      $msg = t('Successfully reinstalled !object_link.', $params);
-    }
-    else {
-      $msg = t('Successfully installed !object_link.', $params);
-    }
-  }
-  elseif ($deleted) {
-    $msg = t('Failed to reinstall @label, identified by @pid.', $params);
-  }
-  else {
-    $msg = t('Failed to install @label, identified by @pid.', $params);
-  }
-
-  $status = $object ? 'status' : 'error';
-  drupal_set_message(\Drupal\Component\Utility\Xss::filter($msg), $status);
-}*/
 
 /**
  * Install the given solution pack.

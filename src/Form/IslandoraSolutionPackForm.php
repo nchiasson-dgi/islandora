@@ -11,15 +11,48 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Url;
-use AbstractObject;
 
-class IslandoraSolutionPackFormIslandora extends FormBase {
+class IslandoraSolutionPackForm extends FormBase {
 
   /**
    * {@inheritdoc}
    */
   public function getFormId() {
     return 'islandora_solution_pack_form_islandora';
+  }
+
+  /**
+   * Get the batch definition to reinstall all the objects for a given module.
+   *
+   * @param string $module
+   *   The name of the modules of which to grab the required objects for to setup
+   *   the batch.
+   * @param array $not_checked
+   *   The object that will bot be install.
+   *
+   * @return array
+   *   An array defining a batch which can be passed on to batch_set().
+   */
+  function islandora_solution_pack_get_batch($module, $not_checked = array()) {
+    $batch = array(
+      'title' => t('Installing / Updating solution pack objects'),
+      'file' => drupal_get_path('module', 'islandora') . '/src/Form/solution_packs.inc',
+      'operations' => array(),
+    );
+
+    $info = islandora_solution_packs_get_required_objects($module);
+    foreach ($info['objects'] as $key => $object) {
+      foreach ($not_checked as $not) {
+        if ($object->id == $not) {
+          unset($info['objects'][$key]);
+        }
+      }
+    }
+
+    foreach ($info['objects'] as $key => $object) {
+      $batch['operations'][] = array(array('\Drupal\islandora\Form\IslandoraSolutionPackForm', 'islandora_solution_pack_batch_operation_reingest_object'), array($object));
+    }
+    return $batch;
   }
 
   /**
@@ -32,16 +65,16 @@ class IslandoraSolutionPackFormIslandora extends FormBase {
     if (isset($table)) {
       foreach ($table as $key => $value) {
         if ($value === 0) {
-          $not_checked[] = $object_info[$key]->pid;
+          $not_checked[] = $object_info->$key->pid;
         }
       }
     }
     $solution_pack_module = $form_state->getValue('solution_pack_module');
-    drupal_set_message($solution_pack_module);
     // Use not_checked instead of checked. Remove not checked item from betch. so
     // that get batch function can get all object ingest batch if not checked list
     // is empty.
-    $batch = islandora_solution_pack_get_batch($solution_pack_module, $not_checked);
+    $batch =
+      $this->islandora_solution_pack_get_batch($solution_pack_module, $not_checked);
     batch_set($batch);
     // Hook to let solution pack objects be modified.
     // Not using module_invoke so solution packs can be expanded by other modules.
@@ -105,25 +138,22 @@ class IslandoraSolutionPackFormIslandora extends FormBase {
       );
 
     $object_info = array();
-    foreach ($objects as $key => $value) {
-      kint($key);
-      $object_status = islandora_check_object_status($value);
+    foreach ($objects as $object) {
+      $object_status = islandora_check_object_status($object);
       $object_status_info = $status_info[$object_status['status']];
       $object_status_severity = array_search($object_status['status'], $status_severities);
       // The solution pack status severity will be the highest severity of
       // the objects.
       $solution_pack_status_severity = max($solution_pack_status_severity, $object_status_severity);
-      // @FIXME
-      // l() expects a Url object, created from a route name or external URI.
       $exists = $object_status['status'] != 'missing';
-      $label = $exists ? \Drupal::l($value->label, Url::fromRoute("islandora/object/{$value->id}")) : $value->label;
+      $label = $exists ? \Drupal::l($object->label, Url::fromRoute('islandora.view_root_object')) : $object->label;
 
       // XXX: Probably want to apply css pseudo-selector
       // to this TD directly. Drupal 8 uses glyphs instead of images for things
       // like 'warning' and 'ok'.
-      $object_info[$key] = [
+      $object_info[$object->id] = [
         'label'=> $label,
-        'pid' => $value->id,
+        'pid' => $object->id,
         'status' => [
           '#markup' => t('@image @status', [
             '@image' => \Drupal::service("renderer")->renderRoot($object_status_info['image']),
@@ -131,6 +161,7 @@ class IslandoraSolutionPackFormIslandora extends FormBase {
               ]
           )]
       ];
+
 
     }
 
@@ -201,15 +232,13 @@ class IslandoraSolutionPackFormIslandora extends FormBase {
    * @param array $context
    *   The context of this batch operation.
    */
-  function islandora_solution_pack_batch_operation_reingest_object(AbstractObject $object, array &$context) {
+  function islandora_solution_pack_batch_operation_reingest_object(\AbstractObject $object, array &$context) {
     $existing_object = islandora_object_load($object->id);
     $deleted = FALSE;
     if ($existing_object) {
       $deleted = islandora_delete_object($existing_object);
       if (!$deleted) {
-        // @FIXME
-        // l() expects a Url object, created from a route name or external URI.
-        // $object_link = l($existing_object->label, "islandora/object/{$existing_object->id}");
+        $object_link = \Drupal::l($existing_object->label, Url::fromRoute('islandora.view_object'), ['object' => $existing_object->id]);
 
         drupal_set_message(\Drupal\Component\Utility\Xss::filter(t('Failed to purge existing object !object_link.', array(
           '!object_link' => $object_link,
@@ -222,9 +251,7 @@ class IslandoraSolutionPackFormIslandora extends FormBase {
     // Object was deleted or did not exist.
     $pid = $object->id;
     $label = $object->label;
-    // @FIXME
-    // l() expects a Url object, created from a route name or external URI.
-    // $object_link = l($label, "islandora/object/{$pid}");
+    $object_link = \Drupal::l($label, Url::fromRoute('islandora.view_object'), ['object' => $pid]);
 
     $object = islandora_add_object($object);
     $params = array(
@@ -250,6 +277,8 @@ class IslandoraSolutionPackFormIslandora extends FormBase {
     }
 
     $status = $object ? 'status' : 'error';
+
+    \Drupal::service('devel.dumper')->debug($status);
     drupal_set_message(\Drupal\Component\Utility\Xss::filter($msg), $status);
   }
 }

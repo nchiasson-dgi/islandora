@@ -87,11 +87,11 @@ class IslandoraTuque {
 
     if (self::exists()) {
       module_load_include('inc', 'islandora', 'includes/tuque_wrapper');
-      $this->connection = new IslandoraRepositoryConnection($url, $user_string, $pass_string);
+      $this->connection = new \Drupal\islandora\Tuque\IslandoraRepositoryConnection($url, $user_string, $pass_string);
       $this->connection->reuseConnection = TRUE;
-      $this->api = new IslandoraFedoraApi($this->connection);
-      $this->cache = new IslandoraSimpleCache();
-      $this->repository = new IslandoraFedoraRepository($this->api, $this->cache);
+      $this->api = new \Drupal\islandora\Tuque\IslandoraFedoraApi($this->connection);
+      $this->cache = new \Drupal\islandora\Tuque\IslandoraSimpleCache();
+      $this->repository = new \Drupal\islandora\Tuque\IslandoraFedoraRepository($this->api, $this->cache);
     }
   }
 

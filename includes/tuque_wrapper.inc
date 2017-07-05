@@ -46,7 +46,7 @@ function islandora_alter_object(AbstractObject $object, array &$context) {
 /**
  * Allow modules to alter a datastream before a mutable event occurs.
  */
-function islandora_alter_datastream(AbstractObject $object, AbstractDatastream $datastream, array &$context) {
+function islandora_alter_datastream(\AbstractObject $object, \AbstractDatastream $datastream, array &$context) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   $types = array();
   foreach ($object->models as $model) {
