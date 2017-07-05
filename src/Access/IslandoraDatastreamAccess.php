@@ -38,7 +38,6 @@ class IslandoraDatastreamAccess implements AccessInterface {
     // in Drupal as defaults this needs to be the case. If it's possible to get
     // around this by making the empty slug route in YAML or a custom Routing
     // object we can remove this.
-    $datastream = islandora_datastream_load($datastream, $object);
     if (!$datastream && !islandora_describe_repository()) {
       islandora_display_repository_inaccessible_message();
       return AccessResult::forbidden();
@@ -46,12 +45,12 @@ class IslandoraDatastreamAccess implements AccessInterface {
     if (is_array($perms)) {
       $result = AccessResult::neutral();
       foreach ($perms as $perm) {
-        $result = $islandora_access_conjunction == 'AND' ? $result->andIf(AccessResult::allowedIf(islandora_datastream_access($perm, $object, $account))) : $result->orIf(AccessResult::allowedIf(islandora_datastream_access($perm, $object, $account)));
+        $result = $islandora_access_conjunction == 'AND' ? $result->andIf(AccessResult::allowedIf(islandora_datastream_access($perm, $datastream, $account))) : $result->orIf(AccessResult::allowedIf(islandora_datastream_access($perm, $datastream, $account)));
       }
       return $result;
     }
     else {
-      return AccessResult::allowedIf(islandora_datastream_access($perms, $object, $account));
+      return AccessResult::allowedIf(islandora_datastream_access($perms, $datastream, $account));
     }
   }
 
