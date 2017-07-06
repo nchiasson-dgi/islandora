@@ -2,9 +2,11 @@
 namespace Drupal\islandora\Tuque;
 
 @include_once 'sites/all/libraries/tuque/FedoraApi.php';
+@include_once 'sites/all/libraries/tuque/FedoraApiSerializer.php';
 
 $islandora_module_path = drupal_get_path('module', 'islandora');
-@include_once "$islandora_module_path/libraries/tuque/FedoraApi.php";
+@include_once "$islandora_module_path/libraries/tuque/RepositoryConnection.php";
+@include_once "$islandora_module_path/libraries/tuque/FedoraApiSerializer.php";
 
 class IslandoraFedoraApi extends \FedoraApi {
 

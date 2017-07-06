@@ -16,7 +16,7 @@ $islandora_module_path = drupal_get_path('module', 'islandora');
 @include_once "$islandora_module_path/libraries/tuque/Object.php";
 
 class IslandoraNewFedoraObject extends \NewFedoraObject {
-  protected $newFedoraDatastreamClass = '\Drupal\islandora\Tuque\IslandoraNewFedoraDataStream';
+  protected $newFedoraDatastreamClass = '\Drupal\islandora\Tuque\IslandoraNewFedoraDatastream';
   protected $fedoraDatastreamClass = '\Drupal\islandora\Tuque\IslandoraFedoraDatastream';
   protected $fedoraRelsExtClass = '\Drupal\islandora\Tuque\IslandoraFedoraRelsExt';
 

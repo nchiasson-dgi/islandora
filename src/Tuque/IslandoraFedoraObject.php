@@ -3,7 +3,7 @@
 namespace Drupal\islandora\Tuque;
 
 class IslandoraFedoraObject extends \FedoraObject {
-  protected $newFedoraDatastreamClass = '\Drupal\islandora\Tuque\IslandoraNewFedoraDataStream';
+  protected $newFedoraDatastreamClass = '\Drupal\islandora\Tuque\IslandoraNewFedoraDatastream';
   protected $fedoraDatastreamClass = '\Drupal\islandora\Tuque\IslandoraFedoraDatastream';
   protected $fedoraRelsExtClass = '\Drupal\islandora\Tuque\IslandoraFedoraRelsExt';
 

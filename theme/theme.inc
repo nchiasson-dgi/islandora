@@ -5,7 +5,7 @@
  * This file contains all theme and preprocess functions.
  */
 
-use Drupal\islandora\DublinCore;
+use Drupal\islandora\Tuque\DublinCore;
 use Drupal\Core\Url;
 
 /**
@@ -237,7 +237,7 @@ function template_preprocess_islandora_default(&$variables) {
   $variables['datastreams'] = $datastreams;
   // Objects in fcrepo4 don't always contain a DC datastream.
   if (isset($islandora_object['DC']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $islandora_object['DC'])) {
-    $dc_object = \Drupal\islandora\DublinCore::importFromXMLString($islandora_object['DC']->content);
+    $dc_object = DublinCore::importFromXMLString($islandora_object['DC']->content);
     $dc_array = $dc_object->asArray();
   }
   // We should eventually remove the DC object and dc_array code as it only
