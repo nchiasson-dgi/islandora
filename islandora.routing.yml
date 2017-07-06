@@ -176,7 +176,7 @@ islandora.view_datastream_view:
   defaults:
     perms: 'view fedora repository objects'
     _title: 'View datastream'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_datastream'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraViewDatastream'
   requirements:
     _islandora_datastream_access: '{datastream}'
   options:
