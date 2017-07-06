@@ -36,7 +36,6 @@ class DefaultController extends ControllerBase {
 
     $output = [];
     $enabled_solution_packs = islandora_solution_packs_get_required_objects();
-    kint($enabled_solution_packs);
     foreach ($enabled_solution_packs as $solution_pack_module => $solution_pack_info) {
       // @todo We should probably get the title of the solution pack from the
       // systems table for consistency in the interface.
