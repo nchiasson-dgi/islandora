@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Utility functions.
- *
- * @todo this file should be broken out into other files.
+ * Utility functions for Islandora.
  */
+
+use Drupal\file\Entity\File;
 
 /**
  * Convert bytes to human readable format.
@@ -13,7 +13,7 @@
  * XXX: Shouldn't Drupal's format_size() be preferred?
  *
  * @param int $bytes
- *   Size in bytes to convert
+ *   Size in bytes to convert.
  * @param int $precision
  *   The amount of decimal precision to show.
  *
@@ -51,33 +51,33 @@ function islandora_convert_bytes_to_human_readable($bytes, $precision = 2) {
  *
  * @param string $file_uri
  *   The given file URI location.
+ * @param null|string $mime
+ *   The MIME type if specified, NULL if detecting.
  *
- * @return object
- *   The file, as returned from file_save().
+ * @return Drupal\file\Entity\File
+ *   The File entity as reflected in Drupal.
  */
 function islandora_temp_file_entry($file_uri, $mime = NULL) {
-  $query = new EntityFieldQuery();
-  $result = $query
-    ->entityCondition('entity_type', 'file')
-    ->propertyCondition('uri', $file_uri)
+  module_load_include('inc', 'islandora', 'includes/mimetype.utils');
+  $entity_ids = \Drupal::entityQuery('file')
+    ->condition('uri', $file_uri)
     ->execute();
-  if (isset($result['file'])) {
-    $fid = current($result['file'])->fid;
-    $file = file_load($fid);
+  if (!empty($entity_ids)) {
+    $fid = current($entity_ids);
   }
   else {
-    $file = new stdClass();
-    $file->uri = $file_uri;
-    $file->filename = \Drupal::service("file_system")->basename($file_uri);
-    if (isset($mime)) {
-      $file->filemime = $mime;
-    }
-    else {
-      $file->filemime = file_get_mimetype($file_uri);
-    }
+    $mime = isset($mime) ? $mime : islandora_get_extension_for_mimetype($file_uri);
+    $file = File::create([
+      'uri' => $file_uri,
+      'filename' => \Drupal::service("file_system")->basename($file_uri),
+      'filemime' => $mime,
+      'filesize' => 0,
+      'status' => 0,
+    ]);
+    $file->save();
+    $fid = $file->id();
   }
-  $file->status = 0;
-  return file_save($file);
+  return File::load($fid);
 }
 
 /**

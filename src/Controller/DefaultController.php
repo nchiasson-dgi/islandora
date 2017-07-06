@@ -1,13 +1,12 @@
-<?php /**
- * @file
- * Contains \Drupal\islandora\Controller\DefaultController.
- */
+<?php
 
 namespace Drupal\islandora\Controller;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use AbstractObject;
 use AbstractDatastream;
 
@@ -169,7 +168,6 @@ class DefaultController extends ControllerBase {
       // Nothing returned FALSE, and something returned TRUE.
       $cache[$op][$object->id][$user->id()] = (!in_array(FALSE, $results, TRUE) && in_array(TRUE, $results, TRUE));
     }
-    ksm($cache);
     return $cache[$op][$object->id][$user->id()];
   }
 
@@ -301,16 +299,24 @@ class DefaultController extends ControllerBase {
     return $cache[$op][$datastream->parent->id][$datastream->id][$user->id()];
   }
 
-  public function islandora_view_datastream(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
+  /**
+   * Callback function to view or download a datastream.
+   *
+   * @param AbstractDatastream $datastream
+   *   The datastream to view/download.
+   * @param bool $download
+   *   If TRUE the file is download to the user computer for viewing otherwise
+   *   it will attempt to display in the browser natively.
+   * @param int $version
+   *   The version of the datastream to display.
+   *
+   * @return Symfony\Component\HttpFoundation\BinaryFileResponse|Symfony\Component\HttpFoundation\StreamedResponse
+   *   A BinaryFileResponse if it's a ranged request, a StreamedResponse
+   *   otherwise.
+   */
+  public function islandoraViewDatastream(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
     module_load_include('inc', 'islandora', 'includes/mimetype.utils');
     module_load_include('inc', 'islandora', 'includes/datastream');
-
-    // XXX: Certain features of the Devel module rely on the use of "shutdown
-    // handlers", such as query logging... The problem is that they might blindly
-    // add additional output which will break things if what is actually being
-    // output is anything but a webpage... like an image or video or audio or
-    // whatever the datastream is here.
-    $GLOBALS['devel_shutdown'] = FALSE;
 
     if ($version !== NULL) {
       if (isset($datastream[$version])) {
@@ -320,10 +326,27 @@ class DefaultController extends ControllerBase {
         return drupal_not_found();
       }
     }
-    header('Content-type: ' . $datastream->mimetype);
-    if ($datastream->controlGroup == 'M' || $datastream->controlGroup == 'X') {
-      header('Content-length: ' . $datastream->size);
+    $headers = [
+      'Content-type' => $datastream->mimetype,
+      'Last-Modified' => $datastream->createdDate->format('D, d M Y H:i:s \G\M\T'),
+    ];
+    // XXX: The two response objects being used are considered non-cacheable by
+    // default. By setting the cache control we allow these responses to be
+    // cached. Non-cacheable responses wipe away certain headers that are nice
+    // to have such as 'Last-Modified' and 'Etag' (for the checksum).
+    $cache_control_visibility = $datastream->parent->repository->api->connection->username == 'anonymous' ? 'public' : 'private';
+    $cache_control[] = $cache_control_visibility;
+    $cache_control[] = 'must-revalidate';
+    $cache_control[] = 'max-age=0';
+    $headers['Cache-Control'] = implode(', ', $cache_control);
+    if (isset($datastream->checksum)) {
+      $headers['Etag'] = "\"{$datastream->checksum}\"";
     }
+    $status = 200;
+    if ($datastream->controlGroup == 'M' || $datastream->controlGroup == 'X') {
+      $headers['Content-Length'] = $datastream->size;
+    }
+    $content_disposition = NULL;
     if ($download) {
       // Browsers will not append all extensions.
       $extension = '.' . islandora_get_extension_for_mimetype($datastream->mimetype);
@@ -337,50 +360,41 @@ class DefaultController extends ControllerBase {
       if ($duplicate_extension_position === FALSE) {
         $filename .= $extension;
       }
-      header("Content-Disposition: attachment; filename=\"$filename\"");
+      $content_disposition = "attachment; filename=\"{$filename}\"";
     }
-
-    $cache_check = islandora_view_datastream_cache_check($datastream);
-    if ($cache_check !== 200) {
-      if ($cache_check === 304) {
-        header('HTTP/1.1 304 Not Modified');
-      }
-      elseif ($cache_check === 412) {
-        header('HTTP/1.0 412 Precondition Failed');
-      }
-    }
-    islandora_view_datastream_set_cache_headers($datastream);
-
-    // New content needed.
-    if ($cache_check === 200) {
-      // We need to see if the chunking is being requested. This will mainly
+    // We need to see if the chunking is being requested. This will mainly
     // happen with iOS video requests as they do not support any other way
     // to receive content for playback.
-      $chunk_headers = FALSE;
-      if (isset($_SERVER['HTTP_RANGE'])) {
-        // Set headers specific to chunking.
-        $chunk_headers = islandora_view_datastream_set_chunk_headers($datastream);
-      }
-      // Try not to load the file into PHP memory!
-      // Close and flush ALL the output buffers!
-      while (@ob_end_flush()) {
-      }
-      ;
-
-      if (isset($_SERVER['HTTP_RANGE'])) {
-        if ($chunk_headers) {
-          islandora_view_datastream_deliver_chunks($datastream, $chunk_headers);
-        }
-      }
-      else {
-        $datastream->getContent('php://output');
-      }
+    if (isset($_SERVER['HTTP_RANGE'])) {
+      module_load_include('inc', 'islandora', 'includes/datastream');
+      $file_uri = islandora_view_datastream_retrieve_file_uri($datastream);
+      $binary_content_disposition = isset($content_disposition) ? 'attachment' : NULL;
+      $response = new BinaryFileResponse($file_uri, $status, $headers, $cache_control_visibility, $binary_content_disposition, FALSE, FALSE);
     }
-    exit();
+    else {
+      $streaming_callback = function () use ($datastream) {
+        $datastream->getContent('php://output');
+      };
+      if ($content_disposition) {
+        $headers['Content-Disposition'] = $content_disposition;
+      }
+      $response = new StreamedResponse($streaming_callback, $status, $headers);
+    }
+    return $response;
   }
 
-  public function islandora_download_datastream(AbstractDatastream $datastream) {
-    islandora_view_datastream($datastream, TRUE);
+  /**
+   * Callback to download the given datastream to the users computer.
+   *
+   * @param AbstractDatastream $datastream
+   *   The datastream to download.
+   *
+   * @@return Symfony\Component\HttpFoundation\BinaryFileResponse|Symfony\Component\HttpFoundation\StreamedResponse
+   *   A BinaryFileResponse if it's a ranged request, a StreamedResponse
+   *   otherwise.
+   */
+  public function islandoraDownloadDatastream(AbstractDatastream $datastream) {
+    return $this->islandoraViewDatastream($datastream, TRUE);
   }
 
   public function islandora_edit_datastream(AbstractDatastream $datastream) {
