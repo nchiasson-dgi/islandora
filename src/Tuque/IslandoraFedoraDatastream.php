@@ -11,6 +11,10 @@ $islandora_module_path = drupal_get_path('module', 'islandora');
 
 use FedoraDatastream;
 
+/**
+ * Class IslandoraFedoraDatastream
+ * @package Drupal\islandora\Tuque
+ */
 class IslandoraFedoraDatastream extends FedoraDatastream {
   protected $fedoraRelsIntClass = IslandoraFedoraRelsInt::class;
   protected $fedoraDatastreamVersionClass = IslandoraFedoraDatastreamVersion::class;
