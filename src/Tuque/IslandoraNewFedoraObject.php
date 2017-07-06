@@ -1,23 +1,23 @@
 <?php
 
-/**
- * @file
- * Wrapper around the tuque library, allows for autoloading of Islandora Tuque
- * Objects.
- *
- * @todo Overload functions and apply pre/post hooks.
- */
-
 namespace Drupal\islandora\Tuque;
 
+// XXX: Class from tuque do not autoload properly which causes problems
+// for deserialization.
 @include_once 'sites/all/libraries/tuque/Object.php';
 
 $islandora_module_path = drupal_get_path('module', 'islandora');
 @include_once "$islandora_module_path/libraries/tuque/Object.php";
 
-class IslandoraNewFedoraObject extends \NewFedoraObject {
-  protected $newFedoraDatastreamClass = '\Drupal\islandora\Tuque\IslandoraNewFedoraDatastream';
-  protected $fedoraDatastreamClass = '\Drupal\islandora\Tuque\IslandoraFedoraDatastream';
-  protected $fedoraRelsExtClass = '\Drupal\islandora\Tuque\IslandoraFedoraRelsExt';
+use NewFedoraObject;
+
+/**
+ * Class IslandoraNewFedoraObject
+ * @package Drupal\islandora\Tuque
+ */
+class IslandoraNewFedoraObject extends NewFedoraObject {
+  protected $newFedoraDatastreamClass = IslandoraNewFedoraDatastream::class;
+  protected $fedoraDatastreamClass = IslandoraFedoraDatastream::class;
+  protected $fedoraRelsExtClass = IslandoraFedoraRelsExt::class;
 
 }

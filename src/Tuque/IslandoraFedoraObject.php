@@ -2,10 +2,16 @@
 
 namespace Drupal\islandora\Tuque;
 
-class IslandoraFedoraObject extends \FedoraObject {
-  protected $newFedoraDatastreamClass = '\Drupal\islandora\Tuque\IslandoraNewFedoraDatastream';
-  protected $fedoraDatastreamClass = '\Drupal\islandora\Tuque\IslandoraFedoraDatastream';
-  protected $fedoraRelsExtClass = '\Drupal\islandora\Tuque\IslandoraFedoraRelsExt';
+use FedoraObject;
+
+/**
+ * Class IslandoraFedoraObject
+ * @package Drupal\islandora\Tuque
+ */
+class IslandoraFedoraObject extends FedoraObject {
+  protected $newFedoraDatastreamClass = IslandoraNewFedoraDatastream::class;
+  protected $fedoraDatastreamClass = IslandoraFedoraDatastream::class;
+  protected $fedoraRelsExtClass = IslandoraFedoraRelsExt::class;
 
   /**
    * Magical magic, to allow recursive modifications.

@@ -1,8 +1,8 @@
 <?php
+
 namespace Drupal\islandora\Tuque;
 
 /**
- * @file
  * Class for determining MIME types and file extensions.
  *
  * This class inspired by Chris Jean's work, here:
@@ -21,7 +21,6 @@ namespace Drupal\islandora\Tuque;
  * Drupal 7 will have better mime handlers.  See:
  * http://api.drupal.org/api/function/file_default_mimetype_mapping/7
  */
-
 class MimeDetect {
 
   protected $protectedMimeTypes = array(

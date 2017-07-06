@@ -1,11 +1,12 @@
 <?php
+
 namespace Drupal\islandora\Tuque;
 
 /**
- * @file
- * Very basic entity controller.
+ * Class IslandoraObjectEntityController
+ * @package Drupal\islandora\Tuque
  */
-
+//XXX: DrupalEntityControllerInterface is gone in Drupal8.
 class IslandoraObjectEntityController implements DrupalEntityControllerInterface {
 
   /**

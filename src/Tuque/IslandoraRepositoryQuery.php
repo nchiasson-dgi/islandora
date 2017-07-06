@@ -1,4 +1,11 @@
 <?php
+
 namespace Drupal\islandora\Tuque;
 
-class IslandoraRepositoryQuery extends \RepositoryQuery {}
+use RepositoryQuery;
+
+/**
+ * Class IslandoraRepositoryQuery
+ * @package Drupal\islandora\Tuque
+ */
+class IslandoraRepositoryQuery extends RepositoryQuery {}

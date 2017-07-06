@@ -1,32 +1,40 @@
 <?php
+
 namespace Drupal\islandora\Tuque;
 
+// XXX: Class from tuque do not autoload properly which causes problems
+// for deserialization.
 @include_once 'sites/all/libraries/tuque/Repository.php';
 @include_once 'sites/all/libraries/tuque/Object.php';
-@include_once 'sites/all/libraries/tuque/Datastream.php';
 
 $islandora_module_path = drupal_get_path('module', 'islandora');
 @include_once "$islandora_module_path/libraries/tuque/Repository.php";
 @include_once "$islandora_module_path/libraries/tuque/Object.php";
-@include_once "$islandora_module_path/libraries/tuque/Datastream.php";
 
-class IslandoraFedoraRepository extends \FedoraRepository {
-  protected $queryClass = '\Drupal\islandora\Tuque\IslandoraRepositoryQuery';
-  protected $newObjectClass = '\Drupal\islandora\Tuque\IslandoraNewFedoraObject';
-  protected $objectClass = '\Drupal\islandora\Tuque\IslandoraFedoraObject';
+use FedoraRepository;
+use NewFedoraObject;
+
+/**
+ * Class IslandoraFedoraRepository
+ * @package Drupal\islandora\Tuque
+ */
+class IslandoraFedoraRepository extends FedoraRepository {
+  protected $queryClass = IslandoraRepositoryQuery::class;
+  protected $newObjectClass = IslandoraNewFedoraObject::class;
+  protected $objectClass = IslandoraFedoraObject::class;
 
   /**
    * Ingest the given object.
    *
    * @see FedoraRepository::ingestObject()
    */
-  public function ingestObject(\NewFedoraObject &$object) {
+  public function ingestObject(NewFedoraObject &$object) {
     try {
       foreach ($object as $dsid => $datastream) {
-        $datastream_context = array(
+        $datastream_context = [
           'action' => 'ingest',
           'block' => FALSE,
-        );
+        ];
         islandora_alter_datastream($object, $datastream, $datastream_context);
         if ($datastream_context['block']) {
           throw new Exception(t('Object ingest blocked due to ingest of @dsid being blocked.', array(
@@ -35,10 +43,10 @@ class IslandoraFedoraRepository extends \FedoraRepository {
         }
       }
 
-      $object_context = array(
+      $object_context = [
         'action' => 'ingest',
         'block' => FALSE,
-      );
+      ];
       islandora_alter_object($object, $object_context);
       if ($object_context['block']) {
         throw new Exception('Ingest Object was blocked.');
@@ -53,10 +61,12 @@ class IslandoraFedoraRepository extends \FedoraRepository {
       return $ret;
     }
     catch (Exception $e) {
-      \Drupal::logger('islandora')->error('Failed to ingest object: @pid</br>code: @code<br/>message: @msg', array(
-          '@pid' => $object->id,
-          '@code' => $e->getCode(),
-          '@msg' => $e->getMessage()));
+      \Drupal::logger('islandora')->error(
+        'Failed to ingest object: @pid</br>code: @code<br/>message: @msg', [
+        '@pid' => $object->id,
+        '@code' => $e->getCode(),
+        '@msg' => $e->getMessage()]
+      );
       throw $e;
     }
   }
@@ -86,7 +96,7 @@ class IslandoraFedoraRepository extends \FedoraRepository {
   /**
    * Helper for three-valued logic with UUIDs.
    *
-   * @param bool|NULL $to_create
+   * @param bool|null $to_create
    *   The variable to test.
    *
    * @return bool
@@ -99,4 +109,5 @@ class IslandoraFedoraRepository extends \FedoraRepository {
       \Drupal::config('islandora.settings')->get('islandora_basic_collection_generate_uuid') :
       $to_create;
   }
+
 }
