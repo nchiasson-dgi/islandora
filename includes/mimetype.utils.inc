@@ -17,8 +17,14 @@ use Drupal\islandora\IslandoraMimeTypeMapper;
  *   The extension mapped to the given mimetype.
  */
 function islandora_get_extension_for_mimetype($mimetype) {
+  // Drupal's MIME type guesser returns nothing for text/xml so force return
+  // our extension before anything else.
+  if ($mimetype == 'text/xml') {
+    return 'xml';
+  }
   $mapper = new IslandoraMimeTypeMapper(\Drupal::service('file.mime_type.guesser'));
-  return reset($mapper->getExtensionsForMimeType($mimetype));
+  $extensions = $mapper->getExtensionsForMimeType($mimetype);
+  return !empty($extensions) ? reset($extensions) : 'bin';
 }
 
 /**
@@ -31,8 +37,14 @@ function islandora_get_extension_for_mimetype($mimetype) {
  *   All known legal extensions.
  */
 function islandora_get_extensions_for_mimetype($mimetype) {
+  // Drupal's MIME type guesser returns nothing for text/xml so force return
+  // our extension before anything else.
+  if ($mimetype == 'text/xml') {
+    return array('xml');
+  }
   $mapper = new IslandoraMimeTypeMapper(\Drupal::service('file.mime_type.guesser'));
-  return $mapper->getExtensionsForMimeType($mimetype);
+  $extensions = $mapper->getExtensionsForMimeType($mimetype);
+  return $extensions;
 }
 
 /**
