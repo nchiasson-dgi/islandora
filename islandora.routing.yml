@@ -34,7 +34,7 @@ islandora.view_root_object:
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_object'
     object: 'root'
   requirements:
-    _islandora_object_access: '{object}'
+    _islandora_object_access: 'TRUE'
   options:
     parameters:
       object:
@@ -47,7 +47,7 @@ islandora.view_object:
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_object'
     object: 'root'
   requirements:
-    _islandora_object_access: '{object}'
+    _islandora_object_access: 'TRUE'
   options:
     parameters:
       object:
@@ -60,7 +60,7 @@ islandora.printer_object:
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_printer_object'
     object: ~
   requirements:
-    _islandora_object_access: '{object}'
+    _islandora_object_access: 'TRUE'
   options:
     parameters:
       object:
@@ -73,7 +73,7 @@ islandora.print_object:
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_print_object'
     object: ~
   requirements:
-    _islandora_object_access: '{object}'
+    _islandora_object_access: 'TRUE'
   options:
     parameters:
       object:
@@ -91,7 +91,7 @@ islandora.manage_overview_object:
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_manage_overview_object'
     object: ~
   requirements:
-    _islandora_object_access: '{object}'
+    _islandora_object_access: 'TRUE'
   options:
     parameters:
       object:
@@ -107,7 +107,7 @@ islandora.edit_object:
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_edit_object'
     object: ~
   requirements:
-    _islandora_object_access: '{object}'
+    _islandora_object_access: 'TRUE'
   options:
     parameters:
       object:
@@ -159,12 +159,25 @@ islandora.add_datastream_form_autocomplete_callback:
 islandora.view_datastream:
   path: '/islandora/object/{object}/datastream/{datastream}'
   defaults:
-    perms: 'view old datastream versions'
+    perms: 'view fedora repository objects'
     download: false
     _title: 'View datastream'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_datastream'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraViewDatastream'
   requirements:
-    _islandora_object_access: '{object}'
+    _islandora_datastream_access: 'TRUE'
+  options:
+    parameters:
+      object:
+        type: object
+      datastream:
+        type: datastream
+islandora.view_datastream_view:
+  path: '/islandora/object/{object}/datastream/{datastream}/view'
+  defaults:
+    perms: 'view fedora repository objects'
+    _title: 'View datastream'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraViewDatastream'
+  requirements:
     _islandora_datastream_access: '{datastream}'
   options:
     parameters:
@@ -172,12 +185,15 @@ islandora.view_datastream:
         type: object
       datastream:
         type: datastream
+    _islandora_token_route: TRUE
 islandora.download_datastream:
   path: '/islandora/object/{object}/datastream/{datastream}/download'
   defaults:
     perms: 'view fedora repository objects'
     _title: 'Download datastream'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_download_datastream'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraDownloadDatastream'
+  requirements:
+    _islandora_datastream_access: 'TRUE'
   options:
     parameters:
       object:
@@ -191,8 +207,7 @@ islandora.edit_datastream:
     _title: 'Edit datastream'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_edit_datastream'
   requirements:
-    _islandora_object_access: '{object}'
-    _islandora_datastream_access: '{datastream}'
+    _islandora_datastream_access: 'TRUE'
   options:
     parameters:
       object:

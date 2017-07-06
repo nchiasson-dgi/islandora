@@ -23,6 +23,8 @@
  * along with the program.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
+use Drupal\islandora\Authentication\Provider\IslandoraTokenAuth;
+
 // Common datastreams.
 define('ISLANDORA_DS_COMP_STREAM', 'DS-COMPOSITE-MODEL');
 
@@ -1213,8 +1215,7 @@ function islandora_delete_datastream(AbstractDatastream &$datastream) {
  * Implements hook_cron().
  */
 function islandora_cron() {
-  module_load_include('inc', 'islandora', 'includes/authtokens');
-  islandora_remove_expired_tokens();
+  IslandoraTokenAuth::removeExpiredTokens();
 }
 
 /**

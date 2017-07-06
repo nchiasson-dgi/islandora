@@ -15,3 +15,8 @@ services:
     class: Drupal\islandora\Access\IslandoraDatastreamAccess
     tags:
       - { name: access_check, applies_to: _islandora_datastream_access }
+  authentication.islandora_token:
+    class: Drupal\islandora\Authentication\Provider\IslandoraTokenAuth
+    arguments: ['@config.factory', '@entity.manager']
+    tags:
+      - {name: authentication_provider, provider_id: islandora_auth_token, global: TRUE, priority: 1}
