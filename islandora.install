@@ -43,25 +43,6 @@ function islandora_install() {
 function islandora_uninstall() {
   module_load_include('inc', 'islandora', 'includes/solution_packs');
   //islandora_install_solution_pack('islandora', 'uninstall');
-  // Add new variables to clean up.
-  $variables = array(
-    'islandora_ds_replace_exclude_enforced',
-    'islandora_defer_derivatives_on_ingest',
-    'islandora_base_url',
-    'islandora_repository_pid',
-    'islandora_use_datastream_cache_headers',
-    'islandora_show_print_option',
-    'islandora_render_drupal_breadcrumbs',
-    'islandora_namespace_restriction_enforced',
-    'islandora_pids_allowed',
-    'islandora_risearch_use_itql_when_necessary',
-    'islandora_use_object_semaphores',
-    'islandora_semaphore_period',
-    'islandora_require_obj_upload',
-    'islandora_breadcrumbs_backends',
-    'islandora_render_context_ingeststep',
-  );
-  array_walk($variables, 'variable_del');
 }
 
 /**
