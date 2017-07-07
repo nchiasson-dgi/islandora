@@ -1,0 +1,22 @@
+islandora-admin:
+  version: 1.x
+  css:
+    layout:
+      css/islandora.admin.css: {}
+islandora:
+  version: 1.x
+  css:
+    base:
+      css/islandora.base.css: {}
+    theme:
+      css/islandora.theme.css: {}
+islandora-objects:
+  version: 1.x
+  css:
+    layout:
+      css/islandora.objects.css: {}
+islandora-print:
+  version: 1.x
+  css:
+    layout:
+      css/islandora.print.css: {}
