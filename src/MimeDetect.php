@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\islandora\Tuque;
+namespace Drupal\islandora;
 
 /**
  * Class for determining MIME types and file extensions.

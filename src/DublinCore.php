@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\islandora\Tuque;
+namespace Drupal\islandora;
 
 
 use Drupal\Component\Utility\Unicode;

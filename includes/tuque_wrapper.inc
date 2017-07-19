@@ -74,8 +74,3 @@ function islandora_invoke_datastream_hooks($hook, array $models, $dsid) {
   }
   return islandora_invoke_hook_list($hook, $refinements, array_slice(func_get_args(), 3));
 }
-
-
-
-class IslandoraSimpleCache extends SimpleCache {}
-
