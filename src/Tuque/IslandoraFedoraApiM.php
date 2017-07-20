@@ -1,6 +1,13 @@
 <?php
-namespace Drupal\islandora;
 
+namespace Drupal\islandora\Tuque;
+
+use FedoraApiM;
+
+/**
+ * Class IslandoraFedoraApiM
+ * @package Drupal\islandora\Tuque
+ */
 class IslandoraFedoraApiM extends FedoraApiM {
 
   /**
@@ -177,4 +184,5 @@ class IslandoraFedoraApiM extends FedoraApiM {
       return call_user_func_array(array($this, "parent::$callback"), $args);
     }
   }
+
 }

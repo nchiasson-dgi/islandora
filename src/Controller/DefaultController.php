@@ -5,16 +5,50 @@ namespace Drupal\islandora\Controller;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Form\FormBuilderInterface;
+
+use Drupal\islandora\Form\IslandoraSolutionPackForm;
+
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+
 use AbstractObject;
 use AbstractDatastream;
 
 /**
- * Default controller for the islandora module.
+ * Class DefaultController
+ * @package Drupal\islandora\Controller
  */
 class DefaultController extends ControllerBase {
 
+  protected $formbuilder;
+
+  // XXX: Coder complains if you reference \Drupal core services
+  // directly without using dependency injection. Here is a working example
+  // injecting formbuilder into our controller.
+  public function __construct(FormBuilderInterface $formbuilder) {
+    $this->formbuilder = $formbuilder;
+  }
+
+  /**
+   * Dependency Injection!
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   * @return static
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+    // Load the service(s) required to construct this class.
+    // Order should be the same as the order they are listed in the constructor.
+      $container->get('form_builder')
+    );
+  }
+
+  /**
+   * Administer solutions packs.
+   * @return array|string
+   * @throws \Exception
+   */
   public function islandora_solution_packs_admin() {
     module_load_include('inc', 'islandora', 'includes/utilities');
     module_load_include('inc', 'islandora', 'includes/solution_packs');
@@ -32,15 +66,17 @@ class DefaultController extends ControllerBase {
     // @see https://www.drupal.org/node/2169605
     // @see https://www.drupal.org/node/2408597
     // drupal_add_css(drupal_get_path('module', 'islandora') . '/css/islandora.admin.css');
-
     $output = [];
     $enabled_solution_packs = islandora_solution_packs_get_required_objects();
     foreach ($enabled_solution_packs as $solution_pack_module => $solution_pack_info) {
       // @todo We should probably get the title of the solution pack from the
-    // systems table for consistency in the interface.
+      // systems table for consistency in the interface.
       $solution_pack_name = $solution_pack_info['title'];
       $objects = array_filter($solution_pack_info['objects']);
-      $output[$solution_pack_module] = \Drupal::formBuilder()->getForm('islandora_solution_pack_form_' . $solution_pack_module, $solution_pack_module, $solution_pack_name, $objects);
+      $class_name = IslandoraSolutionPackForm::class;
+
+      $output[$solution_pack_module] = $this->formbuilder->getForm($class_name, $solution_pack_module, $solution_pack_name, $objects);
+
     }
     return $output;
   }

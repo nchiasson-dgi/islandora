@@ -1,9 +1,23 @@
 <?php
-namespace Drupal\islandora;
 
+namespace Drupal\islandora\Tuque;
+
+// XXX: Class from tuque do not autoload properly which causes problems
+// for deserialization.
+@include_once 'sites/all/libraries/tuque/Datastream.php';
+
+$islandora_module_path = drupal_get_path('module', 'islandora');
+@include_once "$islandora_module_path/libraries/tuque/Datastream.php";
+
+use FedoraDatastream;
+
+/**
+ * Class IslandoraFedoraDatastream
+ * @package Drupal\islandora\Tuque
+ */
 class IslandoraFedoraDatastream extends FedoraDatastream {
-  protected $fedoraRelsIntClass = 'IslandoraFedoraRelsInt';
-  protected $fedoraDatastreamVersionClass = 'IslandoraFedoraDatastreamVersion';
+  protected $fedoraRelsIntClass = IslandoraFedoraRelsInt::class;
+  protected $fedoraDatastreamVersionClass = IslandoraFedoraDatastreamVersion::class;
 
   /**
    * Magical magic, to allow recursive modifications.
@@ -62,10 +76,10 @@ class IslandoraFedoraDatastream extends FedoraDatastream {
     }
     catch (Exception $e) {
       \Drupal::logger('islandora')->error('Failed to modify datastream @dsid from @pid</br>code: @code<br/>message: @msg', array(
-          '@pid' => $this->parent->id,
-          '@dsid' => $this->id,
-          '@code' => $e->getCode(),
-          '@msg' => $e->getMessage()));
+        '@pid' => $this->parent->id,
+        '@dsid' => $this->id,
+        '@code' => $e->getCode(),
+        '@msg' => $e->getMessage()));
       throw $e;
     }
   }

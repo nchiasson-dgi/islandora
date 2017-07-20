@@ -1,10 +1,17 @@
 <?php
-namespace Drupal\islandora;
 
+namespace Drupal\islandora\Tuque;
+
+use FedoraObject;
+
+/**
+ * Class IslandoraFedoraObject
+ * @package Drupal\islandora\Tuque
+ */
 class IslandoraFedoraObject extends FedoraObject {
-  protected $newFedoraDatastreamClass = 'IslandoraNewFedoraDatastream';
-  protected $fedoraDatastreamClass = 'IslandoraFedoraDatastream';
-  protected $fedoraRelsExtClass = 'IslandoraFedoraRelsExt';
+  protected $newFedoraDatastreamClass = IslandoraNewFedoraDatastream::class;
+  protected $fedoraDatastreamClass = IslandoraFedoraDatastream::class;
+  protected $fedoraRelsExtClass = IslandoraFedoraRelsExt::class;
 
   /**
    * Magical magic, to allow recursive modifications.
@@ -94,9 +101,9 @@ class IslandoraFedoraObject extends FedoraObject {
     }
     catch (Exception $e) {
       \Drupal::logger('islandora')->error('Failed to modify object: @pid</br>code: @code<br/>message: @msg', array(
-          '@pid' => $this->id,
-          '@code' => $e->getCode(),
-          '@msg' => $e->getMessage()));
+        '@pid' => $this->id,
+        '@code' => $e->getCode(),
+        '@msg' => $e->getMessage()));
       throw $e;
     }
   }
@@ -141,10 +148,10 @@ class IslandoraFedoraObject extends FedoraObject {
     }
     catch (Exception $e) {
       \Drupal::logger('islandora')->error('Failed to purge datastream @dsid from @pid</br>code: @code<br/>message: @msg', array(
-          '@pid' => $this->id,
-          '@dsid' => $id,
-          '@code' => $e->getCode(),
-          '@msg' => $e->getMessage()));
+        '@pid' => $this->id,
+        '@dsid' => $id,
+        '@code' => $e->getCode(),
+        '@msg' => $e->getMessage()));
       throw $e;
     }
   }
