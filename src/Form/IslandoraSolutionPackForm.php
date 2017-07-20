@@ -181,7 +181,7 @@ class IslandoraSolutionPackForm extends FormBase {
       // the objects.
       $solution_pack_status_severity = max($solution_pack_status_severity, $object_status_severity);
       $exists = $object_status['status'] != 'missing';
-      $label = $exists ? \Drupal::l($object->label, Url::fromRoute('islandora.view_root_object')) : $object->label;
+      $label = $exists ? \Drupal::l($object->label, Url::fromRoute('islandora.view_object', ['object' => $object->id])) : $object->label;
 
       // XXX: Probably want to apply css pseudo-selector
       // to this TD directly. Drupal 8 uses glyphs instead of images for things
