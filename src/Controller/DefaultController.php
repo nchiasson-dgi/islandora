@@ -58,14 +58,6 @@ class DefaultController extends ControllerBase {
       return '';
     }
 
-    // @FIXME
-    // The Assets API has totally changed. CSS, JavaScript, and libraries are now
-    // attached directly to render arrays using the #attached property.
-    //
-    //
-    // @see https://www.drupal.org/node/2169605
-    // @see https://www.drupal.org/node/2408597
-    // drupal_add_css(drupal_get_path('module', 'islandora') . '/css/islandora.admin.css');
     $output = [];
     $enabled_solution_packs = islandora_solution_packs_get_required_objects();
     foreach ($enabled_solution_packs as $solution_pack_module => $solution_pack_info) {
