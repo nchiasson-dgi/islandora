@@ -5,7 +5,7 @@
  * This file contains all theme and preprocess functions.
  */
 
-use Drupal\islandora\Tuque\DublinCore;
+use Drupal\islandora\DublinCore;
 use Drupal\Core\Url;
 
 /**

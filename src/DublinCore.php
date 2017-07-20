@@ -8,7 +8,7 @@ use Drupal\Component\Utility\Xss;
 
 /**
  * Class DublinCore
- * @package Drupal\islandora\Tuque
+ * @package Drupal\islandora
  */
 class DublinCore {
 
