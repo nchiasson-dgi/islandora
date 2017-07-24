@@ -22,6 +22,7 @@ class IslandoraTokenAuth implements AuthenticationProviderFilterInterface, Authe
   // Token lifespan(seconds): after this duration the token expires.
   // 5 minutes.
   const ISLANDORA_AUTHTOKEN_TOKEN_TIMEOUT = 300;
+  const TOKEN_NAME = 'islandora_token';
 
   /**
    * The config factory.
@@ -56,7 +57,7 @@ class IslandoraTokenAuth implements AuthenticationProviderFilterInterface, Authe
   public function applies(Request $request) {
     // XXX: The get property on the Request object is advised against usage and
     // to use the property directly on the ParameterBag.
-    return $request->query->get('token') ? TRUE : FALSE;
+    return $request->query->get(static::TOKEN_NAME) ? TRUE : FALSE;
   }
 
   /**
@@ -71,7 +72,7 @@ class IslandoraTokenAuth implements AuthenticationProviderFilterInterface, Authe
     }
     $object = $request->attributes->get('object');
     $datastream = $request->attributes->get('datastream');
-    $token = $request->query->get('token');
+    $token = $request->query->get(static::TOKEN_NAME);
     return $this->validateObjectToken($object->id, $datastream->id, $token);
   }
 
@@ -80,7 +81,7 @@ class IslandoraTokenAuth implements AuthenticationProviderFilterInterface, Authe
    */
   public function authenticate(Request $request) {
     // Find the user corresponding to the token.
-    $uid = $this->authenticateUserByToken($request->query->get('token'));
+    $uid = $this->authenticateUserByToken($request->query->get(static::TOKEN_NAME));
     return $uid ? $this->entityTypeManager->getStorage('user')->load($uid) : NULL;
   }
 
