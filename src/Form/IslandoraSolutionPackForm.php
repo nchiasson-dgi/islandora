@@ -269,7 +269,7 @@ class IslandoraSolutionPackForm extends FormBase {
    * @param array $context
    *   The context of this batch operation.
    */
-  function islandora_solution_pack_batch_operation_reingest_object(AbstractObject $object, array &$context) {
+  static function islandora_solution_pack_batch_operation_reingest_object(AbstractObject $object, array &$context) {
     $existing_object = islandora_object_load($object->id);
     $deleted = FALSE;
     if ($existing_object) {
