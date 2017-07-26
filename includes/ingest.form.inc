@@ -792,8 +792,8 @@ function islandora_ingest_form_ingest_button_process(array $element) {
   // @FIXME
 // The Assets API has totally changed. CSS, JavaScript, and libraries are now
 // attached directly to render arrays using the #attached property.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2169605
 // @see https://www.drupal.org/node/2408597
 // drupal_add_js($settings, 'setting');
@@ -986,7 +986,7 @@ function islandora_ingest_form_get_steps(array &$form_state) {
   foreach ($steps as $key => &$step) {
     $step['id'] = $key;
   }
-  uasort($steps, 'drupal_sort_weight');
+  uasort($steps, array('Drupal\Component\Utility\SortArray', 'sortByWeightElement'));
   return $steps;
 }
 
