@@ -13,7 +13,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use AbstractObject;
 
 /**
- * Class IslandoraSolutionPackForm
+ * Class IslandoraSolutionPackForm.
+ *
  * @package Drupal\islandora\Form
  */
 class IslandoraSolutionPackForm extends FormBase {
@@ -23,13 +24,16 @@ class IslandoraSolutionPackForm extends FormBase {
   // XXX: Coder complains if you reference \Drupal core services
   // directly without using dependency injection. Here is a working example
   // injecting formbuilder into our controller.
+
   public function __construct(ModuleHandler $moduleHandler) {
     $this->moduleHandler = $moduleHandler;
   }
 
   /**
    * Dependency Injection!
+   *
    * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   *
    * @return static
    */
   public static function create(ContainerInterface $container) {
@@ -79,7 +83,7 @@ class IslandoraSolutionPackForm extends FormBase {
       $batch['operations'][] = [
         [
           '\Drupal\islandora\Form\IslandoraSolutionPackForm',
-          'islandora_solution_pack_batch_operation_reingest_object'
+          'islandora_solution_pack_batch_operation_reingest_object',
         ],
         [$object]
       ];
@@ -102,9 +106,9 @@ class IslandoraSolutionPackForm extends FormBase {
       }
     }
     $solution_pack_module = $form_state->getValue('solution_pack_module');
-    // Use not_checked instead of checked. Remove not checked item from betch. so
-    // that get batch function can get all object ingest batch if not checked list
-    // is empty.
+    // Use not_checked instead of checked. Remove not checked item from batch.
+    // So that get batch function can get all object ingest batch if not checked
+    // list is empty.
     $batch =
       $this->islandora_solution_pack_get_batch($solution_pack_module, $not_checked);
     batch_set($batch);
@@ -168,9 +172,9 @@ class IslandoraSolutionPackForm extends FormBase {
       'label' => $this->t('Label'),
       'pid' => $this->t('PID'),
       'status' =>  $this->t('Status'),
-      ];
+    ];
 
-    $object_info = array();
+    $object_info = [];
     foreach ($objects as $object) {
       $object_status = islandora_check_object_status($object);
       $object_status_info = $status_info[$object_status['status']];
@@ -185,16 +189,15 @@ class IslandoraSolutionPackForm extends FormBase {
       // to this TD directly. Drupal 8 uses glyphs instead of images for things
       // like 'warning' and 'ok'.
       $object_info[$object->id] = [
-        'label'=> $label,
+        'label' => $label,
         'pid' => $object->id,
         'status' => [
           '#markup' => $this->t('@image @status', [
             '@image' => \Drupal::service("renderer")->renderRoot($object_status_info['image']),
             '@status' => $object_status['status_friendly'],
-              ]
-          )]
+            ]),
+        ],
       ];
-
 
     }
 
@@ -226,14 +229,16 @@ class IslandoraSolutionPackForm extends FormBase {
         ],
         'install_status' => [
           '#markup' => '<strong>Object status:</strong> @image @status',
-          '#attached' => ['placeholders' => [
-            '@image' => [
-              'image' => $solution_pack_status_info['image']
+          '#attached' => [
+            'placeholders' => [
+              '@image' => [
+                'image' => $solution_pack_status_info['image'],
+              ],
+              '@status' => [
+                '#markup' => $solution_pack_status_info['solution_pack'],
+              ],
             ],
-            '@status' => [
-              '#markup' => $solution_pack_status_info['solution_pack']
-            ]
-          ]],
+          ],
           '#prefix' => '<div class="islandora-solution-pack-install-status">',
           '#suffix' => '</div>',
         ],
@@ -267,7 +272,7 @@ class IslandoraSolutionPackForm extends FormBase {
    * @param array $context
    *   The context of this batch operation.
    */
-  static function islandora_solution_pack_batch_operation_reingest_object(AbstractObject $object, array &$context) {
+  public static function islandora_solution_pack_batch_operation_reingest_object(AbstractObject $object, array &$context) {
     $existing_object = islandora_object_load($object->id);
     $deleted = FALSE;
     if ($existing_object) {
@@ -275,9 +280,9 @@ class IslandoraSolutionPackForm extends FormBase {
       if (!$deleted) {
         $object_link = \Drupal::l($existing_object->label, Url::fromRoute('islandora.view_object'), ['object' => $existing_object->id]);
 
-        drupal_set_message(Xss::filter(t('Failed to purge existing object !object_link.', array(
+        drupal_set_message(Xss::filter(t('Failed to purge existing object !object_link.', [
           '!object_link' => $object_link,
-        ))), 'error');
+        ])), 'error');
         // Failed to purge don't attempt to ingest.
         return;
       }
@@ -314,4 +319,5 @@ class IslandoraSolutionPackForm extends FormBase {
       $object ? 'status' : 'error'
     );
   }
+
 }
