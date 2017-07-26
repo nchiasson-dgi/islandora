@@ -295,28 +295,24 @@ class IslandoraSolutionPackForm extends FormBase {
       '@pid' => $pid,
       '@label' => $label,
       '@object_link' => $object_link,
-      '@msg' => '',
     ];
 
     if ($object) {
       if ($deleted) {
-        $params['@msg'] = 'Successfully reinstalled';
+        $message = t('Successfully reinstalled');
       }
       else {
-        $params['@msg'] = 'Successfully installed @object_link.';
+        $message = t('Successfully installed @object_link.', $params);
       }
     }
     elseif ($deleted) {
-      $params['@msg'] = 'Failed to reinstall @label, identified by @pid.';
+      $message = t('Failed to reinstall @label, identified by @pid.', $params);
     }
     else {
-      $params['@msg'] = 'Failed to install @label, identified by @pid.';
+      $message = t('Failed to install @label, identified by @pid.', $params);
     }
 
-    drupal_set_message(Xss::filter(
-      [
-        '#markup' => t('@msg @object_link.', $params),
-      ]),
+    drupal_set_message(Xss::filter($message),
       $object ? 'status' : 'error'
     );
   }
