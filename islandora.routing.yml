@@ -1,5 +1,12 @@
+islandora.admin_config:
+  path: '/admin/config/islandora'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Islandora'
+  requirements:
+    _permission: 'administer site configuration'
 islandora.repository_admin:
-  path: '/admin/islandora/configure'
+  path: '/admin/config/islandora/core'
   defaults:
     _title: 'Configuration'
     _form: '\Drupal\islandora\Form\IslandoraRepositoryAdmin'

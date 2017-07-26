@@ -6,6 +6,7 @@
  */
 
 use Drupal\file\Entity\File;
+use Drupal\Core\Form\FormState;
 
 /**
  * Convert bytes to human readable format.
@@ -651,18 +652,15 @@ function islandora_directory_exists_message($path) {
  *   The name of the system settings form element.
  * @param mixed $default_value
  *   The default value for the system settings form element.
- * @param array $form_state
- *   The Drupal form state.
+ * @param FormState $form_state
+ *   The Drupal form state object.
  *
  * @return mixed
  *   The default value for use in a the system_settings_form().
  */
-function islandora_system_settings_form_default_value($name, $default_value, array &$form_state) {
-  // @FIXME
-// // @FIXME
-// // The correct configuration object could not be determined. You'll need to
-// // rewrite this call manually.
-// return isset($form_state['values'][$name]) ? $form_state['values'][$name] : variable_get($name, $default_value);
+function islandora_system_settings_form_default_value($name, $default_value, FormState &$form_state) {
+  $values = $form_state->getValues();
+  return isset($values[$name]) ? $values[$name] : variable_get($name, $default_value);
 
 }
 

@@ -4,7 +4,6 @@ islandora_pids_allowed: 'default: demo: changeme: ilives: islandora-book: books:
 islandora_basic_collection_generate_uuid: false
 islandora_use_object_semaphores: false
 islandora_semaphore_period: 600
-islandora_use_datastream_cache_headers: true
 islandora_render_context_ingeststep: false
 islandora_show_print_option: false
 islandora_repository_pid: 'islandora:root'
@@ -14,3 +13,4 @@ islandora_metadata_display: dublin_core
 islandora_render_drupal_breadcrumbs: true
 islandora_risearch_use_itql_when_necessary: true
 islandora_require_obj_upload: true
+islandora_breadcrumbs_backends: 'islandora_breadcrumbs_legacy_sparql'

@@ -1,5 +1,11 @@
+islandora.admin_config:
+  route_name: islandora.admin_config
+  parent: system.admin_config
+  title: Islandora
+  weight: 100
 islandora.repository_admin:
   route_name: islandora.repository_admin
+  parent: islandora.admin_config
   title: Configuration
   weight: -1
   description: 'Configure settings for Islandora.'
