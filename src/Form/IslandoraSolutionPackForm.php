@@ -4,7 +4,6 @@ namespace Drupal\islandora\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Extension\ModuleHandler;
@@ -12,7 +11,6 @@ use Drupal\Core\Extension\ModuleHandler;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use AbstractObject;
-
 
 /**
  * Class IslandoraSolutionPackForm
