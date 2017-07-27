@@ -257,7 +257,6 @@ class IslandoraSolutionPackForm extends FormBase {
       ],
     ];
     $form['#attached']['library'][] = 'islandora/islandora-admin';
-    kint($form);
     return $form;
   }
 
