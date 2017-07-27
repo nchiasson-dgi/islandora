@@ -11,13 +11,25 @@ islandora.repository_admin:
   description: 'Configure settings for Islandora.'
 islandora.metadata_display_form:
   route_name: islandora.metadata_display_form
+  parent: islandora.admin_config
   title: 'Metadata Display'
   description: 'Configure settings for metadata display on Islandora objects'
 islandora.solution_packs_admin:
   route_name: islandora.solution_packs_admin
+  parent: islandora.admin_config
+  title: 'Solution pack configuration'
+  description: 'Configure Islandora solution packs'
+islandora.solution_packs_admin_form:
+  route_name: islandora.solution_packs_admin_form
+  parent: islandora.solution_packs_admin
   title: 'Solution packs required objects'
   weight: -1
   description: 'Install content models and collections required by installed solution packs.'
+islandora.tools_admin:
+  route_name: islandora.tools_admin
+  parent: islandora.admin_config
+  title: 'Islandora Utility Modules'
+  description: 'Configure Islandora utility modules.'
 islandora.view_default_object:
   route_name: islandora.view_default_object
   title: 'Islandora Repository'

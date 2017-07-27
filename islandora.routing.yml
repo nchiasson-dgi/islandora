@@ -13,19 +13,33 @@ islandora.repository_admin:
   requirements:
     _permission: 'administer site configuration'
 islandora.metadata_display_form:
-  path: '/admin/islandora/metadata'
+  path: '/admin/config/islandora/metadata'
   defaults:
     _title: 'Metadata Display'
     _form: '\Drupal\islandora\Form\IslandoraMetadataDisplayForm'
   requirements:
     _permission: 'administer site configuration'
 islandora.solution_packs_admin:
-  path: '/admin/islandora/solution_pack_config/solution_packs'
+  path: 'admin/config/islandora/solution_pack_config'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Solution pack configuration'
+  requirements:
+    _permission: 'administer site configuration'
+islandora.solution_packs_admin_form:
+  path: '/admin/config/islandora/solution_pack_config/solution_packs'
   defaults:
     _title: 'Solution packs required objects'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_solution_packs_admin'
   requirements:
     _permission: 'add fedora datastreams'
+islandora.tools_admin:
+  path: 'admin/config/islandora/tools'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Islandora Utility Modules'
+  requirements:
+    _permission: 'administer site configuration'
 islandora.view_default_object:
   path: '/islandora'
   defaults:

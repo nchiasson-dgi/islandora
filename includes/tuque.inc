@@ -67,7 +67,6 @@ class IslandoraTuque {
    *   The url to the fedora instance.
    */
   public function __construct($user = NULL, $url = NULL) {
-    dd('this tuque');
     if (!isset($user)) {
       $user = \Drupal::currentUser();
     }

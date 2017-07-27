@@ -839,7 +839,7 @@ function hook_islandora_breadcrumbs_alter(&$breadcrumbs, $context, $object = NUL
  *   -description callback: A callable function that provides the markup to be
  *    passed for the description. Returns markup or FALSE if the viewer
  *    wishes to default back to the Dublin Core display for the current object.
- *   -configuration (Optional): A path to the administration page for the
+ *   -configuration (Optional): A route name to the administration page for the
  *    metadata display.
  *
  * @see islandora_retrieve_metadata_markup()
@@ -851,7 +851,7 @@ function hook_islandora_metadata_display_info() {
       'description' => t('This is purely an example of how to implement this.'),
       'metadata callback' => 'hookable_displays_some_function_that_returns_metadata_markup',
       'description callback' => 'hookable_displays_some_function_that_returns_description_markup',
-      'configuration' => 'admin/hookable_displays_yay/somepath',
+      'configuration' => 'islandora.sample_route',
     ),
   );
 }

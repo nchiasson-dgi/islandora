@@ -7,6 +7,7 @@
 
 use Drupal\file\Entity\File;
 use Drupal\Core\Form\FormState;
+use Drupal\Core\Url;
 
 /**
  * Convert bytes to human readable format.
@@ -968,4 +969,29 @@ function islandora_build_datastream_edit_registry(AbstractDatastream $datastream
   );
   \Drupal::moduleHandler()->alter(ISLANDORA_EDIT_DATASTREAM_REGISTRY_HOOK, $edit_registry, $context);
   return $edit_registry;
+}
+
+/**
+ * Helper to construct a URL from a route name or a path.
+ *
+ * @param string $path_or_route
+ *   Either the path for a URL being constructed or the name of the route.
+ *
+ * @return bool|Url
+ *   A URL object to be used for rendering a link or FALSE if no route matches.
+ *
+ * @note This will eventually be removed. Only exists as a stop gap for
+ * the deprecation of the "l" function and the change from paths to routes
+ * within Drupal as a whole.
+ */
+function islandora_get_url_from_path_or_route($path_or_route) {
+  $route_provider = \Drupal::service('router.route_provider');
+  try {
+    $route = $route_provider->getRouteByName($path_or_route);
+  }
+  catch (Exception $e) {
+    $routes = $route_provider->getRoutesByPattern($path_or_route)->all();
+    $route = !empty($routes) ? reset($routes) : FALSE;
+  }
+  return $route ? URL::fromRoute($route) : FALSE;
 }
