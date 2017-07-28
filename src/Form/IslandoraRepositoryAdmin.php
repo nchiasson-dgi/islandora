@@ -210,6 +210,7 @@ class IslandoraRepositoryAdmin extends IslandoraModuleHandlerAdminForm {
       ->set('islandora_use_object_semaphores', $form_state->getValue('islandora_use_object_semaphores'))
       ->set('islandora_semaphore_period', $form_state->getValue('islandora_semaphore_period'))
       ->set('islandora_defer_derivatives_on_ingest', $form_state->getValue('islandora_defer_derivatives_on_ingest'))
+      ->set('islandora_show_print_option', $form_state->getValue('islandora_show_print_option'))
       ->set('islandora_render_context_ingeststep', $form_state->getValue('islandora_render_context_ingeststep'))
       ->set('islandora_breadcrumbs_backends', $form_state->getValue('islandora_breadcrumbs_backend'))
       ->set('islandora_risearch_use_itql_when_necessary', $form_state->getValue('islandora_risearch_use_itql_when_necessary'))

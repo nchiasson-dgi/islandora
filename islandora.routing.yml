@@ -340,17 +340,10 @@ islandora.mime_type_autocomplete:
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_mime_type_autocomplete'
   requirements:
     _permission: 'administer site configuration'
-islandora.deleted_objects_prep_form:
-  path: '/admin/islandora/restore/prep'
-  defaults:
-    _title: 'Manage Deleted Objects'
-    _form: '\Drupal\islandora\Form\IslandoraDeletedObjectsPrepForm'
-  requirements:
-    _permission: 'manage deleted objects'
 islandora.deleted_objects_manage_form:
-  path: '/admin/islandora/restore/manage'
+  path: '/admin/config/islandora/restore'
   defaults:
     _title: 'Manage Deleted Objects'
-    _form: '\Drupal\islandora\Form\IslandoraDeletedObjectsManageForm'
+    _form: '\Drupal\islandora\Form\IslandoraManageDeletedObjectsForm'
   requirements:
     _permission: 'manage deleted objects'

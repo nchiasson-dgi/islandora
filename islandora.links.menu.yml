@@ -35,7 +35,8 @@ islandora.view_default_object:
   title: 'Islandora Repository'
 islandora.view_object:
   route_name: islandora.view_object
-islandora.deleted_objects_prep_form:
-  route_name: islandora.deleted_objects_prep_form
+islandora.deleted_objects_manage_form:
+  route_name: islandora.deleted_objects_manage_form
+  parent: islandora.admin_config
   title: 'Manage Deleted Objects'
-  description: 'Restore or permanantly remove objects with Deleted status'
+  description: 'Restore or permanently remove objects with Deleted status'

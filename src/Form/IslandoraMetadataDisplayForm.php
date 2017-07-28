@@ -34,29 +34,8 @@ class IslandoraMetadataDisplayForm extends IslandoraModuleHandlerAdminForm {
       '#tree' => TRUE,
     ];
     $defined_displays = $this->moduleHandler->invokeAll('islandora_metadata_display_info');
-    $rows = [
-      'none' => [
-        'label' => t('None'),
-        'description' => t("Don't show any metadata for displaying"),
-      ],
-    ];
-    foreach ($defined_displays as $display_name => $values) {
-      $configuration = FALSE;
-      if (isset($values['configuration'])) {
-        $configuration = [
-          '#title' => $this->t('configure'),
-          '#type' => 'link',
-          '#url' => islandora_get_url_from_path_or_route($values['configuration']),
-        ];
-      }
-      $rows[$display_name] = [
-        'label' => $values['label'],
-        'description' => $values['description'],
-        'configuration' => $configuration ? ['data' => $configuration] : '',
-      ];
-    }
     $form['viewers'] = [
-      '#type' => 'tableselect',
+      '#type' => 'table',
       '#title' => $this->t('Select a viewer'),
       '#caption' => $this->t('Preferred metadata display for Islandora. These may be provided by third-party modules.'),
       '#header' => [
@@ -64,11 +43,37 @@ class IslandoraMetadataDisplayForm extends IslandoraModuleHandlerAdminForm {
         'description' => $this->t('Description'),
         'configuration' => $this->t('Configuration'),
       ],
-      '#options' => $rows,
       '#default_value' => $this->config('islandora.settings')->get('islandora_metadata_display'),
       '#empty' => $this->t('No viewers detected.'),
       '#multiple' => FALSE,
+      '#tableselect' => TRUE,
     ];
+    foreach ($defined_displays as $display_name => $values) {
+      $form['viewers']['none'] = [
+        'label' => [
+          '#plain_text' => $this->t('None'),
+        ],
+        'description' => [
+          '#plain_text' => $this->t("Don't show any metadata for displaying"),
+        ],
+      ];
+
+      $form['viewers'][$display_name] = [
+        'label' => [
+          '#plain_text' => $values['label'],
+        ],
+        'description' => [
+          '#plain_text' => $values['description'],
+        ],
+      ];
+      if (isset($values['configuration'])) {
+        $form['viewers'][$display_name]['configuration'] = [
+          '#title' => $this->t('configure'),
+          '#type' => 'link',
+          '#url' => islandora_get_url_from_path_or_route($values['configuration']),
+        ];
+      }
+    }
     return parent::buildForm($form, $form_state);
   }
 
