@@ -1851,8 +1851,17 @@ function islandora_cache_clear_all() {
 
   if (!$clear) {
     $clear = TRUE;
-    drupal_register_shutdown_function('cache_clear_all');
+    drupal_register_shutdown_function('islandora_shutdown_cache_clear_all');
   }
+}
+
+/**
+ * Shutdown callback to nuke render cache.
+ *
+ * This should be made more targeted in the future.
+ */
+function islandora_shutdown_cache_clear_all() {
+  \Drupal::cache('render')->deleteAll();
 }
 
 /**
