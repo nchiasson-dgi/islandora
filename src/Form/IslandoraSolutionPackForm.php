@@ -283,8 +283,8 @@ class IslandoraSolutionPackForm extends FormBase {
       if (!$deleted) {
         $object_link = \Drupal::l($existing_object->label, Url::fromRoute('islandora.view_object'), ['object' => $existing_object->id]);
 
-        drupal_set_message(Xss::filter($this->t('Failed to purge existing object !object_link.', [
-          '!object_link' => $object_link,
+        drupal_set_message(Xss::filter($this->t('Failed to purge existing object @object_link.', [
+          '@object_link' => $object_link,
         ])), 'error');
         // Failed to purge don't attempt to ingest.
         return;
