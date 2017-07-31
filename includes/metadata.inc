@@ -60,90 +60,6 @@ function islandora_retrieve_description_markup(AbstractObject $object) {
 }
 
 /**
- * Form used for choosing which default metadata display to use for viewing.
- *
- * @param array $form
- *   An array representing a Drupal form.
- * @param array $form_state
- *   An array containing the Drupal form state.
- *
- * @return array
- *   An array representing the metadata display viewer form.
- */
-function islandora_metadata_display_form($form, $form_state) {
-  module_load_include('inc', 'islandora', 'includes/solution_packs.inc');
-  $form = array();
-  $defined_displays = \Drupal::moduleHandler()->invokeAll('islandora_metadata_display_info');
-  if (!empty($defined_displays)) {
-    $no_viewer = array();
-    $no_viewer['none'] = array(
-      'label' => t('None'),
-      'description' => t("Don't show any metadata for displaying"),
-    );
-    $viewers = array_merge_recursive($no_viewer, $defined_displays);
-
-    $form['viewers'] = array(
-      '#type' => 'item',
-      '#title' => t('Select a viewer'),
-      '#description' => t('Preferred metadata display for Islandora. These may be provided by third-party modules.'),
-      '#tree' => TRUE,
-      '#theme' => 'islandora_viewers_table',
-    );
-
-    foreach ($viewers as $name => $profile) {
-      $options[$name] = '';
-      $form['viewers']['name'][$name] = array(
-        '#type' => 'hidden',
-        '#value' => $name,
-      );
-      $form['viewers']['label'][$name] = array(
-        '#type' => 'item',
-        '#markup' => $profile['label'],
-      );
-      $form['viewers']['description'][$name] = array(
-        '#type' => 'item',
-        '#markup' => $profile['description'],
-      );
-      // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $form['viewers']['configuration'][$name] = array(
-//         '#type' => 'item',
-//         '#markup' => (isset($profile['configuration']) AND $profile['configuration'] != '') ? l(t('configure'), $profile['configuration']) : '',
-//       );
-
-    }
-    $form['viewers']['default'] = array(
-      '#type' => 'radios',
-      '#options' => isset($options) ? $options : array(),
-      '#default_value' => \Drupal::config('islandora.settings')->get('islandora_metadata_display'),
-    );
-  }
-  else {
-    $form['viewers']['no_viewers'] = array(
-      '#markup' => t('No viewers detected.'),
-    );
-  }
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save configuration'),
-  );
-  return $form;
-}
-
-/**
- * Submit handler for the metadata display form which sets the default viewer.
- *
- * @param array $form
- *   An array representing a Drupal form.
- * @param array $form_state
- *   An array containing the Drupal form state.
- */
-function islandora_metadata_display_form_submit($form, $form_state) {
-  \Drupal::configFactory()->getEditable('islandora.settings')->set('islandora_metadata_display', $form_state['values']['viewers']['default'])->save();
-  drupal_set_message(t('The configuration options have been saved.'));
-}
-
-/**
  * Metadata display callback for rendering Dublin Core metadata.
  *
  * @param AbstractObject $object
@@ -164,8 +80,8 @@ function islandora_metadata_display_callback(AbstractObject $object, $print = FA
 // Calling _theme() directly can alter the expected output and potentially
 // introduce security issues (see https://www.drupal.org/node/2195739). You
 // should use renderable arrays instead.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2195739
 // return theme('islandora_dublin_core_display', $elements);
 
@@ -189,8 +105,8 @@ function islandora_metadata_description_callback(AbstractObject $islandora_objec
 // Calling _theme() directly can alter the expected output and potentially
 // introduce security issues (see https://www.drupal.org/node/2195739). You
 // should use renderable arrays instead.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2195739
 // return theme('islandora_dublin_core_description', $elements);
 

@@ -6,6 +6,8 @@
  */
 
 use Drupal\file\Entity\File;
+use Drupal\Core\Form\FormState;
+use Drupal\Core\Url;
 
 /**
  * Convert bytes to human readable format.
@@ -651,18 +653,15 @@ function islandora_directory_exists_message($path) {
  *   The name of the system settings form element.
  * @param mixed $default_value
  *   The default value for the system settings form element.
- * @param array $form_state
- *   The Drupal form state.
+ * @param FormState $form_state
+ *   The Drupal form state object.
  *
  * @return mixed
  *   The default value for use in a the system_settings_form().
  */
-function islandora_system_settings_form_default_value($name, $default_value, array &$form_state) {
-  // @FIXME
-// // @FIXME
-// // The correct configuration object could not be determined. You'll need to
-// // rewrite this call manually.
-// return isset($form_state['values'][$name]) ? $form_state['values'][$name] : variable_get($name, $default_value);
+function islandora_system_settings_form_default_value($name, $default_value, FormState &$form_state) {
+  $values = $form_state->getValues();
+  return isset($values[$name]) ? $values[$name] : variable_get($name, $default_value);
 
 }
 
@@ -970,4 +969,29 @@ function islandora_build_datastream_edit_registry(AbstractDatastream $datastream
   );
   \Drupal::moduleHandler()->alter(ISLANDORA_EDIT_DATASTREAM_REGISTRY_HOOK, $edit_registry, $context);
   return $edit_registry;
+}
+
+/**
+ * Helper to construct a URL from a route name or a path.
+ *
+ * @param string $path_or_route
+ *   Either the path for a URL being constructed or the name of the route.
+ *
+ * @return bool|Url
+ *   A URL object to be used for rendering a link or FALSE if no route matches.
+ *
+ * @note This will eventually be removed. Only exists as a stop gap for
+ * the deprecation of the "l" function and the change from paths to routes
+ * within Drupal as a whole.
+ */
+function islandora_get_url_from_path_or_route($path_or_route) {
+  $route_provider = \Drupal::service('router.route_provider');
+  try {
+    $route = $route_provider->getRouteByName($path_or_route);
+  }
+  catch (Exception $e) {
+    $routes = $route_provider->getRoutesByPattern($path_or_route)->all();
+    $route = !empty($routes) ? reset($routes) : FALSE;
+  }
+  return $route ? URL::fromRoute($route) : FALSE;
 }
