@@ -47,19 +47,6 @@ islandora.view_default_object:
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_default_object'
   requirements:
     _permission: 'view fedora repository objects'
-islandora.view_root_object:
-  path: '/islandora/object'
-  defaults:
-    perms: 'view fedora repository objects'
-    _title_callback: '\Drupal\islandora\Controller\DefaultController::islandora_drupal_title'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_object'
-    object: 'root'
-  requirements:
-    _islandora_object_access: 'TRUE'
-  options:
-    parameters:
-      object:
-        type: object
 islandora.view_object:
   path: '/islandora/object/{object}'
   defaults:
@@ -110,7 +97,6 @@ islandora.manage_overview_object:
       - 'ingest fedora objects'
     _title: 'Manage'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_manage_overview_object'
-    object: ~
   requirements:
     _islandora_object_access: 'TRUE'
   options:
@@ -126,30 +112,36 @@ islandora.edit_object:
       - 'delete fedora objects and datastreams'
     _title: 'Datastreams'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_edit_object'
-    object: ~
+  requirements:
+    _islandora_object_access: 'true'
+  options:
+    parameters:
+      object:
+        type: object
+islandora.object_properties_form:
+  path: '/islandora/object/{object}/manage/properties'
+  defaults:
+    perms: 'manage object properties'
+    _title: 'Properties'
+    _form: '\Drupal\islandora\Form\IslandoraObjectPropertiesForm'
   requirements:
     _islandora_object_access: 'TRUE'
   options:
     parameters:
       object:
         type: object
-
-islandora.object_properties_form:
-  path: '/islandora/object/{object}/manage/properties'
-  defaults:
-    perm: 'manage object properties'
-    _title: 'Properties'
-    _form: '\Drupal\islandora\Form\IslandoraObjectPropertiesForm'
-  requirements:
-    _custom_access: '\Drupal\islandora\Form\IslandoraObjectPropertiesForm::islandora_object_access_callback'
 islandora.delete_object_form:
   path: '/islandora/object/{object}/delete'
   defaults:
-    perm: 'delete fedora objects and datastreams'
+    perms: 'delete fedora objects and datastreams'
     _title: 'Delete object'
     _form: '\Drupal\islandora\Form\IslandoraDeleteObjectForm'
   requirements:
-    _custom_access: '\Drupal\islandora\Form\IslandoraDeleteObjectForm::islandora_object_access_callback'
+    _islandora_object_access: 'true'
+  options:
+    parameters:
+      object:
+        type: object
 islandora.regenerate_object_derivatives_form:
   path: '/islandora/object/{object}/regenerate'
   defaults:

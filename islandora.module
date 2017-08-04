@@ -227,12 +227,6 @@ function islandora_theme() {
       'file' => 'includes/solution_packs.inc',
       'render element' => 'form',
     ),
-    // Overview for manage tab.
-    'islandora_object_overview' => array(
-      'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-object-overview',
-      'variables' => array('islandora_object' => NULL),
-    ),
   );
 }
 
@@ -590,32 +584,6 @@ function islandora_object_manage_access_callback($perms, $object = NULL) {
   }
 
   return $has_access;
-}
-
-/**
- * Renders the given objects manage overview page.
- *
- * @param AbstractObject $object
- *   The object to manage.
- *
- * @return string
- *   The HTML repersentation of the manage object page.
- */
-function islandora_manage_overview_object(AbstractObject $object) {
-  module_load_include('inc', 'islandora', 'includes/utilities');
-  $output = islandora_create_manage_overview($object);
-  $hooks = islandora_build_hook_list(ISLANDORA_OVERVIEW_HOOK, $object->models);
-  foreach ($hooks as $hook) {
-    $temp = \Drupal::moduleHandler()->invokeAll($hook, [$object]);
-    islandora_as_renderable_array($temp);
-    if (!empty($temp)) {
-      arsort($temp);
-      $output = array_merge_recursive($output, $temp);
-    }
-  }
-  \Drupal::moduleHandler()->alter($hooks, $object, $output);
-  islandora_as_renderable_array($output);
-  return $output;
 }
 
 /**
@@ -1901,29 +1869,6 @@ function islandora_islandora_get_breadcrumb_query_predicates(AbstractObject $obj
     'info:fedora/fedora-system:def/relations-external#isMemberOfCollection',
     'info:fedora/fedora-system:def/relations-external#isMemberOf',
   );
-}
-
-/**
- * Provides information for the object manage page.
- *
- * @param AbstractObject $object
- *   The object being managed.
- *
- * @return array
- *   themed output
- */
-function islandora_create_manage_overview(AbstractObject $object) {
-  // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $output = theme('islandora_object_overview', array('islandora_object' => $object));
-
-  return array('cmodels' => $output);
 }
 
 /**

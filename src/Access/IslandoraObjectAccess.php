@@ -5,11 +5,21 @@ namespace Drupal\islandora\Access;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Access checking for objects within Islandora.
  */
 class IslandoraObjectAccess implements AccessInterface {
+  protected $config;
+
+  public function __construct(ConfigFactoryInterface $config) {
+    $this->config = $config;
+  }
+
+  public static function create(ConfigFactoryInterface $config) {
+    return new static($config);
+  }
 
   /**
    * Whether the user has access to an object.
@@ -35,7 +45,9 @@ class IslandoraObjectAccess implements AccessInterface {
     // in Drupal as defaults this needs to be the case. If it's possible to get
     // around this by making the empty slug route in YAML or a custom Routing
     // object we can remove this.
-    $object = $object === 'root' ? islandora_object_load(\Drupal::config('islandora.settings')->get('islandora_repository_pid')) : islandora_object_load($object);
+    $object = islandora_object_load($object === 'root' ?
+      $this->config->get('islandora.settings')->get('islandora_repository_pid') :
+      $object);
     if (!$object && !islandora_describe_repository()) {
       islandora_display_repository_inaccessible_message();
       return AccessResult::forbidden();

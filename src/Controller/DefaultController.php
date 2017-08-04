@@ -177,7 +177,7 @@ class DefaultController extends ControllerBase {
     $cache = &drupal_static(__FUNCTION__);
     if (!is_object($object)) {
       // The object could not be loaded... Presumably, we don't have
-    // permission.
+      // permission.
       return FALSE;
     }
     if ($user === NULL) {
@@ -238,18 +238,45 @@ class DefaultController extends ControllerBase {
 
   public function islandora_manage_overview_object(AbstractObject $object) {
     module_load_include('inc', 'islandora', 'includes/utilities');
-    $output = islandora_create_manage_overview($object);
+    $link_generator = \Drupal::service('link_generator');
+
+    $to_item = function ($model) use ($link_generator) {
+      if ($model == 'fedora-system:FedoraObject-3.0') {
+        return FALSE;
+      }
+
+      $loaded = islandora_object_load($model);
+      return $loaded ?
+        $link_generator->generate($loaded->label, \Drupal\Core\Url::fromRoute('islandora.view_object', array(
+          'object' => $loaded->id,
+        ))) :
+        t('@cmodel - (This content model is not in this Islandora repository.)', array(
+          '@cmodel' => $loaded->id,
+        ));
+    };
+    $links = array_filter(array_map($to_item, $object->models));
+    $output = [
+      'models' => [
+        '#type' => 'item',
+        '#title' => t('Models'),
+        '#title_display' => 'invisible',
+        '#description' => \Drupal::translation()->formatPlural(count($links), "This object's behavior is defined by the Islandora content model:", "This object's behavior is defined by the Islandora content models:"),
+        '#description_display' => 'before',
+        'list' => [
+          '#theme' => 'item_list',
+          '#items' => $links,
+        ]
+      ],
+    ];
     $hooks = islandora_build_hook_list(ISLANDORA_OVERVIEW_HOOK, $object->models);
     foreach ($hooks as $hook) {
       $temp = \Drupal::moduleHandler()->invokeAll($hook, [$object]);
-      islandora_as_renderable_array($temp);
       if (!empty($temp)) {
         arsort($temp);
         $output = array_merge_recursive($output, $temp);
       }
     }
     \Drupal::moduleHandler()->alter($hooks, $object, $output);
-    islandora_as_renderable_array($output);
     return $output;
   }
 

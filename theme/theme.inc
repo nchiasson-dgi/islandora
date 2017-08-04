@@ -817,38 +817,3 @@ function template_preprocess_islandora_dublin_core_description(array &$variables
     $variables['dc_array']['dc:description']['value'] = nl2br(\Drupal\Component\Utility\Xss::filter($variables['dc_array']['dc:description']['value']));
   }
 }
-
-/**
- * Implements template_preprocess_HOOK().
- */
-function template_preprocess_islandora_object_overview(array &$variables) {
-  $object = $variables['islandora_object'];
-  $cmodels = $object->models;
-  $links = array();
-  foreach ($cmodels as $cmodel) {
-    if ($cmodel != 'fedora-system:FedoraObject-3.0') {
-      $o = islandora_object_load($cmodel);
-      if (is_object($o)) {
-        // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $links[] = array(l($o->label, "islandora/object/{$o->id}"));
-
-      }
-      else {
-        $links[] = array(t("@cmodel  - (This content model is not in this Islandora repository.)", array('@cmodel' => $cmodel)));
-      }
-    }
-  }
-  $pluralized_identifier = \Drupal::translation()->formatPlural(count($links), 'Islandora content model', 'Islandora content models');
-  $variables['header'] = t("This object's behavior is defined by the @identifier", array("@identifier" => $pluralized_identifier));
-  // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $variables['list'] = theme('item_list', array('items' => $links));
-
-}
