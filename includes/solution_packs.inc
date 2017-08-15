@@ -5,6 +5,8 @@
  * Admin and callback functions for solution pack management.
  */
 
+use Drupal\Core\Extension\InfoParser;
+
 /**
  * Get the information about required object.
  *
@@ -105,8 +107,8 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
   module_load_include('module', 'islandora', 'islandora');
   module_load_include('inc', 'islandora', 'includes/utilities');
   module_load_include('module', $module, $module);
-  $info_file = drupal_get_path('module', $module) . "/{$module}.info";
-  $info_array = drupal_parse_info_file($info_file);
+  $info_file = drupal_get_path('module', $module) . "/{$module}.info.yml";
+  $info_array = InfoParser::parse($info_file);
   $module_name = $info_array['name'];
   if (!islandora_describe_repository()) {
     $msg = $t('@module: Did not install any objects. Could not connect to the repository. Please check the settings on the !config_link page and install the required objects manually on the !admin_link page.', $t_params);
@@ -195,8 +197,8 @@ function islandora_uninstall_solution_pack($module, $force = FALSE) {
 // l() expects a Url object, created from a route name or external URI.
 // $config_link = l($t('Islandora configuration'), 'admin/islandora/configure');
 
-  $info_file = drupal_get_path('module', $module) . "/{$module}.info";
-  $info_array = drupal_parse_info_file($info_file);
+  $info_file = drupal_get_path('module', $module) . "/{$module}.info.yml";
+  $info_array = InfoParser::parse($info_file);
   $module_name = $info_array['name'];
   if (!islandora_describe_repository()) {
     $msg = $t('@module: Did not uninstall any objects. Could not connect to the repository. Please check the settings on the !config_link page and uninstall the required objects manually if necessary.', array(
