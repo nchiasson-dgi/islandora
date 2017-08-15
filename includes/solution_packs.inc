@@ -102,9 +102,9 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
     '!admin_link' => $admin_link,
   );
 
-  drupal_load('module', 'islandora');
+  module_load_include('module', 'islandora', 'islandora');
   module_load_include('inc', 'islandora', 'includes/utilities');
-  drupal_load('module', $module);
+  module_load_include('module', $module, $module);
   $info_file = drupal_get_path('module', $module) . "/{$module}.info";
   $info_array = drupal_parse_info_file($info_file);
   $module_name = $info_array['name'];
@@ -188,9 +188,9 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
  */
 function islandora_uninstall_solution_pack($module, $force = FALSE) {
   $t = 't';
-  drupal_load('module', 'islandora');
+  module_load_include('module', 'islandora', 'islandora');
   module_load_include('inc', 'islandora', 'includes/utilities');
-  drupal_load('module', $module);
+  module_load_include('module', $module, $module);
   // @FIXME
 // l() expects a Url object, created from a route name or external URI.
 // $config_link = l($t('Islandora configuration'), 'admin/islandora/configure');
@@ -516,8 +516,8 @@ function theme_islandora_viewers_table($variables) {
 // Calling _theme() directly can alter the expected output and potentially
 // introduce security issues (see https://www.drupal.org/node/2195739). You
 // should use renderable arrays instead.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2195739
 // $output .= theme('table', array(
 //                'header' => $header,
