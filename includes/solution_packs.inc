@@ -189,9 +189,7 @@ function islandora_uninstall_solution_pack($module, $force = FALSE) {
   module_load_include('module', 'islandora', 'islandora');
   module_load_include('inc', 'islandora', 'includes/utilities');
   module_load_include('module', $module, $module);
-  // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $config_link = l($t('Islandora configuration'), 'admin/islandora/configure');
+  $config_link = Link::fromTextAndUrl($t('Islandora configuration'), Url::fromRoute('islandora.repository_admin'));
 
   $info_file = drupal_get_path('module', $module) . "/{$module}.info.yml";
   $parser = new InfoParser();
