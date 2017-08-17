@@ -125,9 +125,7 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
     $already_exists = islandora_object_load($object->id);
 
     $label = $object->label;
-    // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $object_link = l($label, "islandora/object/{$object->id}");
+    $object_link = Link::fromTextAndUrl($label, Url::fromRoute('islandora.view_object', ['object' => $object->id]));
 
     $deleted = FALSE;
     if ($already_exists) {
