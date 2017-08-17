@@ -92,8 +92,8 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
   $t = 't';
 
   // Some general replacements.
-  $admin_link = Link::fromTextAndUrl($t('Solution Pack admin'), Url::fromRoute('islandora.solution_packs_admin'));
-  $config_link = Link::fromTextAndUrl($t('Islandora configuration'), Url::fromRoute('islandora.repository_admin'));
+  $admin_link = Link::fromTextAndUrl($t('Solution Pack admin'), Url::fromRoute('islandora.solution_packs_admin'))->toString();
+  $config_link = Link::fromTextAndUrl($t('Islandora configuration'), Url::fromRoute('islandora.repository_admin'))->toString();
 
   $t_params = array(
     '@module' => $module,
@@ -125,7 +125,7 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
     $already_exists = islandora_object_load($object->id);
 
     $label = $object->label;
-    $object_link = Link::fromTextAndUrl($label, Url::fromRoute('islandora.view_object', ['object' => $object->id]));
+    $object_link = Link::fromTextAndUrl($label, Url::fromRoute('islandora.view_object', ['object' => $object->id]))->toString();
 
     $deleted = FALSE;
     if ($already_exists) {
@@ -189,7 +189,7 @@ function islandora_uninstall_solution_pack($module, $force = FALSE) {
   module_load_include('module', 'islandora', 'islandora');
   module_load_include('inc', 'islandora', 'includes/utilities');
   module_load_include('module', $module, $module);
-  $config_link = Link::fromTextAndUrl($t('Islandora configuration'), Url::fromRoute('islandora.repository_admin'));
+  $config_link = Link::fromTextAndUrl($t('Islandora configuration'), Url::fromRoute('islandora.repository_admin'))->toString();
 
   $info_file = drupal_get_path('module', $module) . "/{$module}.info.yml";
   $parser = new InfoParser();
