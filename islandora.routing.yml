@@ -111,7 +111,7 @@ islandora.edit_object:
       - 'add fedora datastreams'
       - 'delete fedora objects and datastreams'
     _title: 'Datastreams'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_edit_object'
+    _controller: '\Drupal\islandora\Controller\DatastreamManagementController::content'
   requirements:
     _islandora_object_access: 'true'
   options:

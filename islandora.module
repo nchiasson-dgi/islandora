@@ -161,42 +161,6 @@ function islandora_theme() {
       'template' => 'theme/islandora-objects-list',
       'variables' => array('objects' => NULL),
     ),
-    'islandora_datastream_edit_link' => array(
-      'file' => 'theme/theme.inc',
-      'variables' => array('datastream' => NULL),
-    ),
-    'islandora_datastream_delete_link' => array(
-      'file' => 'theme/theme.inc',
-      'variables' => array('datastream' => NULL, 'version' => NULL),
-    ),
-    'islandora_datastream_revert_link' => array(
-      'file' => 'theme/theme.inc',
-      'variables' => array('datastream' => NULL, 'version' => NULL),
-    ),
-    'islandora_datastream_view_link' => array(
-      'file' => 'theme/theme.inc',
-      'variables' => array(
-        'datastream' => NULL,
-        'version' => NULL,
-        'label' => NULL,
-      ),
-    ),
-    'islandora_datastream_download_link' => array(
-      'file' => 'theme/theme.inc',
-      'variables' => array('datastream' => NULL),
-    ),
-    'islandora_datastream_version_link' => array(
-      'file' => 'theme/theme.inc',
-      'variables' => array('datastream' => NULL),
-    ),
-    'islandora_datastream_regenerate_link' => array(
-      'file' => 'theme/theme.inc',
-      'variables' => array('datastream' => NULL),
-    ),
-    'islandora_datastream_replace_link' => array(
-      'file' => 'theme/theme.inc',
-      'variables' => array('datastream' => NULL),
-    ),
     'islandora_dublin_core_display' => array(
       'file' => 'theme/theme.inc',
       'template' => 'theme/islandora-dublin-core-display',
@@ -584,66 +548,6 @@ function islandora_object_manage_access_callback($perms, $object = NULL) {
   }
 
   return $has_access;
-}
-
-/**
- * Renders the given objects manage page.
- *
- * Its possible to modify the output of this function if 'ISLANDORA_EDIT_HOOK'
- * is implemented in other modules.
- *
- * If no modules implement 'ISLANDORA_EDIT_HOOK' then this function returns the
- *  default manage view.
- *
- * @param AbstractObject $object
- *   The object to manage.
- *
- * @return string
- *   The HTML repersentation of the manage object page.
- */
-function islandora_edit_object(AbstractObject $object) {
-  module_load_include('inc', 'islandora', 'includes/breadcrumb');
-  module_load_include('inc', 'islandora', 'includes/utilities');
-  $output = array();
-  foreach (islandora_build_hook_list(ISLANDORA_EDIT_HOOK, $object->models) as $hook) {
-    $temp = \Drupal::moduleHandler()->invokeAll($hook, [$object]);
-    islandora_as_renderable_array($temp);
-    if (!empty($temp)) {
-      $output = array_merge_recursive($output, $temp);
-    }
-  }
-  if (empty($output)) {
-    // Add in the default, if we did not get any results.
-    $output = islandora_default_islandora_edit_object($object);
-  }
-  arsort($output);
-  \Drupal::moduleHandler()->alter(ISLANDORA_EDIT_HOOK, $object, $output);
-  islandora_as_renderable_array($output);
-  return $output;
-}
-
-/**
- * Renders the default manage object page for the given object.
- *
- * @param AbstractObject $object
- *   The object used to render the manage object page.
- *
- * @return array
- *   The default rendering of the object manage page, indexed at
- *   'Default Edit output'.
- */
-function islandora_default_islandora_edit_object(AbstractObject $object) {
-  // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $output = theme('islandora_default_edit', array('islandora_object' => $object));
-
-  return array('Default Edit output' => array('#markup' => $output));
 }
 
 /**

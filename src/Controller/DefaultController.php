@@ -286,7 +286,6 @@ class DefaultController extends ControllerBase {
     $output = [];
     foreach (islandora_build_hook_list(ISLANDORA_EDIT_HOOK, $object->models) as $hook) {
       $temp = \Drupal::moduleHandler()->invokeAll($hook, [$object]);
-      islandora_as_renderable_array($temp);
       if (!empty($temp)) {
         $output = array_merge_recursive($output, $temp);
       }
@@ -297,7 +296,6 @@ class DefaultController extends ControllerBase {
     }
     arsort($output);
     \Drupal::moduleHandler()->alter(ISLANDORA_EDIT_HOOK, $object, $output);
-    islandora_as_renderable_array($output);
     return $output;
   }
 
