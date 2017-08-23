@@ -10,6 +10,9 @@ namespace Drupal\islandora\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
+use Drupal\file\Entity\File;
+
+use AbstractDatastream;
 
 class IslandoraDatastreamVersionReplaceForm extends FormBase {
 
@@ -20,7 +23,7 @@ class IslandoraDatastreamVersionReplaceForm extends FormBase {
     return 'islandora_datastream_version_replace_form';
   }
 
-  public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state, AbstractDatastream $datastream = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, AbstractDatastream $datastream = NULL) {
     module_load_include('inc', 'islandora', 'includes/content_model');
     module_load_include('inc', 'islandora', 'includes/utilities');
     module_load_include('inc', 'islandora', 'includes/mimetype.utils');
@@ -75,34 +78,33 @@ class IslandoraDatastreamVersionReplaceForm extends FormBase {
           '#value' => t('Add Contents'),
         ],
       ]
-      ];
+    ];
   }
 
-  public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
-    $object = islandora_object_load($form_state->get(['object_id']));
-    $form_state->set(['redirect'], "islandora/object/{$object->id}");
-    $file = file_load($form_state->getValue(['file']));
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $object = islandora_object_load($form_state->get('object_id'));
+    $form_state->set('redirect', "islandora/object/{$object->id}");
+    $file = File::load(reset($form_state->getValue(['file'])));
     try {
-      $ds = $object[$form_state['dsid']];
-      if ($ds->mimetype != $file->filemime) {
-        $ds->mimetype = $file->filemime;
+      $ds = $object[$form_state->get('dsid')];
+      $mime = $file->getMimeType();
+      if ($ds->mimetype != $mime) {
+        $ds->mimetype = $mime;
       }
-      $path = \Drupal::service("file_system")->realpath($file->uri);
+      $path = \Drupal::service("file_system")->realpath($file->getFileUri());
       $ds->setContentFromFile($path);
-      file_delete($file);
+      $file->delete();
     }
-    
-      catch (exception $e) {
+    catch (exception $e) {
       drupal_set_message(t('An error occurred during datastream updates. See watchlog for more information.'), 'error');
       \Drupal::logger('islandora')->error('Failed to add new versionable datastream.<br/>code: @code<br/>message: @msg', [
         '@code' => $e->getCode(),
         '@msg' => $e->getMessage(),
       ]);
-      file_delete($file);
+      $file->delete();
       return;
     }
     drupal_set_message(t("Successfully Updated Datastream"));
   }
 
 }
-?>

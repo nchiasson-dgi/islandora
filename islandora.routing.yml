@@ -262,7 +262,7 @@ islandora.datastream_version_replace_form:
     _title: 'Replace Datastream'
     _form: '\Drupal\islandora\Form\IslandoraDatastreamVersionReplaceForm'
   requirements:
-    _custom_access: '\Drupal\islandora\Form\IslandoraDatastreamVersionReplaceForm::islandora_datastream_access'
+    _islandora_datastream_access: 'TRUE'
   options:
     parameters:
       object:
