@@ -153,11 +153,11 @@ islandora.regenerate_object_derivatives_form:
 islandora.add_datastream_form:
   path: '/islandora/object/{object}/manage/datastreams/add'
   defaults:
-    perm: 'add fedora datastreams'
+    perms: 'add fedora datastreams'
     _title: 'Add a datastream'
     _form: '\Drupal\islandora\Form\IslandoraAddDatastreamForm'
   requirements:
-    _custom_access: '\Drupal\islandora\Form\IslandoraAddDatastreamForm::islandora_object_access_callback'
+    _islandora_object_access: 'true'
   options:
     parameters:
       object:
