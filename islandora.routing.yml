@@ -234,7 +234,7 @@ islandora.delete_datastream_form:
     _title: 'Delete data stream'
     _form: '\Drupal\islandora\Form\IslandoraDeleteDatastreamForm'
   requirements:
-    _custom_access: '\Drupal\islandora\Form\IslandoraDeleteDatastreamForm::islandora_datastream_access'
+    _islandora_datastream_access: 'TRUE'
   options:
     parameters:
       object:
