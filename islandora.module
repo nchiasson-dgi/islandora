@@ -1244,12 +1244,15 @@ function islandora_file_mimetype_mapping_alter(&$mapping) {
  *   TRUE if at least one implementation of hook_islandora_object_access()
  *   returned TRUE, and no implementation return FALSE; FALSE otherwise.
  */
-function islandora_object_access($op, $object, $account) {
+function islandora_object_access($op, $object, $account = NULL) {
   $cache = &drupal_static(__FUNCTION__);
   if (!is_object($object)) {
     // The object could not be loaded... Presumably, we don't have
     // permission.
     return FALSE;
+  }
+  if ($account === NULL) {
+    $account = \Drupal::currentUser();
   }
   // Populate the cache on a miss.
   if (!isset($cache[$op][$object->id][$account->id()])) {

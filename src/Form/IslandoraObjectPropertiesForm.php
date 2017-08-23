@@ -11,6 +11,8 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 
+use AbstractObject;
+
 class IslandoraObjectPropertiesForm extends FormBase {
 
   /**
@@ -20,7 +22,7 @@ class IslandoraObjectPropertiesForm extends FormBase {
     return 'islandora_object_properties_form';
   }
 
-  public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state, AbstractObject $object = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, AbstractObject $object = NULL) {
     $form_state->set(['object'], $object);
     $temp = islandora_invoke_hook_list(ISLANDORA_UPDATE_RELATED_OBJECTS_PROPERTIES_HOOK, $object->models, [
       $object
