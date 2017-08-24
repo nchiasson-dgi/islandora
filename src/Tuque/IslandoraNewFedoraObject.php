@@ -2,12 +2,7 @@
 
 namespace Drupal\islandora\Tuque;
 
-// XXX: Class from tuque do not autoload properly which causes problems
-// for deserialization.
-@include_once 'sites/all/libraries/tuque/Object.php';
-
-$islandora_module_path = drupal_get_path('module', 'islandora');
-@include_once "$islandora_module_path/libraries/tuque/Object.php";
+require_once __DIR__ . '/Base.php';
 
 use NewFedoraObject;
 
