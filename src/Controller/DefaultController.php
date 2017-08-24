@@ -6,12 +6,14 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Form\FormBuilderInterface;
+use Drupal\Core\Url;
 
 use Drupal\islandora\Form\IslandoraSolutionPackForm;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use AbstractObject;
 use AbstractDatastream;
@@ -235,21 +237,24 @@ class DefaultController extends ControllerBase {
 
   public function islandora_manage_overview_object(AbstractObject $object) {
     module_load_include('inc', 'islandora', 'includes/utilities');
-    $link_generator = \Drupal::service('link_generator');
 
-    $to_item = function ($model) use ($link_generator) {
+    $to_item = function ($model) {
       if ($model == 'fedora-system:FedoraObject-3.0') {
         return FALSE;
       }
 
       $loaded = islandora_object_load($model);
       return $loaded ?
-        $link_generator->generate($loaded->label, \Drupal\Core\Url::fromRoute('islandora.view_object', array(
-          'object' => $loaded->id,
-        ))) :
-        t('@cmodel - (This content model is not in this Islandora repository.)', array(
+        [
+          '#type' => 'link',
+          '#title' => $loaded->label,
+          '#url' => Url::fromRoute('islandora.view_object', [
+            'object' => $loaded->id,
+          ]),
+        ] :
+        $this->t('@cmodel - (This content model is not in this Islandora repository.)', [
           '@cmodel' => $loaded->id,
-        ));
+        ]);
     };
     $links = array_filter(array_map($to_item, $object->models));
     $output = [
@@ -349,6 +354,9 @@ class DefaultController extends ControllerBase {
     return $cache[$op][$datastream->parent->id][$datastream->id][$user->id()];
   }
 
+  public function islandoraViewDatastreamTitle(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
+    return $datastream->id;
+  }
   /**
    * Callback function to view or download a datastream.
    *
@@ -451,23 +459,39 @@ class DefaultController extends ControllerBase {
     module_load_include('inc', 'islandora', 'includes/utilities');
 
     $edit_registry = islandora_build_datastream_edit_registry($datastream);
+    $edit_registry = [
+      ['name' => 'a', 'url' => '/islandora/object/islandora:root',],
+      ['name' => 'b', 'url' => '/islandora/object/islandora:sp_pdf',],
+    ];
     $edit_count = count($edit_registry);
     switch ($edit_count) {
       case 0:
         // No edit implementations.
-        drupal_set_message(t('There are no edit methods specified for this datastream.'));
-        drupal_goto("islandora/object/{$datastream->parent->id}/manage/datastreams");
-        break;
+        drupal_set_message($this->t('There are no edit methods specified for the @id datastream.', ['@id' => $datastream->id]));
+        return $this->redirect('islandora.edit_object', ['object' => $datastream->parent->id]);
 
       case 1:
         // One registry implementation, go there.
         $entry = reset($edit_registry);
-        drupal_goto($entry['url']);
-        break;
+        return RedirectResponse::create($entry['url']);
 
       default:
         // Multiple edit routes registered.
-        return islandora_edit_datastream_registry_render($edit_registry);
+        $list = [
+          '#theme' => 'item_list',
+          '#items' => [],
+        ];
+        foreach ($edit_registry as $entry) {
+          $list['#items'][$entry['name']] = [
+            '#type' => 'link',
+            '#title' => $entry['name'],
+            // XXX: Doesn't anything which accepts as a string... I foresee
+            // having to rework the hook to return the route info (route name
+            // and parameters).
+            '#url' => Url::fromUserInput($entry['url']),
+          ];
+        }
+        return $list;
     }
   }
 

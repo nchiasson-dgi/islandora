@@ -53,14 +53,14 @@ class IslandoraObjectPropertiesForm extends FormBase {
         '#required' => 'TRUE',
         '#description' => t('A human-readable label'),
         // Double the normal length.
-      '#size' => 120,
+        '#size' => 120,
         // Max length for a Fedora Label.
-      '#maxlength' => 255,
+        '#maxlength' => 255,
         '#type' => 'textfield',
       ],
       // @todo Make this into an autocomplete field that list the users in the
       // system as well.
-    'object_owner' => [
+      'object_owner' => [
         '#title' => t('Owner'),
         '#default_value' => $object->owner,
         '#required' => FALSE,
@@ -98,25 +98,33 @@ class IslandoraObjectPropertiesForm extends FormBase {
       'delete' => [
         '#type' => 'submit',
         '#access' => islandora_object_access(ISLANDORA_PURGE, $object),
-        '#value' => t("Permanently remove '@label' from repository", [
+        '#value' => $this->t("Permanently remove '@label' from repository", [
           '@label' => \Drupal\Component\Utility\Unicode::truncate($object->label, 32, TRUE, TRUE)
-          ]),
-        '#submit' => ['islandora_object_properties_form_delete'],
+        ]),
+        '#submit' => ['::redirectToDelete'],
         '#limit_validation_errors' => [
           [
             'pid'
-            ]
-          ],
+          ]
+        ],
       ],
       'regenerate' => [
         '#type' => 'submit',
         '#access' => $regenerate_derivatives_access,
-        '#value' => t("Regenerate all derivatives"),
-        '#submit' => [
-          'islandora_object_properties_regenerate_derivatives'
-          ],
+        '#value' => $this->t("Regenerate all derivatives"),
+        '#submit' => ['::redirectToRegenerate'],
       ],
     ];
+  }
+
+  public function redirectToDelete(array $form, FormStateInterface $form_state) {
+    $object = $form_state->get(['object']);
+    $form_state->setRedirect('islandora.delete_object_form', ['object' => $object->id]);
+  }
+
+  public function redirectToRegenerate(array $form, FormStateInterface $form_state) {
+    $object = $form_state->get(['object']);
+    $form_state->setRedirect('islandora.regenerate_object_derivatives_form', ['object' => $object->id]);
   }
 
   public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {

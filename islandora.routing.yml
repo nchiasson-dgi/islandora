@@ -182,7 +182,7 @@ islandora.view_datastream:
   defaults:
     perms: 'view fedora repository objects'
     download: false
-    _title: 'View datastream'
+    _title_callback: '\Drupal\islandora\Controller\DefaultController::islandoraViewDatastreamTitle'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandoraViewDatastream'
   requirements:
     _islandora_datastream_access: 'TRUE'
@@ -196,7 +196,7 @@ islandora.view_datastream_view:
   path: '/islandora/object/{object}/datastream/{datastream}/view'
   defaults:
     perms: 'view fedora repository objects'
-    _title: 'View datastream'
+    _title: 'View'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandoraViewDatastream'
   requirements:
     _islandora_datastream_access: '{datastream}'
