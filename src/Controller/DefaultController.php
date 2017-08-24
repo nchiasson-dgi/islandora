@@ -121,7 +121,6 @@ class DefaultController extends ControllerBase {
         $page_number,
         $page_size,
       ]);
-      islandora_as_renderable_array($temp);
       if (!empty($temp)) {
         $output = array_merge_recursive($output, $temp);
       }
