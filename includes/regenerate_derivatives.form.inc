@@ -46,45 +46,6 @@ function islandora_regenerate_datastream_derivative_form_submit(array $form, arr
 }
 
 /**
- * Regenerate all derivatives on an object.
- *
- * @param array $form
- *   The Drupal form.
- * @param array $form_state
- *   The Drupal form state.
- * @param AbstractObject $object
- *   The object that is having its derivatives regenerated.
- *
- * @return array
- *   The Drupal form definition.
- */
-function islandora_regenerate_object_derivatives_form(array $form, array &$form_state, AbstractObject $object) {
-  $form_state['object'] = $object;
-  return confirm_form($form,
-    t('Are you sure you want to regenerate all the derivatives for %title?', array('%title' => $object->label)),
-    "islandora/object/{$object->id}/manage/properties",
-    t('This will create a new version for every datastream on the object. Please wait while this happens.'),
-    t('Regenerate'),
-    t('Cancel')
-  );
-}
-
-/**
- * Submit handler for the regenerate object derivativse form.
- *
- * @param array $form
- *   The Drupal form.
- * @param array $form_state
- *   The Drupal form state.
- */
-function islandora_regenerate_object_derivatives_form_submit(array $form, array &$form_state) {
-  $object = $form_state['object'];
-  $batch = islandora_regenerate_object_derivatives_batch($object);
-  batch_set($batch);
-  $form_state['redirect'] = "islandora/object/{$object->id}/manage/properties";
-}
-
-/**
  * Creates a batch to go out and re-create all of the derivatives for an object.
  *
  * @param AbstractObject $object
