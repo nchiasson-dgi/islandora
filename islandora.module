@@ -100,12 +100,6 @@ function islandora_theme() {
       'template' => 'islandora-default',
       'variables' => array('islandora_object' => NULL),
     ),
-    // Default edit page.
-    'islandora_default_edit' => array(
-      'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-object-edit',
-      'variables' => array('islandora_object' => NULL),
-    ),
     // Admin table for solution pack viewer selection.
     'islandora_viewers_table' => array(
       'file' => 'includes/solution_packs.inc',

@@ -151,14 +151,12 @@ class DefaultController extends ControllerBase {
     // Dispatch print hook.
     foreach (islandora_build_hook_list(ISLANDORA_PRINT_HOOK, $object->models) as $hook) {
       $temp = \Drupal::moduleHandler()->invokeAll($hook, [$object]);
-      islandora_as_renderable_array($temp);
       if (!empty($temp)) {
         $temp_arr = array_merge_recursive($temp_arr, $temp);
       }
     }
     $output = islandora_default_islandora_printer_object($object, \Drupal::service("renderer")->render($temp_arr));
     arsort($output);
-    islandora_as_renderable_array($output);
 
     // Prompt to print.
     // @FIXME

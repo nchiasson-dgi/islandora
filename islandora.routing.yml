@@ -47,13 +47,19 @@ islandora.view_default_object:
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_default_object'
   requirements:
     _permission: 'view fedora repository objects'
+islandora.view_default_object_0:
+  path: '/islandora/object'
+  defaults:
+    _title: 'Object Browsing'
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_default_object'
+  requirements:
+    _permission: 'view fedora repository objects'
 islandora.view_object:
   path: '/islandora/object/{object}'
   defaults:
     perms: 'view fedora repository objects'
     _title_callback: '\Drupal\islandora\Controller\DefaultController::islandora_drupal_title'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_view_object'
-    object: 'root'
   requirements:
     _islandora_object_access: 'TRUE'
   options:
@@ -66,7 +72,6 @@ islandora.printer_object:
     perms: 'view fedora repository objects'
     _title: 'Print Object'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_printer_object'
-    object: ~
   requirements:
     _islandora_object_access: 'TRUE'
   options:
@@ -79,7 +84,6 @@ islandora.print_object:
     perms: 'view fedora repository objects'
     _title: 'Print Object'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_print_object'
-    object: ~
   requirements:
     _islandora_object_access: 'TRUE'
   options:

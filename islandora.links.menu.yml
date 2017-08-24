@@ -33,9 +33,13 @@ islandora.tools_admin:
 islandora.view_default_object:
   route_name: islandora.view_default_object
   title: 'Islandora Repository'
+islandora.view_default_object_0:
+  route_name: islandora.view_default_object_0
+  title: 'Browse Objects'
+  parent: islandora.view_default_object
 islandora.view_object:
   route_name: islandora.view_object
-  parent: islandora.view_root_object
+  parent: islandora.view_default_object
 islandora.manage_overview_object:
   route_name: islandora.manage_overview_object
   parent: islandora.view_object
