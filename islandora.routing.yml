@@ -149,11 +149,15 @@ islandora.delete_object_form:
 islandora.regenerate_object_derivatives_form:
   path: '/islandora/object/{object}/regenerate'
   defaults:
-    perm: 'regenerate derivatives for an object'
+    perms: 'regenerate derivatives for an object'
     _title: 'Regenerate all derivatives on an object'
     _form: '\Drupal\islandora\Form\IslandoraRegenerateObjectDerivativesForm'
   requirements:
-    _custom_access: '\Drupal\islandora\Form\IslandoraRegenerateObjectDerivativesForm::islandora_object_access_callback'
+    _islandora_object_access: 'true'
+  options:
+    parameters:
+      object:
+        type: object
 islandora.add_datastream_form:
   path: '/islandora/object/{object}/manage/datastreams/add'
   defaults:
@@ -308,7 +312,7 @@ islandora.regenerate_datastream_derivative_form:
     _title: 'Regenrate datastream derivative'
     _form: '\Drupal\islandora\Form\IslandoraRegenerateDatastreamDerivativeForm'
   requirements:
-    _custom_access: '\Drupal\islandora\Form\IslandoraRegenerateDatastreamDerivativeForm::islandora_datastream_access'
+    _islandora_datastream_access: 'TRUE'
   options:
     parameters:
       object:
