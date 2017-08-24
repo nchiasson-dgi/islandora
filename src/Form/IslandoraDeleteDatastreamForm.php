@@ -9,7 +9,6 @@ namespace Drupal\islandora\Form;
 
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 use Drupal\Core\Url;
 
 use AbstractDatastream;
@@ -49,7 +48,7 @@ class IslandoraDeleteDatastreamForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return Url::fromRoute('islandora.view_object', [$this->datastream->parent->id]);
+    return Url::fromRoute('islandora.view_object', ['object' => $this->datastream->parent->id]);
   }
 
   public function buildForm(array $form, FormStateInterface $form_state, AbstractDatastream $datastream = NULL) {
