@@ -189,58 +189,6 @@ function islandora_theme() {
 }
 
 /**
- * Implements hook_permission().
- */
-function islandora_permission() {
-  return array(
-    ISLANDORA_VIEW_OBJECTS => array(
-      'title' => t('View repository objects'),
-      'description' => t('View objects in the repository. Note: Fedora XACML security policies may override this permission.'),
-    ),
-    ISLANDORA_ADD_DS => array(
-      'title' => t('Add datastreams to repository objects'),
-      'description' => t('Add datastreams to objects in the repository. Note: Fedora XACML security policies may override this position.'),
-    ),
-    ISLANDORA_METADATA_EDIT => array(
-      'title' => t('Edit metadata'),
-      'description' => t('Edit metadata for objects in the repository.'),
-    ),
-    ISLANDORA_INGEST => array(
-      'title' => t('Create new repository objects'),
-      'description' => t('Create new objects in the repository.'),
-    ),
-    ISLANDORA_PURGE => array(
-      'title' => t('Permanently remove objects from the repository'),
-      'description' => t('Permanently remove objects from the repository.'),
-    ),
-    ISLANDORA_MANAGE_PROPERTIES => array(
-      'title' => t('Manage object properties'),
-      'description' => t('Modify object labels, owner IDs, and states.'),
-    ),
-    ISLANDORA_VIEW_DATASTREAM_HISTORY => array(
-      'title' => t('View datastream history'),
-      'description' => t('View all previous versions of a datastream.'),
-    ),
-    ISLANDORA_REVERT_DATASTREAM => array(
-      'title' => t('Revert datastream history'),
-      'description' => t('Revert to a previous version of a datastream.'),
-    ),
-    ISLANDORA_MANAGE_DELETED_OBJECTS => array(
-      'title' => t('Manage deleted objects'),
-      'description' => t('Purge or revert deleted objects.'),
-    ),
-    ISLANDORA_REGENERATE_DERIVATIVES => array(
-      'title' => t('Regenerate derivatives'),
-      'description' => t('Regenerate derivatives for an object or per datastream.'),
-    ),
-    ISLANDORA_REPLACE_DATASTREAM_CONTENT => array(
-      'title' => t('Replace datastreams'),
-      'description' => t('Add new datastream content as latest version.'),
-    ),
-  );
-}
-
-/**
  * Implements hook_i18n_string_info().
  */
 function islandora_i18n_string_info() {

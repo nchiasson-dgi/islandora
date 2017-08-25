@@ -5,6 +5,10 @@
  * Admin and callback functions for solution pack management.
  */
 
+use Drupal\Core\Extension\InfoParser;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
+
 /**
  * Get the information about required object.
  *
@@ -88,28 +92,24 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
   $t = 't';
 
   // Some general replacements.
-  // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $admin_link = l($t('Solution Pack admin'), 'admin/islandora/solution_pack_config');
-
-  // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $config_link = l($t('Islandora configuration'), 'admin/islandora/configure');
+  $admin_link = Link::fromTextAndUrl($t('Solution Pack admin'), Url::fromRoute('islandora.solution_packs_admin'))->toString();
+  $config_link = Link::fromTextAndUrl($t('Islandora configuration'), Url::fromRoute('islandora.repository_admin'))->toString();
 
   $t_params = array(
     '@module' => $module,
-    '!config_link' => $config_link,
-    '!admin_link' => $admin_link,
+    '@config_link' => $config_link,
+    '@admin_link' => $admin_link,
   );
 
-  drupal_load('module', 'islandora');
+  module_load_include('module', 'islandora', 'islandora');
   module_load_include('inc', 'islandora', 'includes/utilities');
-  drupal_load('module', $module);
-  $info_file = drupal_get_path('module', $module) . "/{$module}.info";
-  $info_array = drupal_parse_info_file($info_file);
+  module_load_include('module', $module, $module);
+  $info_file = drupal_get_path('module', $module) . "/{$module}.info.yml";
+  $parser = new InfoParser();
+  $info_array = $parser->parse($info_file);
   $module_name = $info_array['name'];
   if (!islandora_describe_repository()) {
-    $msg = $t('@module: Did not install any objects. Could not connect to the repository. Please check the settings on the !config_link page and install the required objects manually on the !admin_link page.', $t_params);
+    $msg = $t('@module: Did not install any objects. Could not connect to the repository. Please check the settings on the @config_link page and install the required objects manually on the @admin_link page.', $t_params);
     drupal_set_message(\Drupal\Component\Utility\Xss::filter($msg), 'error');
     return;
   }
@@ -117,29 +117,27 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
   $objects = $required_objects['objects'];
   $status_messages = array(
     'up_to_date' => $t('The object already exists and is up-to-date.', $t_params),
-    'missing_datastream' => $t('The object already exists but is missing a datastream. Please reinstall the object on the !admin_link page.', $t_params),
-    'out_of_date' => $t('The object already exists but is out-of-date. Please update the object on the !admin_link page.', $t_params),
-    'modified_datastream' => $t('The object already exists but datastreams are modified. Please reinstall the object on the !admin_link page.', $t_params),
+    'missing_datastream' => $t('The object already exists but is missing a datastream. Please reinstall the object on the @admin_link page.', $t_params),
+    'out_of_date' => $t('The object already exists but is out-of-date. Please update the object on the @admin_link page.', $t_params),
+    'modified_datastream' => $t('The object already exists but datastreams are modified. Please reinstall the object on the @admin_link page.', $t_params),
   );
   foreach ($objects as $object) {
     $already_exists = islandora_object_load($object->id);
 
     $label = $object->label;
-    // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $object_link = l($label, "islandora/object/{$object->id}");
+    $object_link = Link::fromTextAndUrl($label, Url::fromRoute('islandora.view_object', ['object' => $object->id]))->toString();
 
     $deleted = FALSE;
     if ($already_exists) {
       if (!$force) {
         $object_status = islandora_check_object_status($object);
         $here_params = array(
-          '!summary' => $t("@module: Did not install !object_link.", array(
-              '!object_link' => $object_link,
+          '@summary' => $t("@module: Did not install @object_link.", array(
+              '@object_link' => $object_link,
             ) + $t_params),
-          '!description' => $status_messages[$object_status['status']],
+          '@description' => $status_messages[$object_status['status']],
         );
-        drupal_set_message(\Drupal\Component\Utility\Xss::filter(format_string('!summary !description', $here_params)), 'warning');
+        drupal_set_message(\Drupal\Component\Utility\Xss::filter(format_string('@summary @description', $here_params)), 'warning');
         continue;
       }
       else {
@@ -151,13 +149,13 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
       $object = islandora_add_object($object);
       if ($object) {
         if ($deleted) {
-          drupal_set_message(\Drupal\Component\Utility\Xss::filter($t('@module: Successfully reinstalled. !object_link.', array(
-              '!object_link' => $object_link,
+          drupal_set_message(\Drupal\Component\Utility\Xss::filter($t('@module: Successfully reinstalled. @object_link.', array(
+              '@object_link' => $object_link,
             ) + $t_params)), 'status');
         }
         else {
-          drupal_set_message(\Drupal\Component\Utility\Xss::filter($t('@module: Successfully installed. !object_link.', array(
-              '!object_link' => $object_link,
+          drupal_set_message(\Drupal\Component\Utility\Xss::filter($t('@module: Successfully installed. @object_link.', array(
+              '@object_link' => $object_link,
             ) + $t_params)), 'status');
         }
       }
@@ -188,20 +186,19 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
  */
 function islandora_uninstall_solution_pack($module, $force = FALSE) {
   $t = 't';
-  drupal_load('module', 'islandora');
+  module_load_include('module', 'islandora', 'islandora');
   module_load_include('inc', 'islandora', 'includes/utilities');
-  drupal_load('module', $module);
-  // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $config_link = l($t('Islandora configuration'), 'admin/islandora/configure');
+  module_load_include('module', $module, $module);
+  $config_link = Link::fromTextAndUrl($t('Islandora configuration'), Url::fromRoute('islandora.repository_admin'))->toString();
 
-  $info_file = drupal_get_path('module', $module) . "/{$module}.info";
-  $info_array = drupal_parse_info_file($info_file);
+  $info_file = drupal_get_path('module', $module) . "/{$module}.info.yml";
+  $parser = new InfoParser();
+  $info_array = $parser->parse($info_file);
   $module_name = $info_array['name'];
   if (!islandora_describe_repository()) {
-    $msg = $t('@module: Did not uninstall any objects. Could not connect to the repository. Please check the settings on the !config_link page and uninstall the required objects manually if necessary.', array(
+    $msg = $t('@module: Did not uninstall any objects. Could not connect to the repository. Please check the settings on the @config_link page and uninstall the required objects manually if necessary.', array(
       '@module' => $module_name,
-      '!config_link' => $config_link,
+      '@config_link' => $config_link,
     ));
     drupal_set_message(\Drupal\Component\Utility\Xss::filter($msg), 'error');
     return;
@@ -219,8 +216,8 @@ function islandora_uninstall_solution_pack($module, $force = FALSE) {
 // l() expects a Url object, created from a route name or external URI.
 // $object_link = l($object->label, "islandora/object/{$object->id}");
 
-      $msg = $t('@module: Did not remove !object_link. It may be used by other sites.', array(
-        '!object_link' => $object_link,
+      $msg = $t('@module: Did not remove @object_link. It may be used by other sites.', array(
+        '@object_link' => $object_link,
         '@module' => $module_name,
       ));
 
@@ -516,8 +513,8 @@ function theme_islandora_viewers_table($variables) {
 // Calling _theme() directly can alter the expected output and potentially
 // introduce security issues (see https://www.drupal.org/node/2195739). You
 // should use renderable arrays instead.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2195739
 // $output .= theme('table', array(
 //                'header' => $header,
