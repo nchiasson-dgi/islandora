@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\islandora\Form\IslandoraRegenerateObjectDerivativesForm.
- */
-
 namespace Drupal\islandora\Form;
 
 use Drupal\Core\Form\ConfirmFormBase;
@@ -13,7 +8,18 @@ use Drupal\Core\Url;
 
 use AbstractObject;
 
+/**
+ * Derivative regeneration form.
+ *
+ * @package \Drupal\islandora\Form
+ */
 class IslandoraRegenerateObjectDerivativesForm extends ConfirmFormBase {
+
+  /**
+   * The object on which we are operating.
+   *
+   * @var \AbstractObject
+   */
   protected $object;
 
   /**
@@ -51,12 +57,18 @@ class IslandoraRegenerateObjectDerivativesForm extends ConfirmFormBase {
     return Url::fromRoute('islandora.object_properties_form', ['object' => $this->object->id]);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state, AbstractObject $object = NULL) {
     $this->object = $object;
     $form_state->set(['object'], $object->id);
     return parent::buildForm($form, $form_state);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $object = islandora_object_load($form_state->get(['object']));
     module_load_include('inc', 'islandora', 'includes/regenerate_derivatives.form');
@@ -66,4 +78,3 @@ class IslandoraRegenerateObjectDerivativesForm extends ConfirmFormBase {
   }
 
 }
-?>

@@ -1,17 +1,24 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\islandora\Form\IslandoraRevertDatastreamVersionForm.
- */
-
 namespace Drupal\islandora\Form;
 
-use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 
-class IslandoraRevertDatastreamVersionForm extends FormBase {
+use AbstractDatastream;
+
+/**
+ * Datastream version reversion form.
+ *
+ * @package \Drupal\islandora\Form
+ */
+class IslandoraRevertDatastreamVersionForm extends ConfirmFormBase {
+  /**
+   * The datastream on which is being operated.
+   *
+   * @var \AbstractDatastream
+   */
+  protected $datastream;
 
   /**
    * {@inheritdoc}
@@ -20,33 +27,67 @@ class IslandoraRevertDatastreamVersionForm extends FormBase {
     return 'islandora_revert_datastream_version_form';
   }
 
-  public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state, AbstractDatastream $datastream = NULL, $version = NULL) {
+  /**
+   * {@inheritdoc}
+   */
+  public function getQuestion() {
+    return $this->t('Are you sure you want to revert the the selected version of this datastream?');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfirmText() {
+    return $this->t('Revert');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCancelText() {
+    return $this->t('Cancel');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCancelUrl() {
+    return Url::fromRoute('islandora.view_object', ['object' => $this->datastream->parent->id]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state, AbstractDatastream $datastream = NULL, $version = NULL) {
     if (!isset($datastream[$version]) || count($datastream) < 2) {
       return drupal_not_found();
     }
+    $this->datastream = $datastream;
 
     $form_state->set(['dsid'], $datastream->id);
     $form_state->set(['object_id'], $datastream->parent->id);
     $form_state->set(['version'], $version);
 
-    return confirm_form($form, t('Are you sure you want to revert to version @version of the @dsid datastream?', [
-      '@dsid' => $datastream->id,
-      '@version' => $version,
-    ]), "islandora/object/{$datastream->parent->id}", "", t('Revert'), t('Cancel'));
+    return parent::buildForm($form, $form_state);
   }
 
-  public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $islandora_object = islandora_object_load($form_state->get(['object_id']));
 
     $datastream_to_revert = $islandora_object[$form_state['dsid']];
     $version = $form_state->get(['version']);
 
-    // Create file holding specified datastream version, and set datastream to it.
+    // Create file holding specified datastream version, and set datastream to
+    // it.
     $datastream_to_revert_to = $datastream_to_revert[$version];
     if (in_array($datastream_to_revert->controlGroup, ['R', 'E'])) {
       $datastream_to_revert->url = $datastream_to_revert_to->url;
     }
     else {
+      // TODO: Fix the file handling.
       $filename = file_create_filename('datastream_temp_file', 'temporary://');
       $datastream_to_revert_to->getContent($filename);
       $datastream_to_revert->setContentFromFile($filename);
@@ -60,14 +101,13 @@ class IslandoraRevertDatastreamVersionForm extends FormBase {
       $datastream_to_revert->label = $datastream_to_revert_to->label;
     }
 
-    drupal_set_message(t('%d datastream successfully reverted to version %v for Islandora object %o', [
+    drupal_set_message($this->t('%d datastream successfully reverted to version %v for Islandora object %o', [
       '%d' => $datastream_to_revert->id,
       '%v' => $version,
       '%o' => $islandora_object->label,
     ]));
 
-    $form_state->set(['redirect'], "islandora/object/{$islandora_object->id}/datastream/{$datastream_to_revert->id}/version");
+    $form_state->setRedirect('islandora.datastream_version_table', ['object' => $islandora_object->id, 'datastream' => $datastream_to_revert->id]);
   }
 
 }
-?>

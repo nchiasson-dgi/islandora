@@ -100,7 +100,7 @@ islandora.manage_overview_object:
       - 'delete fedora objects and datastreams'
       - 'ingest fedora objects'
     _title: 'Manage'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandora_manage_overview_object'
+    _controller: '\Drupal\islandora\Controller\ObjectManagementOverviewController::content'
   requirements:
     _islandora_object_access: 'TRUE'
   options:

@@ -19,6 +19,9 @@ class Links {
 
   protected $config;
 
+  /**
+   * Constructor.
+   */
   public function __construct(ConfigBase $config, ModuleHandlerInterface $module_handler) {
     $this->config = $config;
     $this->moduleHandler = $module_handler;
@@ -115,7 +118,7 @@ class Links {
    */
   public function revert(AbstractDatastream $datastream, $version = NULL) {
     $can_revert = islandora_datastream_access(ISLANDORA_REVERT_DATASTREAM, $datastream);
-    if ($vars['version'] !== NULL) {
+    if ($version !== NULL) {
       if (count($datastream) == 1) {
         $can_revert = FALSE;
       }
@@ -150,7 +153,7 @@ class Links {
       [
         '#type' => 'link',
         '#title' => $this->t('edit'),
-        '#url' => Url::fromRoute('islandora.edit_datastream',[
+        '#url' => Url::fromRoute('islandora.edit_datastream', [
           'object' => $datastream->parent->id,
           'datastream' => $datastream->id,
         ]),
@@ -191,7 +194,7 @@ class Links {
       if (!in_array($datastream->id, $replace_exclude)) {
         return [
           '#type' => 'link',
-          '#title' =>$this->t('replace'),
+          '#title' => $this->t('replace'),
           '#url' => Url::fromRoute('islandora.datastream_version_replace_form', [
             'object' => $datastream->parent->id,
             'datastream' => $datastream->id,
@@ -218,4 +221,5 @@ class Links {
     }
     return ['#plain_text' => ''];
   }
+
 }

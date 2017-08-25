@@ -64,7 +64,7 @@ class IslandoraTuque {
       $url = \Drupal::config('islandora.settings')->get('islandora_base_url');
     }
 
-    if (self::exists()) {
+    if (static::exists()) {
       module_load_include('inc', 'islandora', 'includes/tuque_wrapper');
       $this->connection = new \Drupal\islandora\Tuque\IslandoraRepositoryConnection($url, $user_string, $pass_string);
       $this->connection->reuseConnection = TRUE;
@@ -77,7 +77,7 @@ class IslandoraTuque {
   /**
    * Checks if the Connection class exists.
    *
-   * @returns bool
+   * @return bool
    *   TRUE if the Connection class exists FALSE otherwise.
    */
   public static function exists() {

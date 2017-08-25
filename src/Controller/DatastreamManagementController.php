@@ -10,7 +10,8 @@ use AbstractObject;
 use AbstractDatastream;
 
 /**
- * Class DatastreamManagementController
+ * Class DatastreamManagementController.
+ *
  * @package Drupal\islandora\Controller
  */
 class DatastreamManagementController extends ControllerBase {
@@ -48,9 +49,9 @@ class DatastreamManagementController extends ControllerBase {
   }
 
   /**
-   * Generate the defaultl content.
+   * Generate the default content.
    *
-   * @param AbstractObject $object
+   * @param \AbstractObject $object
    *   The object for which we are generating content.
    *
    * @return array
@@ -79,7 +80,7 @@ class DatastreamManagementController extends ControllerBase {
   /**
    * Generate the table header for the datastream table.
    *
-   * @param AbstractObject $object
+   * @param \AbstractObject $object
    *   The object for which a table of datastreams is being generated.
    *
    * @return array
@@ -107,7 +108,7 @@ class DatastreamManagementController extends ControllerBase {
   /**
    * Generate a row for the datastream table.
    *
-   * @param AbstractDatastream $datastream
+   * @param \AbstractDatastream $datastream
    *   The datastream for which the row is being generated.
    *
    * @return array
@@ -146,4 +147,5 @@ class DatastreamManagementController extends ControllerBase {
 
     return $row;
   }
+
 }

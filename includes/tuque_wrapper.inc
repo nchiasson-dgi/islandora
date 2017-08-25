@@ -8,33 +8,6 @@
  * @todo Overload functions and apply pre/post hooks.
  */
 
-// This function may not exist when a batch operation is running from a
-// multistep form.
-if (function_exists('drupal_get_path')) {
-  $islandora_module_path = drupal_get_path('module', 'islandora');
-}
-
-// @todo this until we expose these in a module or library
-@include_once 'sites/all/libraries/tuque/Datastream.php';
-@include_once 'sites/all/libraries/tuque/FedoraApi.php';
-@include_once 'sites/all/libraries/tuque/FedoraApiSerializer.php';
-@include_once 'sites/all/libraries/tuque/Object.php';
-@include_once 'sites/all/libraries/tuque/RepositoryConnection.php';
-@include_once 'sites/all/libraries/tuque/Cache.php';
-@include_once 'sites/all/libraries/tuque/RepositoryException.php';
-@include_once 'sites/all/libraries/tuque/Repository.php';
-@include_once 'sites/all/libraries/tuque/FedoraRelationships.php';
-
-@include_once "$islandora_module_path/libraries/tuque/Datastream.php";
-@include_once "$islandora_module_path/libraries/tuque/FedoraApi.php";
-@include_once "$islandora_module_path/libraries/tuque/FedoraApiSerializer.php";
-@include_once "$islandora_module_path/libraries/tuque/Object.php";
-@include_once "$islandora_module_path/libraries/tuque/RepositoryConnection.php";
-@include_once "$islandora_module_path/libraries/tuque/Cache.php";
-@include_once "$islandora_module_path/libraries/tuque/RepositoryException.php";
-@include_once "$islandora_module_path/libraries/tuque/Repository.php";
-@include_once "$islandora_module_path/libraries/tuque/FedoraRelationships.php";
-
 /**
  * Allow modules to alter an object before a mutable event occurs.
  */
@@ -46,9 +19,9 @@ function islandora_alter_object(AbstractObject $object, array &$context) {
 /**
  * Allow modules to alter a datastream before a mutable event occurs.
  */
-function islandora_alter_datastream(\AbstractObject $object, \AbstractDatastream $datastream, array &$context) {
+function islandora_alter_datastream(AbstractObject $object, AbstractDatastream $datastream, array &$context) {
   module_load_include('inc', 'islandora', 'includes/utilities');
-  $types = array();
+  $types = [];
   foreach ($object->models as $model) {
     $types[] = "{$model}_{$datastream->id}";
   }
@@ -68,7 +41,7 @@ function islandora_invoke_object_hooks($hook, array $models) {
  */
 function islandora_invoke_datastream_hooks($hook, array $models, $dsid) {
   module_load_include('inc', 'islandora', 'includes/utilities');
-  $refinements = array();
+  $refinements = [];
   foreach ($models as $model) {
     $refinements[] = "{$model}_{$dsid}";
   }

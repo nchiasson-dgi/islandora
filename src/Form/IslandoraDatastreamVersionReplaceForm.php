@@ -1,20 +1,46 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\islandora\Form\IslandoraDatastreamVersionReplaceForm.
- */
-
 namespace Drupal\islandora\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
-use Drupal\file\Entity\File;
+use Drupal\Core\Entity\EntityStorageInterface;
+
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use AbstractDatastream;
 
+/**
+ * Datastream replacement form.
+ *
+ * @package \Drupal\islandora\Form
+ */
 class IslandoraDatastreamVersionReplaceForm extends FormBase {
+  /**
+   * File entity storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $fileEntityStorage;
+
+  /**
+   * Constructor.
+   */
+  public function __construct(ContainerInterface $container, EntityStorageInterface $file_entity_storage) {
+    parent::__construct($container);
+
+    $this->fileEntityStorage = $file_entity_storage;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container,
+      $container->get('entity_type.manager')->getStorage('file')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -23,6 +49,9 @@ class IslandoraDatastreamVersionReplaceForm extends FormBase {
     return 'islandora_datastream_version_replace_form';
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state, AbstractDatastream $datastream = NULL) {
     module_load_include('inc', 'islandora', 'includes/content_model');
     module_load_include('inc', 'islandora', 'includes/utilities');
@@ -31,7 +60,6 @@ class IslandoraDatastreamVersionReplaceForm extends FormBase {
     $object = islandora_object_load($datastream->parent->id);
     $form_state->set(['object_id'], $object->id);
     $form_state->set(['dsid'], $datastream->id);
-    $form_state->set(['object'], $object);
 
     $extensions = islandora_get_extensions_for_datastream($object, $datastream->id);
     $valid_extensions = implode(' ', $extensions);
@@ -39,72 +67,74 @@ class IslandoraDatastreamVersionReplaceForm extends FormBase {
     return [
       'dsid_fieldset' => [
         '#type' => 'fieldset',
-        '#title' => t("Update Datastream"),
+        '#title' => $this->t("Update Datastream"),
         '#collapsible' => FALSE,
         '#collapsed' => FALSE,
         'dsid' => [
           '#type' => 'markup',
-          '#markup' => t("<div>DSID: <strong>@dsid</strong></div>", [
-            '@dsid' => $datastream->id
-            ]),
+          '#markup' => $this->t("<div>DSID: <strong>@dsid</strong></div>", [
+            '@dsid' => $datastream->id,
+          ]),
         ],
         'label' => [
           '#type' => 'markup',
-          '#markup' => t("<div>Label: <strong>@label</strong></div>", [
-            '@label' => $datastream->label
-            ]),
+          '#markup' => $this->t("<div>Label: <strong>@label</strong></div>", [
+            '@label' => $datastream->label,
+          ]),
         ],
         'file' => [
           '#type' => 'managed_file',
           '#required' => TRUE,
-          '#title' => t('Upload Document'),
+          '#title' => $this->t('Upload Document'),
           '#size' => 64,
-          '#description' => t('Select a file to upload.<br/>Files must be less than <strong>@size MB.</strong>', [
-            '@size' => $upload_size
-            ]),
+          '#description' => $this->t('Select a file to upload.<br/>Files must be less than <strong>@size MB.</strong>', [
+            '@size' => $upload_size,
+          ]),
           '#upload_location' => file_default_scheme() . '://',
           '#upload_validators' => [
             'file_validate_extensions' => [
-              $valid_extensions
-              ],
+              $valid_extensions,
+            ],
             // Assume its specified in MB.
-          'file_validate_size' => [
-              $upload_size * 1024 * 1024
-              ],
+            'file_validate_size' => [
+              $upload_size * 1024 * 1024,
+            ],
           ],
         ],
         'submit' => [
           '#type' => 'submit',
-          '#value' => t('Add Contents'),
+          '#value' => $this->t('Add Contents'),
         ],
-      ]
+      ],
     ];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $object = islandora_object_load($form_state->get('object_id'));
-    $form_state->set('redirect', "islandora/object/{$object->id}");
-    $file = File::load(reset($form_state->getValue(['file'])));
+    $form_state->setRedirect('islandora.view_object', ['object' => $object->id]);
+    $file = $this->fileEntityStorage->load(reset($form_state->getValue(['file'])));
     try {
       $ds = $object[$form_state->get('dsid')];
       $mime = $file->getMimeType();
       if ($ds->mimetype != $mime) {
         $ds->mimetype = $mime;
       }
-      $path = \Drupal::service("file_system")->realpath($file->getFileUri());
-      $ds->setContentFromFile($path);
+      $ds->setContentFromFile($file->getFileUri());
       $file->delete();
     }
     catch (exception $e) {
-      drupal_set_message(t('An error occurred during datastream updates. See watchlog for more information.'), 'error');
-      \Drupal::logger('islandora')->error('Failed to add new versionable datastream.<br/>code: @code<br/>message: @msg', [
+      drupal_set_message($this->t('An error occurred during datastream updates. See watchlog for more information.'), 'error');
+      $this->getLogger('islandora')->error('Failed to add new versionable datastream.<br/>code: @code<br/>message: @msg', [
         '@code' => $e->getCode(),
         '@msg' => $e->getMessage(),
       ]);
       $file->delete();
       return;
     }
-    drupal_set_message(t("Successfully Updated Datastream"));
+    drupal_set_message($this->t("Successfully Updated Datastream"));
   }
 
 }
