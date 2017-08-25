@@ -393,10 +393,6 @@ class DefaultController extends ControllerBase {
     module_load_include('inc', 'islandora', 'includes/utilities');
 
     $edit_registry = islandora_build_datastream_edit_registry($datastream);
-    $edit_registry = [
-      ['name' => 'a', 'url' => '/islandora/object/islandora:root',],
-      ['name' => 'b', 'url' => '/islandora/object/islandora:sp_pdf',],
-    ];
     $edit_count = count($edit_registry);
     switch ($edit_count) {
       case 0:
