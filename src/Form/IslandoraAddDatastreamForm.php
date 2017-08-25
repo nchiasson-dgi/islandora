@@ -4,8 +4,11 @@ namespace Drupal\islandora\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 
 use Drupal\Component\Utility\Html;
+
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use AbstractObject;
 
@@ -20,15 +23,22 @@ class IslandoraAddDatastreamForm extends FormBase {
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $fileStorage;
+  protected $fileEntityStorage;
 
   /**
    * Constructor.
    */
-  public function __construct(ContainerInterface $container) {
-    parent::__construct($container);
+  public function __construct(EntityStorageInterface $file_entity_storage) {
+    $this->fileEntityStorage = $file_entity_storage;
+  }
 
-    $this->fileStorage = $container->get('entity_type.manager')->getStorage('file');
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity_type.manager')->getStorage('file')
+    );
   }
 
   /**
@@ -124,10 +134,9 @@ class IslandoraAddDatastreamForm extends FormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     module_load_include('inc', 'islandora', 'includes/mimetype.utils');
-    $extensions = islandora_get_extensions_for_datastream($form_state->get([
-      'object',
-    ]), $form_state->getValue(['dsid']));
-    $file = $this->fileStorage->load(reset($form_state->getValue(['file'])));
+    $object = islandora_object_load($form_state->get(['object_id']));
+    $extensions = islandora_get_extensions_for_datastream($object, $form_state->getValue(['dsid']));
+    $file = $this->fileEntityStorage->load(reset($form_state->getValue(['file'])));
     // Only validate extensions if mimes defined in ds-composite.
     if ($file && $extensions) {
       $errors = file_validate_extensions($file, implode(' ', $extensions));
@@ -145,7 +154,7 @@ class IslandoraAddDatastreamForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $object = islandora_object_load($form_state->get(['object_id']));
     $form_state->setRedirect('islandora.view_object', ['object' => $object->id]);
-    $file = $this->fileStorage->load(reset($form_state->getValue(['file'])));
+    $file = $this->fileEntityStorage->load(reset($form_state->getValue(['file'])));
     try {
       $ds = $object->constructDatastream($form_state->getValue(['dsid']), 'M');
       $ds->label = $form_state->getValue(['label']);

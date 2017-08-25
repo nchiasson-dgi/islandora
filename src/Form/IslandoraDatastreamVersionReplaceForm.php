@@ -26,9 +26,7 @@ class IslandoraDatastreamVersionReplaceForm extends FormBase {
   /**
    * Constructor.
    */
-  public function __construct(ContainerInterface $container, EntityStorageInterface $file_entity_storage) {
-    parent::__construct($container);
-
+  public function __construct(EntityStorageInterface $file_entity_storage) {
     $this->fileEntityStorage = $file_entity_storage;
   }
 
@@ -37,7 +35,6 @@ class IslandoraDatastreamVersionReplaceForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container,
       $container->get('entity_type.manager')->getStorage('file')
     );
   }

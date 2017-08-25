@@ -10,6 +10,8 @@ use Drupal\Component\Utility\Xss;
 use Drupal\Core\Extension\ModuleHandler;
 use Drupal\Core\Render\Renderer;
 
+use Drupal\filter\Render\FilteredMarkup;
+
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use AbstractObject;
@@ -85,7 +87,7 @@ class IslandoraSolutionPackForm extends FormBase {
     foreach ($info['objects'] as $key => $object) {
       $batch['operations'][] = [
         [
-          '\Drupal\islandora\Form\IslandoraSolutionPackForm',
+          __CLASS__,
           'islandoraSolutionPackBatchOperationReingestObject',
         ],
         [$object],
@@ -280,11 +282,9 @@ class IslandoraSolutionPackForm extends FormBase {
     if ($existing_object) {
       $deleted = islandora_delete_object($existing_object);
       if (!$deleted) {
-        $object_link = \Drupal::l($existing_object->label, Url::fromRoute('islandora.view_object'), ['object' => $existing_object->id]);
-
-        drupal_set_message(Xss::filter($this->t('Failed to purge existing object @object_link.', [
-          '@object_link' => $object_link,
-        ])), 'error');
+        drupal_set_message(t('Failed to purge existing object @object_link.', [
+          '@object_link' => FilteredMarkup::create(Link::fromTextAndUrl(Xss::filter($object->label), Url::fromRoute('islandora.view_object', ['object' => $object->id]))->toString()),
+        ]), 'error');
         // Failed to purge don't attempt to ingest.
         return;
       }
@@ -293,18 +293,18 @@ class IslandoraSolutionPackForm extends FormBase {
     // Object was deleted or did not exist.
     $pid = $object->id;
     $label = $object->label;
-    $object_link = \Drupal::l($label, Url::fromRoute('islandora.view_object'), ['object' => $pid]);
 
     $object = islandora_add_object($object);
     $params = [
       '@pid' => $pid,
       '@label' => $label,
-      '@object_link' => $object_link,
+      '@object_link' => FilteredMarkup::create(Link::fromTextAndUrl(Xss::filter($label), Url::fromRoute('islandora.view_object', ['object' => $pid]))->toString()),
     ];
+    dsm($params);
 
     if ($object) {
       if ($deleted) {
-        $message = t('Successfully reinstalled');
+        $message = t('Successfully reinstalled @object_link.', $params);
       }
       else {
         $message = t('Successfully installed @object_link.', $params);
@@ -316,8 +316,9 @@ class IslandoraSolutionPackForm extends FormBase {
     else {
       $message = t('Failed to install @label, identified by @pid.', $params);
     }
+    dsm($message);
 
-    drupal_set_message(Xss::filter($message),
+    drupal_set_message($message,
       $object ? 'status' : 'error'
     );
   }
