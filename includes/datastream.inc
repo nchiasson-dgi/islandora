@@ -54,59 +54,6 @@ function islandora_datastream_get_url(AbstractDatastream $datastream, $type = 'd
 }
 
 /**
- * Display the edit datastream page.
- *
- * @param AbstractDatastream $datastream
- *   The datastream to edit.
- */
-function islandora_edit_datastream(AbstractDatastream $datastream) {
-  module_load_include('inc', 'islandora', 'includes/utilities');
-
-  $edit_registry = islandora_build_datastream_edit_registry($datastream);
-  $edit_count = count($edit_registry);
-  switch ($edit_count) {
-    case 0:
-      // No edit implementations.
-      drupal_set_message(t('There are no edit methods specified for this datastream.'));
-      drupal_goto("islandora/object/{$datastream->parent->id}/manage/datastreams");
-      break;
-
-    case 1:
-      // One registry implementation, go there.
-      $entry = reset($edit_registry);
-      drupal_goto($entry['url']);
-      break;
-
-    default:
-      // Multiple edit routes registered.
-      return islandora_edit_datastream_registry_render($edit_registry);
-  }
-}
-
-/**
- * Displays links to all the edit datastream registry items.
- *
- * @param array $edit_registry
- *   A list of 'islandora_edit_datastream_registry' values.
- *
- * @return array
- *   A Drupal renderable array containing the "edit" markup.
- */
-function islandora_edit_datastream_registry_render(array $edit_registry) {
-  $markup = '';
-  foreach ($edit_registry as $edit_route) {
-    // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $markup .= l($edit_route['name'], $edit_route['url']) . '<br/>';
-
-  }
-  return array(
-    '#type' => 'markup',
-    '#markup' => $markup,
-  );
-}
-
-/**
  * Creates/returns the file URI for the content of a datastream for chunking.
  *
  * File locks are used to ensure the datastream is completely downloaded before

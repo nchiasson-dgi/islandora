@@ -5,28 +5,7 @@
  * This file contains a class to include the Tuque php library.
  */
 
-$islandora_module_path = drupal_get_path('module', 'islandora');
-
-// Do this until we expose these in a module or library.
-@include_once 'sites/all/libraries/tuque/Datastream.php';
-@include_once 'sites/all/libraries/tuque/FedoraApi.php';
-@include_once 'sites/all/libraries/tuque/FedoraApiSerializer.php';
-@include_once 'sites/all/libraries/tuque/Object.php';
-@include_once 'sites/all/libraries/tuque/RepositoryConnection.php';
-@include_once 'sites/all/libraries/tuque/Cache.php';
-@include_once 'sites/all/libraries/tuque/RepositoryException.php';
-@include_once 'sites/all/libraries/tuque/Repository.php';
-@include_once 'sites/all/libraries/tuque/FedoraRelationships.php';
-
-@include_once "$islandora_module_path/libraries/tuque/Datastream.php";
-@include_once "$islandora_module_path/libraries/tuque/FedoraApi.php";
-@include_once "$islandora_module_path/libraries/tuque/FedoraApiSerializer.php";
-@include_once "$islandora_module_path/libraries/tuque/Object.php";
-@include_once "$islandora_module_path/libraries/tuque/RepositoryConnection.php";
-@include_once "$islandora_module_path/libraries/tuque/Cache.php";
-@include_once "$islandora_module_path/libraries/tuque/RepositoryException.php";
-@include_once "$islandora_module_path/libraries/tuque/Repository.php";
-@include_once "$islandora_module_path/libraries/tuque/FedoraRelationships.php";
+require_once __DIR__ . '/../src/Tuque/Base.php';
 
 class IslandoraTuque {
 
@@ -85,7 +64,7 @@ class IslandoraTuque {
       $url = \Drupal::config('islandora.settings')->get('islandora_base_url');
     }
 
-    if (self::exists()) {
+    if (static::exists()) {
       module_load_include('inc', 'islandora', 'includes/tuque_wrapper');
       $this->connection = new \Drupal\islandora\Tuque\IslandoraRepositoryConnection($url, $user_string, $pass_string);
       $this->connection->reuseConnection = TRUE;
@@ -98,7 +77,7 @@ class IslandoraTuque {
   /**
    * Checks if the Connection class exists.
    *
-   * @returns bool
+   * @return bool
    *   TRUE if the Connection class exists FALSE otherwise.
    */
   public static function exists() {

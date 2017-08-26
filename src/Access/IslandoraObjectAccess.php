@@ -5,11 +5,32 @@ namespace Drupal\islandora\Access;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Access checking for objects within Islandora.
  */
 class IslandoraObjectAccess implements AccessInterface {
+  /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $config;
+
+  /**
+   * Constructor.
+   */
+  public function __construct(ConfigFactoryInterface $config) {
+    $this->config = $config;
+  }
+
+  /**
+   * Dependency injection interface.
+   */
+  public static function create(ConfigFactoryInterface $config) {
+    return new static($config);
+  }
 
   /**
    * Whether the user has access to an object.
@@ -19,14 +40,14 @@ class IslandoraObjectAccess implements AccessInterface {
    * @param string|AbstractObject $object
    *   A string of the default 'root' is being based through, a loaded Fedora
    *   object otherwise.
-   * @param AccountInterface $account
+   * @param \Drupal\Core\Session\AccountInterface $account
    *   User being validated against.
    * @param string $islandora_access_conjunction
    *   If an array of permissions is specified this will dictate how it's
    *   evaluated. To maintain 7's behavior these are ORed together by default
    *   but can be overridden on a per route basis.
    *
-   * @return AccessResult|\Drupal\Core\Access\AccessResultAllowed|\Drupal\Core\Access\AccessResultForbidden|\Drupal\Core\Access\AccessResultNeutral
+   * @return \Drupal\Core\Access\AccessResult|\Drupal\Core\Access\AccessResultAllowed|\Drupal\Core\Access\AccessResultForbidden|\Drupal\Core\Access\AccessResultNeutral
    *   Whether the user has access in AccessResult object form.
    */
   public function access($perms, $object, AccountInterface $account, $islandora_access_conjunction = 'OR') {
@@ -35,7 +56,9 @@ class IslandoraObjectAccess implements AccessInterface {
     // in Drupal as defaults this needs to be the case. If it's possible to get
     // around this by making the empty slug route in YAML or a custom Routing
     // object we can remove this.
-    $object = $object === 'root' ? islandora_object_load(\Drupal::config('islandora.settings')->get('islandora_repository_pid')) : islandora_object_load($object);
+    $object = islandora_object_load($object === 'root' ?
+      $this->config->get('islandora.settings')->get('islandora_repository_pid') :
+      $object);
     if (!$object && !islandora_describe_repository()) {
       islandora_display_repository_inaccessible_message();
       return AccessResult::forbidden();

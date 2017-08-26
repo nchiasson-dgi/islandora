@@ -1,17 +1,23 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\islandora\Form\IslandoraRegenerateDatastreamDerivativeForm.
- */
-
 namespace Drupal\islandora\Form;
 
-use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 
-class IslandoraRegenerateDatastreamDerivativeForm extends FormBase {
+/**
+ * Datastream derivative regeneration form.
+ *
+ * @package \Drupal\islandora\Form
+ */
+class IslandoraRegenerateDatastreamDerivativeForm extends ConfirmFormBase {
+
+  /**
+   * The object in which we are operating.
+   *
+   * @var \AbstractObject
+   */
+  protected $object;
 
   /**
    * {@inheritdoc}
@@ -20,20 +26,63 @@ class IslandoraRegenerateDatastreamDerivativeForm extends FormBase {
     return 'islandora_regenerate_datastream_derivative_form';
   }
 
-  public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state, AbstractDatastream $datastream = NULL) {
-    $form_state->set(['datastream'], $datastream);
-    return confirm_form($form, t('Are you sure you want to regenerate the derivative for the %dsid datastream?', [
-      '%dsid' => $datastream->id
-      ]), "islandora/object/{$datastream->parent->id}/manage/datastreams", t('This will create a new version of the datastream. Please wait while this happens.'), t('Regenerate'), t('Cancel'));
+  /**
+   * {@inheritdoc}
+   */
+  public function getQuestion() {
+    return $this->t('Are you sure you want to regenerate the given datastream?');
   }
 
-  public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription() {
+    return $this->t('This will create a new version of the datastream. Please wait while this happens.');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfirmText() {
+    return $this->t('Regenerate');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCancelText() {
+    return $this->t('Cancel');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCancelUrl() {
+    return Url::fromRoute('islandora.edit_object', ['object' => $this->object->id]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state, AbstractDatastream $datastream = NULL) {
+    $this->object = $datastream->parent;
+    $form_state->set(['datastream_info'], [
+      'object_id' => $datastream->parent->id,
+      'dsid' => $datastream->id,
+    ]);
+    return parent::buildForm($form, $form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     module_load_include('inc', 'islandora', 'includes/derivatives');
-    $datastream = $form_state->get(['datastream']);
+    $object = islandora_object_load($form_state->get(['datastream_info', 'object_id']));
+    $datastream = $object[$form_state->get(['datastream_info', 'dsid'])];
     $batch = islandora_regenerate_datastream_derivative_batch($datastream);
+    $form_state->setRedirect('islandora.edit_object', ['object' => $datastream->parent->id]);
     batch_set($batch);
-    $form_state->set(['redirect'], "islandora/object/{$datastream->parent->id}/manage/datastreams");
   }
 
 }
-?>

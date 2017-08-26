@@ -5,6 +5,7 @@ services:
       - { name: paramconverter }
   access_check.object:
     class: Drupal\islandora\Access\IslandoraObjectAccess
+    arguments: ['@config.factory']
     tags:
       - { name: access_check, applies_to: _islandora_object_access }
   datastream:

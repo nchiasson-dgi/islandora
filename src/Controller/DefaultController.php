@@ -6,12 +6,14 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Form\FormBuilderInterface;
+use Drupal\Core\Url;
 
 use Drupal\islandora\Form\IslandoraSolutionPackForm;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use AbstractObject;
 use AbstractDatastream;
@@ -121,7 +123,6 @@ class DefaultController extends ControllerBase {
         $page_number,
         $page_size,
       ]);
-      islandora_as_renderable_array($temp);
       if (!empty($temp)) {
         $output = array_merge_recursive($output, $temp);
       }
@@ -151,14 +152,12 @@ class DefaultController extends ControllerBase {
     // Dispatch print hook.
     foreach (islandora_build_hook_list(ISLANDORA_PRINT_HOOK, $object->models) as $hook) {
       $temp = \Drupal::moduleHandler()->invokeAll($hook, [$object]);
-      islandora_as_renderable_array($temp);
       if (!empty($temp)) {
         $temp_arr = array_merge_recursive($temp_arr, $temp);
       }
     }
     $output = islandora_default_islandora_printer_object($object, \Drupal::service("renderer")->render($temp_arr));
     arsort($output);
-    islandora_as_renderable_array($output);
 
     // Prompt to print.
     // @FIXME
@@ -177,7 +176,7 @@ class DefaultController extends ControllerBase {
     $cache = &drupal_static(__FUNCTION__);
     if (!is_object($object)) {
       // The object could not be loaded... Presumably, we don't have
-    // permission.
+      // permission.
       return FALSE;
     }
     if ($user === NULL) {
@@ -236,44 +235,6 @@ class DefaultController extends ControllerBase {
     return $has_access;
   }
 
-  public function islandora_manage_overview_object(AbstractObject $object) {
-    module_load_include('inc', 'islandora', 'includes/utilities');
-    $output = islandora_create_manage_overview($object);
-    $hooks = islandora_build_hook_list(ISLANDORA_OVERVIEW_HOOK, $object->models);
-    foreach ($hooks as $hook) {
-      $temp = \Drupal::moduleHandler()->invokeAll($hook, [$object]);
-      islandora_as_renderable_array($temp);
-      if (!empty($temp)) {
-        arsort($temp);
-        $output = array_merge_recursive($output, $temp);
-      }
-    }
-    \Drupal::moduleHandler()->alter($hooks, $object, $output);
-    islandora_as_renderable_array($output);
-    return $output;
-  }
-
-  public function islandora_edit_object(AbstractObject $object) {
-    module_load_include('inc', 'islandora', 'includes/breadcrumb');
-    module_load_include('inc', 'islandora', 'includes/utilities');
-    $output = [];
-    foreach (islandora_build_hook_list(ISLANDORA_EDIT_HOOK, $object->models) as $hook) {
-      $temp = \Drupal::moduleHandler()->invokeAll($hook, [$object]);
-      islandora_as_renderable_array($temp);
-      if (!empty($temp)) {
-        $output = array_merge_recursive($output, $temp);
-      }
-    }
-    if (empty($output)) {
-      // Add in the default, if we did not get any results.
-      $output = islandora_default_islandora_edit_object($object);
-    }
-    arsort($output);
-    \Drupal::moduleHandler()->alter(ISLANDORA_EDIT_HOOK, $object, $output);
-    islandora_as_renderable_array($output);
-    return $output;
-  }
-
   public function islandora_add_datastream_form_autocomplete_callback(AbstractObject $object, $query = '') {
     module_load_include('inc', 'islandora', 'includes/content_model');
     module_load_include('inc', 'islandora', 'includes/utilities');
@@ -327,6 +288,9 @@ class DefaultController extends ControllerBase {
     return $cache[$op][$datastream->parent->id][$datastream->id][$user->id()];
   }
 
+  public function islandoraViewDatastreamTitle(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
+    return $datastream->id;
+  }
   /**
    * Callback function to view or download a datastream.
    *
@@ -433,19 +397,31 @@ class DefaultController extends ControllerBase {
     switch ($edit_count) {
       case 0:
         // No edit implementations.
-        drupal_set_message(t('There are no edit methods specified for this datastream.'));
-        drupal_goto("islandora/object/{$datastream->parent->id}/manage/datastreams");
-        break;
+        drupal_set_message($this->t('There are no edit methods specified for the @id datastream.', ['@id' => $datastream->id]));
+        return $this->redirect('islandora.edit_object', ['object' => $datastream->parent->id]);
 
       case 1:
         // One registry implementation, go there.
         $entry = reset($edit_registry);
-        drupal_goto($entry['url']);
-        break;
+        return RedirectResponse::create($entry['url']);
 
       default:
         // Multiple edit routes registered.
-        return islandora_edit_datastream_registry_render($edit_registry);
+        $list = [
+          '#theme' => 'item_list',
+          '#items' => [],
+        ];
+        foreach ($edit_registry as $entry) {
+          $list['#items'][$entry['name']] = [
+            '#type' => 'link',
+            '#title' => $entry['name'],
+            // XXX: Doesn't anything which accepts as a string... I foresee
+            // having to rework the hook to return the route info (route name
+            // and parameters).
+            '#url' => Url::fromUserInput($entry['url']),
+          ];
+        }
+        return $list;
     }
   }
 
