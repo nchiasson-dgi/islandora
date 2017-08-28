@@ -65,6 +65,7 @@ class IslandoraRepositoryAdmin extends IslandoraModuleHandlerAdminForm {
             '#ajax' => [
               'callback' => '::updateUrlDiv',
               'wrapper' => 'islandora-url',
+              'disable-refocus' => TRUE,
             ],
           ],
           'status_image' => [
