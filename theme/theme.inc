@@ -147,15 +147,24 @@ function template_preprocess_islandora_objects(array &$variables) {
   $list_display = !$grid_display;
   $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters($_GET);
 
-  $grid_url = \Drupal\Core\Url::fromRoute('<current>', [], ['query' => array_merge($query_params, ['display' => 'grid'])]);
-  $list_url = \Drupal\Core\Url::fromRoute('<current>', [], ['query' => array_merge($query_params, ['display' => 'list'])]);
-  $grid_link = Link::fromTextAndUrl(t('Grid view'), $grid_url);
-  $list_link = Link::fromTextAndUrl(t('List view'), $list_url);
-  $renderable_grid_link = $grid_link->toRenderable();
-  $renderable_list_link = $list_link->toRenderable();
-  // If you need some attributes.
-  $renderable_grid_link['#attributes'] = ['class' => [$grid_display ? 'active' : '']];
-  $renderable_list_link['#attributes'] = ['class' => [$list_display ? 'active' : '']];
+  $renderable_grid_link = Link::createFromRoute(
+    t('Grid view'),
+    '<current>',
+    [],
+    [
+      'query' => array_merge($query_params, ['display' => 'grid']),
+      'attributes' => ['class' => [$grid_display ? 'active' : '']],
+    ]
+  )->toRenderable();
+  $renderable_list_link = Link::createFromRoute(
+    t('List view'),
+    '<current>',
+    [],
+    [
+      'query' => array_merge($query_params, ['display' => 'list']),
+      'attributes' => ['class' => [$list_display ? 'active' : '']],
+    ]
+  )->toRenderable();
 
   $variables['display_links'] = [
     $renderable_grid_link,
@@ -269,15 +278,24 @@ function template_preprocess_islandora_objects_subset(&$variables) {
   $list_display = !$grid_display;
   $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters($_GET);
 
-  $grid_url = \Drupal\Core\Url::fromRoute('<current>', [], ['query' => array_merge($query_params, ['display' => 'grid'])]);
-  $list_url = \Drupal\Core\Url::fromRoute('<current>', [], ['query' => array_merge($query_params, ['display' => 'list'])]);
-  $grid_link = Link::fromTextAndUrl(t('Grid view'), $grid_url);
-  $list_link = Link::fromTextAndUrl(t('List view'), $list_url);
-  $renderable_grid_link = $grid_link->toRenderable();
-  $renderable_list_link = $list_link->toRenderable();
-  // If you need some attributes.
-  $renderable_grid_link['#attributes'] = ['class' => [$grid_display ? 'active' : '']];
-  $renderable_list_link['#attributes'] = ['class' => [$list_display ? 'active' : '']];
+  $renderable_grid_link = Link::createFromRoute(
+    t('Grid view'),
+    '<current>',
+    [],
+    [
+      'query' => array_merge($query_params, ['display' => 'grid']),
+      'attributes' => ['class' => [$grid_display ? 'active' : '']],
+    ]
+  )->toRenderable();
+  $renderable_list_link = Link::createFromRoute(
+    t('List view'),
+    '<current>',
+    [],
+    [
+      'query' => array_merge($query_params, ['display' => 'list']),
+      'attributes' => ['class' => [$list_display ? 'active' : '']],
+    ]
+  )->toRenderable();
 
   $variables['display_links'] = [
     $renderable_grid_link,
