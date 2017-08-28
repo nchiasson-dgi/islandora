@@ -7,6 +7,7 @@
 
 use Drupal\islandora\DublinCore;
 use Drupal\Core\Url;
+use Drupal\Core\Link;
 
 /**
  * Implements template_preprocess_HOOK().
@@ -145,66 +146,35 @@ function template_preprocess_islandora_objects(array &$variables) {
   $grid_display = $display == 'grid';
   $list_display = !$grid_display;
   $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters($_GET);
-  $variables['display_links'] = array(
-    array(
-      'title' => t('Grid view'),
-      'href' => \Drupal\Core\Url::fromRoute("<current>")->toString(),
-      'attributes' => array(
-        'class' => array(
-          $grid_display ? 'active' : '',
-        ),
-      ),
-      'query' => array('display' => 'grid') + $query_params,
-    ),
-    array(
-      'title' => t('List view'),
-      'href' => \Drupal\Core\Url::fromRoute("<current>")->toString(),
-      'attributes' => array(
-        'class' => array(
-          $list_display ? 'active' : '',
-        ),
-      ),
-      'query' => array('display' => 'list') + $query_params,
-    ),
-  );
+
+  $current_url = \Drupal\Core\Url::fromRoute('<current>', [], $query_params);
+  $grid_link = Link::fromTextAndUrl(t('Grid view'), $current_url);
+  $list_link = Link::fromTextAndUrl(t('List view'), $current_url);
+  $renderable_grid_link = $grid_link->toRenderable();
+  $renderable_list_link = $list_link->toRenderable();
+  // If you need some attributes.
+  $renderable_grid_link['#attributes'] = ['class' => [$grid_display ? 'active' : '']];
+  $renderable_list_link['#attributes'] = ['class' => [$list_display ? 'active' : '']];
+
+  $variables['display_links'] = [
+    $renderable_grid_link,
+    $renderable_list_link,
+  ];
   // Pager.
   $objects = $variables['objects'];
   $limit = $variables['limit'];
   $page = pager_default_initialize(count($objects), $limit);
   $objects = array_slice($objects, $page * $limit, $limit);
-  // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $variables['pager'] = theme('pager', array('quantity' => 10));
 
+  $variables['pager'] = ['#type' => 'pager', 'quantity' => 10];
 
   $objects = array_map('islandora_objects_object_mapper', $objects);
   $theme = $grid_display ? 'islandora_objects_grid' : 'islandora_objects_list';
-  // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $variables['content'] = theme($theme, array('objects' => $objects));
-
-  $module_path = drupal_get_path('module', 'islandora');
-  // @FIXME
-// The Assets API has totally changed. CSS, JavaScript, and libraries are now
-// attached directly to render arrays using the #attached property.
-//
-//
-// @see https://www.drupal.org/node/2169605
-// @see https://www.drupal.org/node/2408597
-// drupal_add_css("$module_path/css/islandora.objects.css");
-
+  $variables['content'] = [
+    '#theme' => $theme,
+    ['objects' => $objects],
+  ];
+  $variables['content']['#attached']['library'][] = 'islandora/islandora-objects';
 }
 
 /**
@@ -224,62 +194,53 @@ function template_preprocess_islandora_objects(array &$variables) {
  *   - pid: The object's PID.
  */
 function islandora_objects_object_mapper($object_id) {
-  $o = islandora_object_load($object_id);
-
+  $object = islandora_object_load($object_id);
   $module_path = drupal_get_path('module', 'islandora');
 
-  $url = "islandora/object/{$object_id}";
+  $url = \Drupal\Core\Url::fromRoute('islandora.view_object', ['object' => $object_id]);
+  $url_string = $url->toString();
   $img = array(
     '#theme' => 'image',
-    '#path' => ($o && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $o['TN']) ?
-      "$url/datastream/TN/view" :
+    '#uri' => ($object && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['TN']) ?
+      "$url_string/datastream/TN/view" :
       "$module_path/images/folder.png"),
-    '#attributes' => array(),
   );
   $img = \Drupal::service("renderer")->render($img);
 
-  if ($o) {
-    $link_options = array('html' => TRUE, 'attributes' => array('title' => $o->label));
+  if ($object) {
     $description = NULL;
-    if (isset($o['DC']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $o['DC'])) {
-      $dc = DublinCore::importFromXMLString($o['DC']->content);
+    if (isset($object['DC']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['DC'])) {
+      $dc = DublinCore::importFromXMLString($object['DC']->content);
       if ($dc) {
         $dc = $dc->asArray();
         $description = $dc['dc:description']['value'];
       }
     }
-    // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// return array(
-//       'label' => $o->label,
-//       'class' => \Drupal\Component\Utility\Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $o->id)),
-//       'link' => l($o->label, $url, $link_options),
-//       'thumb' => l($img, $url, $link_options),
-//       'description' => $description,
-//       'pid' => $o->id,
-//     );
-
+    return array(
+      'label' => $object->label,
+      'class' => \Drupal\Component\Utility\Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $object->id)),
+      'link' => Link::fromTextAndUrl($object->label, $url),
+      'thumb' => Link::fromTextAndUrl($img, $url),
+      'description' => $description,
+      'pid' => $object->id,
+    );
   }
   else {
-    $link_options = array('html' => TRUE, 'attributes' => array('title' => t('(Unknown)')));
-    // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// return array(
-//       'label' => t('(Unknown)'),
-//       'class' => \Drupal\Component\Utility\Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $object_id)),
-//       'link' => l(t('(Unknown)'), $url, $link_options),
-//       'thumb' => '',
-//       'description' => '',
-//       'pid' => $object_id,
-//     );
-
+    return array(
+      'label' => t('(Unknown)'),
+      'class' => \Drupal\Component\Utility\Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $object_id)),
+      'link' => Link::fromTextAndUrl($object->label, $url),
+      'thumb' => '',
+      'description' => '',
+      'pid' => $object_id,
+    );
   }
 }
 
 /**
  * Prepares variables for islandora_objects_subset templates.
  *
- * A variant of "islandora_objects" which accepts a subset of object to theme.
+ * A variant of "islandora_objects" which accepts a subset of objects to theme.
  *
  * @see template_preprocess_islandora_objects()
  *
@@ -308,58 +269,31 @@ function template_preprocess_islandora_objects_subset(&$variables) {
   $list_display = !$grid_display;
   $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters($_GET);
 
-  // XXX: In l(), Drupal automatically adds the "active" class if it looks like
-  // you are generating a link to the same page, based on the path and language.
-  // Here, we use the "language" side of things to assert our links belong to a
-  // non-existent language, so we can take control of adding our "active" class.
-  $language_hack = new stdClass();
-  $language_hack->language = 'a-non-existent-language';
+  $current_url = \Drupal\Core\Url::fromRoute('<current>', [], $query_params);
+  $grid_link = Link::fromTextAndUrl(t('Grid view'), $current_url);
+  $list_link = Link::fromTextAndUrl(t('List view'), $current_url);
+  $renderable_grid_link = $grid_link->toRenderable();
+  $renderable_list_link = $list_link->toRenderable();
+  // If you need some attributes.
+  $renderable_grid_link['#attributes'] = ['class' => [$grid_display ? 'active' : '']];
+  $renderable_list_link['#attributes'] = ['class' => [$list_display ? 'active' : '']];
 
-  $variables['display_links'] = array(
-    array(
-      'title' => t('Grid view'),
-      'href' => \Drupal\Core\Url::fromRoute("<current>")->toString(),
-      'attributes' => array(
-        'class' => array(
-          $grid_display ? 'active' : '',
-        ),
-      ),
-      'query' => array('display' => 'grid') + $query_params,
-      'language' => $language_hack,
-    ),
-    array(
-      'title' => t('List view'),
-      'href' => \Drupal\Core\Url::fromRoute("<current>")->toString(),
-      'attributes' => array(
-        'class' => array(
-          $list_display ? 'active' : '',
-        ),
-      ),
-      'query' => array('display' => 'list') + $query_params,
-      'language' => $language_hack,
-    ),
-  );
+  $variables['display_links'] = [
+    $renderable_grid_link,
+    $renderable_list_link,
+  ];
 
   $variables['pager'] = array(
-    '#theme' => 'pager',
+    '#type' => 'pager',
     '#element' => $variables['pager_element'],
   );
   $module_path = drupal_get_path('module', 'islandora');
-  $variables['content'] = array(
-    '#attached' => array(
-      'css' => array(
-        "$module_path/css/islandora.objects.css",
-      ),
-    ),
+  $variables['content'] = [
     '#theme' => $grid_display ? 'islandora_objects_grid' : 'islandora_objects_list',
     '#objects' => $variables['objects'],
-  );
-}
+  ];
+  $variables['content']['#attached']['library'][] = 'islandora/islandora-objects';
 
-/**
- * Process variables for islandora_objects_subset templates.
- */
-function template_process_islandora_objects_subset(&$variables) {
   pager_default_initialize($variables['total'], $variables['limit'], $variables['pager_element']);
   $variables['pager'] = \Drupal::service("renderer")->render($variables['pager']);
   $variables['content']['#objects'] = array_map('islandora_objects_object_mapper', $variables['content']['#objects']);
