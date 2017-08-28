@@ -199,11 +199,10 @@ function islandora_objects_object_mapper($object_id) {
   $module_path = drupal_get_path('module', 'islandora');
 
   $url = \Drupal\Core\Url::fromRoute('islandora.view_object', ['object' => $object_id]);
-  $url_string = $url->toString();
   $img = array(
     '#theme' => 'image',
     '#uri' => ($object && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['TN']) ?
-      "$url_string/datastream/TN/view" :
+      Url::fromRoute('islandora.view_datastream_view', ['object' => $object_id, 'datastream' => 'TN'])->toString() :
       "$module_path/images/folder.png"),
   );
   $img = \Drupal::service("renderer")->render($img);
