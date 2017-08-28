@@ -152,7 +152,7 @@ function islandora_theme() {
     // Render a bunch of objects as a list.
     'islandora_objects_list' => array(
       'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-objects-list',
+      'template' => 'islandora-objects-list',
       'variables' => array('objects' => NULL),
     ),
     'islandora_dublin_core_display' => array(

@@ -1,0 +1,31 @@
+{#
+/**
+ * @file
+ * Render a bunch of objects in a list  view.
+ */
+#}
+<div class="islandora-objects-list">
+  {% $row_field = 0 %}
+  {% set first = 'first' %}
+  {% for object in objects %}
+    {% if row_field > 0 %}
+      {% set first = '' %}
+    {% endif %}
+    <div class="islandora-objects-list-item clearfix">
+      <dl class="islandora-object {{ object['class'] }}">
+        <dt class="islandora-object-thumb">
+          {{ object['thumb'] }}
+        </dt>
+        <dd class="islandora-object-caption {{ object['class'] }} {{ first }}">
+          <strong>
+            {{ object['link'] }}
+          </strong>
+        </dd>
+        <dd class="islandora-object-description">
+          {{ object['description'] }}
+        </dd>
+      </dl>
+    </div>
+    {% set row_field = row_field + 1 %}
+  {% endfor %}
+</div>
