@@ -300,7 +300,6 @@ class IslandoraSolutionPackForm extends FormBase {
       '@label' => $label,
       '@object_link' => FilteredMarkup::create(Link::fromTextAndUrl(Xss::filter($label), Url::fromRoute('islandora.view_object', ['object' => $pid]))->toString()),
     ];
-    dsm($params);
 
     if ($object) {
       if ($deleted) {
@@ -316,7 +315,6 @@ class IslandoraSolutionPackForm extends FormBase {
     else {
       $message = t('Failed to install @label, identified by @pid.', $params);
     }
-    dsm($message);
 
     drupal_set_message($message,
       $object ? 'status' : 'error'
