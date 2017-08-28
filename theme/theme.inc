@@ -147,9 +147,10 @@ function template_preprocess_islandora_objects(array &$variables) {
   $list_display = !$grid_display;
   $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters($_GET);
 
-  $current_url = \Drupal\Core\Url::fromRoute('<current>', [], $query_params);
-  $grid_link = Link::fromTextAndUrl(t('Grid view'), $current_url);
-  $list_link = Link::fromTextAndUrl(t('List view'), $current_url);
+  $grid_url = \Drupal\Core\Url::fromRoute('<current>', [], ['query' => array_merge($query_params, ['display' => 'grid'])]);
+  $list_url = \Drupal\Core\Url::fromRoute('<current>', [], ['query' => array_merge($query_params, ['display' => 'list'])]);
+  $grid_link = Link::fromTextAndUrl(t('Grid view'), $grid_url);
+  $list_link = Link::fromTextAndUrl(t('List view'), $list_url);
   $renderable_grid_link = $grid_link->toRenderable();
   $renderable_list_link = $list_link->toRenderable();
   // If you need some attributes.
@@ -269,9 +270,10 @@ function template_preprocess_islandora_objects_subset(&$variables) {
   $list_display = !$grid_display;
   $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters($_GET);
 
-  $current_url = \Drupal\Core\Url::fromRoute('<current>', [], $query_params);
-  $grid_link = Link::fromTextAndUrl(t('Grid view'), $current_url);
-  $list_link = Link::fromTextAndUrl(t('List view'), $current_url);
+  $grid_url = \Drupal\Core\Url::fromRoute('<current>', [], ['query' => array_merge($query_params, ['display' => 'grid'])]);
+  $list_url = \Drupal\Core\Url::fromRoute('<current>', [], ['query' => array_merge($query_params, ['display' => 'list'])]);
+  $grid_link = Link::fromTextAndUrl(t('Grid view'), $grid_url);
+  $list_link = Link::fromTextAndUrl(t('List view'), $list_url);
   $renderable_grid_link = $grid_link->toRenderable();
   $renderable_list_link = $list_link->toRenderable();
   // If you need some attributes.
