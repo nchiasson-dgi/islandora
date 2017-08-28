@@ -182,7 +182,7 @@ function template_preprocess_islandora_objects(array &$variables) {
   $theme = $grid_display ? 'islandora_objects_grid' : 'islandora_objects_list';
   $variables['content'] = [
     '#theme' => $theme,
-    ['objects' => $objects],
+    'objects' => $objects,
   ];
   $variables['content']['#attached']['library'][] = 'islandora/islandora-objects';
 }
