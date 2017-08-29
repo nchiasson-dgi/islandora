@@ -1,0 +1,16 @@
+{#
+/**
+ * @file
+ * Render a bunch of objects in a list or grid view.
+ */
+#}
+<div class="islandora-objects-grid clearfix">
+ {% for object in objects %}
+   <div class="islandora-objects-grid-item">
+     <dl class="islandora-object {{ object['class'] }}">
+       <dt class="islandora-object-thumb">{{ object['thumb'] }}</dt>
+       <dd class="islandora-object-caption">{{ object['link'] }}</dd>
+     </dl>
+   </div>
+ {% endfor %}
+</div>

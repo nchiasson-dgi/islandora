@@ -123,7 +123,7 @@ function islandora_theme() {
     // Render a bunch of objects as either a grid or a list.
     'islandora_objects' => array(
       'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-objects',
+      'template' => 'islandora-objects',
       'variables' => array(
         'objects' => NULL,
         'display' => NULL,
@@ -134,7 +134,7 @@ function islandora_theme() {
     // Render a bunch of objects as either a grid or a list.
     'islandora_objects_subset' => array(
       'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-objects',
+      'template' => 'islandora-objects',
       'variables' => array(
         'objects' => NULL,
         'display' => 'grid',
@@ -146,13 +146,13 @@ function islandora_theme() {
     // Render a bunch of objects as a grid.
     'islandora_objects_grid' => array(
       'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-objects-grid',
+      'template' => 'islandora-objects-grid',
       'variables' => array('objects' => NULL),
     ),
     // Render a bunch of objects as a list.
     'islandora_objects_list' => array(
       'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-objects-list',
+      'template' => 'islandora-objects-list',
       'variables' => array('objects' => NULL),
     ),
     'islandora_dublin_core_display' => array(
