@@ -20,3 +20,9 @@ islandora-print:
   css:
     layout:
       css/islandora.print.css: {}
+islandora-print-js:
+  js:
+    js/print.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
