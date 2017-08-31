@@ -137,15 +137,12 @@ class DefaultController extends ControllerBase {
     return $output;
   }
 
-  public function islandora_print_object_access($op, $object, AccountInterface $account) {
-    if (!\Drupal::config('islandora.settings')->get('islandora_show_print_option')) {
-      return FALSE;
-    }
-    $access = islandora_object_access($op, $object);
-    return $access;
+  public static function islandora_print_object_access($op, $object, AccountInterface $account) {
+    $object = islandora_object_load($object);
+    return AccessResult::allowedIf(islandora_print_object_access($op, $object, $account));
   }
 
-  public function islandora_printer_object(AbstractObject $object) {
+  public static function islandora_printer_object(AbstractObject $object) {
     $output = [];
     $temp_arr = [];
 
