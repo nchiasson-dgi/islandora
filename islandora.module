@@ -1461,7 +1461,6 @@ function islandora_islandora_metadata_display_info() {
       'description' => t('Dublin Core metadata'),
       'metadata callback' => 'islandora_metadata_display_callback',
       'description callback' => 'islandora_metadata_description_callback',
-      'configuration' => 'islandora.admin_config',
     ),
   );
 }
