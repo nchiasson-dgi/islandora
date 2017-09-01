@@ -676,7 +676,7 @@ function islandora_default_islandora_printer_object($object, $alter) {
   $variables = isset($dc_object) ? $dc_object->asArray() : array();
   $output = [
     '#theme' => 'islandora_object_print_object',
-    '#attached' => ['library' => 'islandora/islandora-print'],
+    '#attached' => ['library' => ['islandora/islandora-print']],
     '#object' => $object,
     '#dc_array' => $variables,
     '#metadata' => $metadata,
