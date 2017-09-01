@@ -137,7 +137,7 @@ class DefaultController extends ControllerBase {
     return $output;
   }
 
-  public static function islandora_print_object_access($op, $object, AccountInterface $account) {
+  public function islandora_print_object_access($op, $object, AccountInterface $account) {
     $object = islandora_object_load($object);
     return AccessResult::allowedIf(islandora_print_object_access($op, $object, $account));
   }
