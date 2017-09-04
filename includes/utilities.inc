@@ -196,7 +196,6 @@ function islandora_invoke_hook_list($hook, array $refinements, array $args) {
   foreach (islandora_build_hook_list($hook, $refinements) as $refined_hook) {
     $result = \Drupal::moduleHandler()->invokeAll($refined_hook, $args);
     $return = array_merge_recursive($return, $result);
-    array_shift($args);
   }
   if (\Drupal::moduleHandler()->moduleExists('rules')) {
     $event_info = rules_get_event_info($hook);
