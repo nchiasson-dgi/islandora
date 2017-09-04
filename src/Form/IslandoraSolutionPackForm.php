@@ -129,6 +129,10 @@ class IslandoraSolutionPackForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $solution_pack_module = NULL, $solution_pack_name = NULL, $objects = []) {
+    // Caching necessary due to Drupal core bug. @see https://www.drupal.org/node/2821852
+    $form_state->setRequestMethod('POST');
+    $form_state->setCached(TRUE);
+
     // The order is important in terms of severity of the status, where higher
     // index indicates the status is more serious, it will be used to determine
     // what messages get displayed to the user.
