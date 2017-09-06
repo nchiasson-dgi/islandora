@@ -1,0 +1,33 @@
+{#
+/**
+* @file
+* This is the template file for the object page for large image
+*
+* Available variables:
+* - $islandora_object: The Islandora object rendered in this template file
+* - $islandora_dublin_core: The DC datastream object
+* - $dc_array: The DC datastream object values as a sanitized array. This
+* includes label, value and class name.
+* - $islandora_object_label: The sanitized object label.
+*
+* @see template_preprocess_islandora_dublin_core_display()
+* @see theme_islandora_dublin_core_display()
+*/
+#}
+<fieldset {% if print %} {{ 'class="islandora islandora-metadata"' }} {% else %} {{ 'class="islandora islandora-metadata collapsible collapsed"' }} {% endif %}>
+  <legend><span class="fieldset-legend">{{ 'Details'|t }}</span></legend>
+  <div class="fieldset-wrapper">
+    <dl xmlns:dcterms="http://purl.org/dc/terms/" class="islandora-inline-metadata islandora-metadata-fields islandora-object-fields">
+      {% set row_field = 0 %}
+      {% for key, value in dc_array %}
+        <dt property="{{ value['dcterms'] }}" content="{{ value['value'] }}" class="{{ value['class'] }} {% if row_field == 0 %} first{% endif %}">
+          {{ value['label'] }}
+        </dt>
+        <dd class="{{ value['class'] }} {% if row_field == 0 %} first{% endif %}">
+          {{ value['value'] }}
+        </dd>
+        {% set row_field = row_field + 1 %}
+      {% endfor %}
+    </dl>
+  </div>
+</fieldset>

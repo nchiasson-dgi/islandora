@@ -138,14 +138,11 @@ class DefaultController extends ControllerBase {
   }
 
   public function islandora_print_object_access($op, $object, AccountInterface $account) {
-    if (!\Drupal::config('islandora.settings')->get('islandora_show_print_option')) {
-      return FALSE;
-    }
-    $access = islandora_object_access($op, $object);
-    return $access;
+    $object = islandora_object_load($object);
+    return AccessResult::allowedIf(islandora_print_object_access($op, $object, $account));
   }
 
-  public function islandora_printer_object(AbstractObject $object) {
+  public static function islandora_printer_object(AbstractObject $object) {
     $output = [];
     $temp_arr = [];
 
@@ -160,15 +157,7 @@ class DefaultController extends ControllerBase {
     arsort($output);
 
     // Prompt to print.
-    // @FIXME
-    // The Assets API has totally changed. CSS, JavaScript, and libraries are now
-    // attached directly to render arrays using the #attached property.
-    //
-    //
-    // @see https://www.drupal.org/node/2169605
-    // @see https://www.drupal.org/node/2408597
-    // drupal_add_js('jQuery(document).ready(function () { window.print(); });', 'inline');
-
+    $output['#attached']['library'][] = 'islandora/islandora-print-js';
     return $output;
   }
 
