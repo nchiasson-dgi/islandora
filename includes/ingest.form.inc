@@ -692,7 +692,7 @@ function islandora_ingest_form_stash_info(FormStateInterface $form_state) {
  */
 function islandora_ingest_form_grab_info(FormStateInterface $form_state) {
   $storage = islandora_ingest_form_get_step_storage($form_state);
-  $form_state->setValues('values', isset($storage['values']) ? $storage['values'] : array());
+  $form_state->setValue('values', isset($storage['values']) ? $storage['values'] : array());
 }
 
 /**
