@@ -56,7 +56,7 @@ function islandora_ingest_form_init_form_state_storage(FormStateInterface $form_
     unset($configuration['objects']);
     // Must be called after $form_state['islandora'] is initialized, otherwise,
     // the values in 'islandora' would not be availible to the step hooks.
-    $form_state->getValue('islandora')['step_id'] = islandora_ingest_form_get_first_step_id($form_state);
+    $form_state->setValue(['islandora', 'step_id'], islandora_ingest_form_get_first_step_id($form_state));
   }
 }
 
@@ -162,7 +162,7 @@ function islandora_ingest_form_get_previous_step(FormStateInterface $form_state,
  *   The step ID.
  */
 function islandora_ingest_form_get_current_step_id(FormStateInterface $form_state) {
-  return $form_state->getValue('islandora')['step_id'];
+  return $form_state->getValue(['islandora', 'step_id']);
 }
 
 /**
