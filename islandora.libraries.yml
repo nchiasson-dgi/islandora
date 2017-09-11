@@ -26,3 +26,11 @@ islandora-print-js:
   dependencies:
     - core/jquery
     - core/jquery.once
+islandora-spin-js:
+  js:
+    js/spin/spin.min.js: {}
+    js/spinner.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+    - core/drupalSettings
