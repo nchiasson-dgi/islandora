@@ -310,7 +310,8 @@ function islandora_ingest_form_execute_form_step(array $form, FormStateInterface
   $args = isset($step['args']) ? array_merge($args, $step['args']) : $args;
   $shared_storage = islandora_ingest_form_get_shared_storage($form_state);
   // Build the form step.
-  $form = \Drupal::formBuilder()->getForm($step['form_id'], $args);
+  $form_state->addBuildInfo('args', array_values($args));
+  $form = \Drupal::formBuilder()->buildForm($step['form_id'], $form_state);
   // Since the list of steps depends on the shared storage we will rebuild the
   // list of steps if the shared storage has changed. This must be done before
   // stepifying, so the prev/next buttons get updated.
