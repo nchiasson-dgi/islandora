@@ -310,8 +310,8 @@ function islandora_ingest_form_execute_form_step(array $form, FormStateInterface
   $args = isset($step['args']) ? array_merge($args, $step['args']) : $args;
   $shared_storage = islandora_ingest_form_get_shared_storage($form_state);
   // Build the form step.
-  $form_state->addBuildInfo('args', array_values($args));
-  $form = \Drupal::formBuilder()->buildForm($step['form_id'], $form_state);
+  $object = new $step['form_id']();
+  $form = call_user_func_array([$object, 'buildForm'], $args);
   // Since the list of steps depends on the shared storage we will rebuild the
   // list of steps if the shared storage has changed. This must be done before
   // stepifying, so the prev/next buttons get updated.
@@ -919,7 +919,7 @@ function islandora_ingest_form_get_steps(FormStateInterface $form_state) {
     return $steps;
   }
   $steps = array();
-  $shared_storage = &islandora_ingest_form_get_shared_storage($form_state);
+  $shared_storage = islandora_ingest_form_get_shared_storage($form_state);
   foreach (islandora_build_hook_list(ISLANDORA_INGEST_STEP_HOOK, $shared_storage['models']) as $hook) {
     // Required for pass by reference.
     // @todo Change this around so that it isn't passed by reference, there
