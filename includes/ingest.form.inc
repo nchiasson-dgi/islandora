@@ -786,7 +786,7 @@ function islandora_ingest_form_submit(array $form, FormStateInterface $form_stat
       // We want to redirect to the first object as it's considered to be the
       // primary object.
       if ($set_redirect) {
-        $form_state->setRedirect("islandora/object/{$object->id}");
+        $form_state->setRedirect('islandora.view_object', ['object' => $object->id]);
         $set_redirect = FALSE;
       }
       drupal_set_message(
