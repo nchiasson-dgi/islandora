@@ -624,7 +624,7 @@ function islandora_ingest_form_previous_submit(array $form, FormStateInterface $
   if ($step['type'] == 'callback') {
     islandora_ingest_form_undo_consecutive_callback_steps($form, $form_state, $step);
   }
-  $form_state->setValue('rebuild', TRUE);
+  $form_state->setRebuild();
 }
 
 /**
@@ -668,7 +668,7 @@ function islandora_ingest_form_next_button(FormStateInterface $form_state) {
  */
 function islandora_ingest_form_next_submit(array $form, FormStateInterface $form_state) {
   islandora_ingest_form_increment_step($form_state);
-  $form_state->setValue('rebuild', TRUE);
+  $form_state->setRebuild();
 }
 
 /**
@@ -877,7 +877,17 @@ function &islandora_ingest_form_get_step_storage(FormStateInterface $form_state,
  *   The configuration used to generate the multi-page ingest forms.
  */
 function &islandora_ingest_form_get_shared_storage(FormStateInterface $form_state) {
-  return $form_state->getValue(['islandora', 'shared_storage']);
+  $value = $form_state->getValue(['islandora', 'shared_storage']);
+  $return = islandora_ingest_form_stored_shared_storage($value);
+  return $return;
+}
+// dirty hacks
+function islandora_ingest_form_stored_shared_storage($value = NULL) {
+  $stored_value = &drupal_static(__FUNCTION__);
+  if ($value) {
+    $stored_value = $value;
+  }
+  return $stored_value;
 }
 
 /**
