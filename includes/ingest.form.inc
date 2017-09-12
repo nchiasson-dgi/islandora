@@ -37,7 +37,7 @@ function islandora_ingest_can_display_ingest_form(array $configuration) {
  *   executed.
  */
 function islandora_ingest_form_init_form_state_storage(FormStateInterface $form_state, array $configuration) {
-  if (empty($form_state->getValue('islandora'))) {
+  if (empty($form_state->get('islandora'))) {
     $configuration['models'] = isset($configuration['models']) ? $configuration['models'] : array();
     // Make sure the models actually exist.
     foreach ($configuration['models'] as $key => $model) {
@@ -46,7 +46,7 @@ function islandora_ingest_form_init_form_state_storage(FormStateInterface $form_
       }
     }
     // Required for step hooks.
-    $form_state->setValue('islandora', array(
+    $form_state->set('islandora', array(
       'step_id' => NULL,
       'objects' => $configuration['objects'],
       'shared_storage' => $configuration,
@@ -56,7 +56,7 @@ function islandora_ingest_form_init_form_state_storage(FormStateInterface $form_
     unset($configuration['objects']);
     // Must be called after $form_state['islandora'] is initialized, otherwise,
     // the values in 'islandora' would not be availible to the step hooks.
-    $form_state->setValue(['islandora', 'step_id'], islandora_ingest_form_get_first_step_id($form_state));
+    $form_state->set(['islandora', 'step_id'], islandora_ingest_form_get_first_step_id($form_state));
   }
 }
 
@@ -162,7 +162,7 @@ function islandora_ingest_form_get_previous_step(FormStateInterface $form_state,
  *   The step ID.
  */
 function islandora_ingest_form_get_current_step_id(FormStateInterface $form_state) {
-  return $form_state->getValue(['islandora', 'step_id']);
+  return $form_state->get(['islandora', 'step_id']);
 }
 
 /**
@@ -232,7 +232,7 @@ function islandora_ingest_form_increment_step(FormStateInterface $form_state) {
   drupal_static_reset('islandora_ingest_form_get_steps');
   $next_step_id = islandora_ingest_form_get_next_step_id($form_state);
   islandora_ingest_form_stash_info($form_state);
-  $form_state->setValue(['islandora', 'step_id'], $next_step_id);
+  $form_state->set(['islandora', 'step_id'], $next_step_id);
   islandora_ingest_form_grab_info($form_state);
 }
 
@@ -247,7 +247,7 @@ function islandora_ingest_form_decrement_step(FormStateInterface $form_state) {
   // Don't decrement passed the first step.
   if (isset($previous_step_id)) {
     islandora_ingest_form_stash_info($form_state);
-    $form_state->setValue(['islandora', 'step_id'], $previous_step_id);
+    $form_state->set(['islandora', 'step_id'], $previous_step_id);
     islandora_ingest_form_grab_info($form_state);
   }
 }
@@ -679,9 +679,9 @@ function islandora_ingest_form_next_submit(array $form, FormStateInterface $form
  */
 function islandora_ingest_form_stash_info(FormStateInterface $form_state) {
   $storage = &islandora_ingest_form_get_step_storage($form_state);
-  if ($storage && $form_state->getValue('values')) {
-    $storage['values'] = $form_state->getValue('values');
-    $form_state->setValue('values', []);
+  if ($storage && $form_state->get('values')) {
+    $storage['values'] = $form_state->get('values');
+    $form_state->set('values', []);
   }
 }
 
@@ -693,7 +693,7 @@ function islandora_ingest_form_stash_info(FormStateInterface $form_state) {
  */
 function islandora_ingest_form_grab_info(FormStateInterface $form_state) {
   $storage = islandora_ingest_form_get_step_storage($form_state);
-  $form_state->setValue('values', isset($storage['values']) ? $storage['values'] : array());
+  $form_state->set('values', isset($storage['values']) ? $storage['values'] : array());
 }
 
 /**
@@ -779,14 +779,14 @@ function islandora_ingest_form_submit(array $form, FormStateInterface $form_stat
     islandora_ingest_form_execute_consecutive_callback_steps($form, $form_state, $step);
   }
   // Ingest the objects.
-  $set_redirect = $form_state->getValue('redirect') ? FALSE : TRUE;
-  foreach ($form_state->getValue(['islandora', 'objects']) as &$object) {
+  $set_redirect = $form_state->getRedirect() ? FALSE : TRUE;
+  foreach ($form_state->get(['islandora', 'objects']) as &$object) {
     try {
       islandora_add_object($object);
       // We want to redirect to the first object as it's considered to be the
       // primary object.
       if ($set_redirect) {
-        $form_state->setValue('redirect', "islandora/object/{$object->id}");
+        $form_state->setRedirect("islandora/object/{$object->id}");
         $set_redirect = FALSE;
       }
       drupal_set_message(
@@ -820,7 +820,7 @@ function islandora_ingest_form_submit(array $form, FormStateInterface $form_stat
  *   step submits.
  */
 function &islandora_ingest_form_get_objects(FormStateInterface $form_state) {
-  return $form_state->getValue(['islandora', 'objects']);
+  return $form_state->get(['islandora', 'objects']);
 }
 
 /**
@@ -858,10 +858,10 @@ function islandora_ingest_form_get_object(FormStateInterface $form_state) {
 function &islandora_ingest_form_get_step_storage(FormStateInterface $form_state, $step_id = NULL) {
   $step_id = isset($step_id) ? $step_id : islandora_ingest_form_get_current_step_id($form_state);
   if (isset($step_id)) {
-    if (!$form_state->getValue(['islandora', 'step_storage', $step_id])) {
-      $form_state->setValue(['islandora', 'step_storage', $step_id], array());
+    if (!$form_state->get(['islandora', 'step_storage', $step_id])) {
+      $form_state->set(['islandora', 'step_storage', $step_id], array());
     }
-    return $form_state->getValue(['islandora', 'step_storage', $step_id]);
+    return $form_state->get(['islandora', 'step_storage', $step_id]);
   }
   $undefined_step_storage = array();
   return $undefined_step_storage;
@@ -877,17 +877,7 @@ function &islandora_ingest_form_get_step_storage(FormStateInterface $form_state,
  *   The configuration used to generate the multi-page ingest forms.
  */
 function &islandora_ingest_form_get_shared_storage(FormStateInterface $form_state) {
-  $value = $form_state->getValue(['islandora', 'shared_storage']);
-  $return = islandora_ingest_form_stored_shared_storage($value);
-  return $return;
-}
-// dirty hacks
-function islandora_ingest_form_stored_shared_storage($value = NULL) {
-  $stored_value = &drupal_static(__FUNCTION__);
-  if ($value) {
-    $stored_value = $value;
-  }
-  return $stored_value;
+  return $form_state->get(['islandora', 'shared_storage']);
 }
 
 /**
