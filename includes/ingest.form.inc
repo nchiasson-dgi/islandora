@@ -586,9 +586,9 @@ function islandora_ingest_form_previous_button(FormStateInterface $form_state) {
   // Before we move back to the previous step we should tell the previous steps
   // to undo whatever its submit handler did.
   $prev_form_step = islandora_ingest_form_get_previous_form_step($form_state);
-  $form_id = $prev_form_step['form_id'];
-  $submit_callback = $form_id . '_undo_submit';
-  $submit = function_exists($submit_callback) ? array('islandora_ingest_form_previous_submit', $submit_callback) : array('islandora_ingest_form_previous_submit');
+  $object = new $prev_form_step['form_id']();
+  $submit_callback = [$object, 'undoSubmit'];
+  $submit = is_callable($submit_callback) ? array('islandora_ingest_form_previous_submit', $submit_callback) : array('islandora_ingest_form_previous_submit');
   return array(
     '#type' => 'submit',
     '#value' => t('Previous'),
@@ -640,11 +640,11 @@ function islandora_ingest_form_previous_submit(array $form, FormStateInterface $
  */
 function islandora_ingest_form_next_button(FormStateInterface $form_state) {
   $step = islandora_ingest_form_get_step($form_state);
-  $form_id = $step['form_id'];
-  $validate_callback = $form_id . '_validate';
-  $validate = function_exists($validate_callback) ? array($validate_callback) : NULL;
-  $submit_callback = $form_id . '_submit';
-  $submit = function_exists($submit_callback) ? array($submit_callback, 'islandora_ingest_form_next_submit') : array('islandora_ingest_form_next_submit');
+  $object = new $step['form_id']();
+  $validate_callback = [$object, 'formValidate'];
+  $validate = is_callable($validate_callback) ? array($validate_callback) : NULL;
+  $submit_callback = [$object, 'formSubmit'];
+  $submit = is_callable($submit_callback) ? array($submit_callback, 'islandora_ingest_form_next_submit') : array('islandora_ingest_form_next_submit');
   return array(
     '#type' => 'submit',
     '#value' => t('Next'),
@@ -709,11 +709,11 @@ function islandora_ingest_form_grab_info(FormStateInterface $form_state) {
  */
 function islandora_ingest_form_ingest_button(FormStateInterface $form_state) {
   $step = islandora_ingest_form_get_step($form_state);
-  $form_id = $step['form_id'];
-  $validate_callback = $form_id . '_validate';
-  $validate = function_exists($validate_callback) ? array($validate_callback) : NULL;
-  $submit_callback = $form_id . '_submit';
-  $submit = function_exists($submit_callback) ? array(
+  $object = new $step['form_id']();
+  $validate_callback = [$object, 'validateForm'];
+  $validate = is_callable($validate_callback) ? array($validate_callback) : NULL;
+  $submit_callback = [$object, 'submitForm'];
+  $submit = is_callable($submit_callback) ? array(
     $submit_callback,
     'islandora_ingest_form_pre_submit',
     'islandora_ingest_form_submit',
