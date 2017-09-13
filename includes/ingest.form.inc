@@ -641,9 +641,9 @@ function islandora_ingest_form_previous_submit(array $form, FormStateInterface $
 function islandora_ingest_form_next_button(FormStateInterface $form_state) {
   $step = islandora_ingest_form_get_step($form_state);
   $object = new $step['form_id']();
-  $validate_callback = [$object, 'formValidate'];
+  $validate_callback = [$object, 'validateForm'];
   $validate = is_callable($validate_callback) ? array($validate_callback) : NULL;
-  $submit_callback = [$object, 'formSubmit'];
+  $submit_callback = [$object, 'submitForm'];
   $submit = is_callable($submit_callback) ? array($submit_callback, 'islandora_ingest_form_next_submit') : array('islandora_ingest_form_next_submit');
   return array(
     '#type' => 'submit',
