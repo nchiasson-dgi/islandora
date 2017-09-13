@@ -432,7 +432,7 @@ function islandora_ingest_form_stepify(array $form, FormStateInterface $form_sta
   if (!is_null($form['prev'])) {
     $form['hidden_next'] = $form['next'];
     $form['hidden_next']['#weight'] = -99;
-    $form['hidden_next']['#prefix'] = '<div style="display:none;">';
+    $form['hidden_next']['#prefix'] = '<div class="hidden">';
     $form['hidden_next']['#suffix'] = '</div>';
   }
 
