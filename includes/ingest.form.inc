@@ -919,7 +919,7 @@ function islandora_ingest_form_get_steps(FormStateInterface $form_state) {
     return $steps;
   }
   $steps = array();
-  $shared_storage = islandora_ingest_form_get_shared_storage($form_state);
+  $shared_storage = &islandora_ingest_form_get_shared_storage($form_state);
   foreach (islandora_build_hook_list(ISLANDORA_INGEST_STEP_HOOK, $shared_storage['models']) as $hook) {
     // Required for pass by reference.
     // @todo Change this around so that it isn't passed by reference, there
