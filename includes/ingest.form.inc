@@ -310,7 +310,7 @@ function islandora_ingest_form_execute_form_step(array $form, FormStateInterface
   $args = isset($step['args']) ? array_merge($args, $step['args']) : $args;
   $shared_storage = islandora_ingest_form_get_shared_storage($form_state);
   // Build the form step.
-  $object = new $step['form_id']();
+  $object = new $step['form_class']();
   $form = call_user_func_array([$object, 'buildForm'], $args);
   // Since the list of steps depends on the shared storage we will rebuild the
   // list of steps if the shared storage has changed. This must be done before
@@ -441,7 +441,7 @@ function islandora_ingest_form_stepify(array $form, FormStateInterface $form_sta
     islandora_ingest_form_add_step_context($form, $form_state);
   }
   // Allow for a hook_form_FORM_ID_alter().
-  \Drupal::moduleHandler()->alter(array('form_' . $step['form_id'], 'form'), $form, $form_state, $step['form_id']);
+  \Drupal::moduleHandler()->alter(array('form_' . $step['form_class'], 'form'), $form, $form_state, $step['form_class']);
   return $form;
 }
 
@@ -586,7 +586,7 @@ function islandora_ingest_form_previous_button(FormStateInterface $form_state) {
   // Before we move back to the previous step we should tell the previous steps
   // to undo whatever its submit handler did.
   $prev_form_step = islandora_ingest_form_get_previous_form_step($form_state);
-  $object = new $prev_form_step['form_id']();
+  $object = new $prev_form_step['form_class']();
   $submit_callback = [$object, 'undoSubmit'];
   $submit = is_callable($submit_callback) ? array('islandora_ingest_form_previous_submit', $submit_callback) : array('islandora_ingest_form_previous_submit');
   return array(
@@ -640,7 +640,7 @@ function islandora_ingest_form_previous_submit(array $form, FormStateInterface $
  */
 function islandora_ingest_form_next_button(FormStateInterface $form_state) {
   $step = islandora_ingest_form_get_step($form_state);
-  $object = new $step['form_id']();
+  $object = new $step['form_class']();
   $validate_callback = [$object, 'validateForm'];
   $validate = is_callable($validate_callback) ? array($validate_callback) : NULL;
   $submit_callback = [$object, 'submitForm'];
@@ -709,7 +709,7 @@ function islandora_ingest_form_grab_info(FormStateInterface $form_state) {
  */
 function islandora_ingest_form_ingest_button(FormStateInterface $form_state) {
   $step = islandora_ingest_form_get_step($form_state);
-  $object = new $step['form_id']();
+  $object = new $step['form_class']();
   $validate_callback = [$object, 'validateForm'];
   $validate = is_callable($validate_callback) ? array($validate_callback) : NULL;
   $submit_callback = [$object, 'submitForm'];

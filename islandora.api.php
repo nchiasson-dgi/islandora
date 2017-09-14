@@ -480,7 +480,7 @@ function hook_islandora_undeletable_datastreams(array $models) {
  *   array of properties (keys) which take different paramaters based upon type:
  *   - type: Type of step.  Only "form" and "callback" are implemented so far.
  *   Required "form" type specific parameters:
- *   - form_id: The form building function to call to get the form structure
+ *   - form_class: The form class to call to get the form structure
  *     for this step.
  *   - args: An array of arguments to pass to the form building function.
  *   "Callback" type specific parameters:
@@ -509,7 +509,7 @@ function hook_islandora_ingest_steps(array $form_state) {
     'my_cool_step_definition' => array(
       'type' => 'form',
       'weight' => 1,
-      'form_id' => 'my_cool_form',
+      'form_class' => 'my_cool_form',
       'args' => array('arg_one', 'numero deux'),
     ),
     'my_cool_step_callback' => array(
