@@ -715,12 +715,12 @@ function hook_cmodel_pid_islandora_overview_object_alter(AbstractObject &$object
  *       - message: A string passed through t() describing the
  *         outcome of the operation.
  *       - message_sub: (Optional) A substitution array as acceptable by t() or
- *         watchdog.
+ *         the logger.
  *       - type: A string denoting whether the output is to be
- *         drupal_set_messaged (dsm) or watchdogged (watchdog).
+ *         drupal_set_messaged (dsm) or logged (log).
  *       - severity: (Optional) A severity level / status to be used when
  *         logging messages. Uses the defaults of drupal_set_message and
- *         watchdog if not defined.
+ *         the logger if not defined.
  *   - file: A string denoting the path to the file where the function
  *     is being called from.
  */
