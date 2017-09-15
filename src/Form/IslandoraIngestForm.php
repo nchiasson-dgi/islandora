@@ -47,7 +47,7 @@ class IslandoraIngestForm extends FormBase {
    *   The form definition of the current step.
    */
   public function buildForm(array $form, FormStateInterface $form_state, $configuration = NULL) {
-    module_load_include('inc', 'islandora', 'includes/ingest.form');
+    $form_state->loadInclude('islandora', 'inc', 'includes/ingest.form');
     try {
       islandora_ingest_form_init_form_state_storage($form_state, $configuration);
       return islandora_ingest_form_execute_step($form, $form_state);
