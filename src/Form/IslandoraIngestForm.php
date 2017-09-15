@@ -2,6 +2,7 @@
 
 namespace Drupal\islandora\Form;
 
+use Drupal\Core\Url;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -53,10 +54,13 @@ class IslandoraIngestForm extends FormBase {
       return islandora_ingest_form_execute_step($form, $form_state);
     }
     catch (Exception $e) {
-      \Drupal::logger('islandora')->error('Exception during ingest form processing with Message: "@exception",  and Trace: @trace', array('@exception' => $e->getMessage(), '@trace' => $e->getTraceAsString()));
+      $this->getLogger('islandora')->error('Exception during ingest form processing with Message: "@exception",  and Trace: @trace', array('@exception' => $e->getMessage(), '@trace' => $e->getTraceAsString()));
       drupal_set_message($e->getMessage(), 'error');
-      return array(array(
-          '#markup' => \Drupal::l(t('Back'), \Drupal\Core\Url::fromUri('javascript:window.history.back();'))));
+      return [
+        [
+          '#markup' => \Drupal::l($this->t('Back'), Url::fromUri('javascript:window.history.back();'))
+        ]
+      ];
     }
   }
 
