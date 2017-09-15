@@ -444,7 +444,7 @@ function islandora_ingest_form_stepify(array $form, FormStateInterface $form_sta
     islandora_ingest_form_add_step_context($form, $form_state);
   }
   // Allow for a hook_form_FORM_ID_alter().
-  \Drupal::moduleHandler()->alter(array('form_' . $form_id, 'form'), $form, $form_state, $step['form_class']);
+  \Drupal::moduleHandler()->alter(array('form_' . $form_id, 'form'), $form, $form_state, $form_id);
   return $form;
 }
 
