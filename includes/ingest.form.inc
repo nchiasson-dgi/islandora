@@ -684,9 +684,9 @@ function islandora_ingest_form_next_submit(array $form, FormStateInterface $form
  */
 function islandora_ingest_form_stash_info(FormStateInterface $form_state) {
   $storage = &islandora_ingest_form_get_step_storage($form_state);
-  if ($storage && $form_state->get('values')) {
-    $storage['values'] = $form_state->get('values');
-    $form_state->set('values', []);
+  if ($storage && $form_state->getValues()) {
+    $storage['values'] = $form_state->getValues();
+    $form_state->setValues([]);
   }
 }
 
@@ -698,7 +698,7 @@ function islandora_ingest_form_stash_info(FormStateInterface $form_state) {
  */
 function islandora_ingest_form_grab_info(FormStateInterface $form_state) {
   $storage = islandora_ingest_form_get_step_storage($form_state);
-  $form_state->set('values', isset($storage['values']) ? $storage['values'] : array());
+  $form_state->setValues(isset($storage['values']) ? $storage['values'] : array());
 }
 
 /**
