@@ -319,7 +319,7 @@ function islandora_ingest_form_execute_form_step(array $form, FormStateInterface
   if ($shared_storage != islandora_ingest_form_get_shared_storage($form_state)) {
     drupal_static_reset('islandora_ingest_form_get_steps');
   }
-  return islandora_ingest_form_stepify($form, $form_state, $step);
+  return islandora_ingest_form_stepify($form, $form_state, $step, $object->getFormId());
 }
 
 /**
@@ -415,11 +415,13 @@ function islandora_ingest_form_undo_callback_step(array $form, FormStateInterfac
  *   The Drupal form state.
  * @param array $step
  *   An array defining a ingest step.
+ * @param string $form_id
+ *   Id of the form being stepified.
  *
  * @return array
  *   The stepified Drupal form definition for the given step.
  */
-function islandora_ingest_form_stepify(array $form, FormStateInterface $form_state, array $step) {
+function islandora_ingest_form_stepify(array $form, FormStateInterface $form_state, array $step, $form_id) {
   $first_form_step = islandora_ingest_form_on_first_form_step($form_state);
   $last_form_step = islandora_ingest_form_on_last_form_step($form_state);
   $form['form_step_id'] = array(
@@ -442,7 +444,7 @@ function islandora_ingest_form_stepify(array $form, FormStateInterface $form_sta
     islandora_ingest_form_add_step_context($form, $form_state);
   }
   // Allow for a hook_form_FORM_ID_alter().
-  \Drupal::moduleHandler()->alter(array('form_' . $step['form_class'], 'form'), $form, $form_state, $step['form_class']);
+  \Drupal::moduleHandler()->alter(array('form_' . $form_id, 'form'), $form, $form_state, $step['form_class']);
   return $form;
 }
 
