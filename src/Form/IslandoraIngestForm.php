@@ -71,7 +71,7 @@ class IslandoraIngestForm extends FormBase {
    *   The Drupal form state.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    module_load_include('inc', 'islandora', 'includes/ingest.form');
+    $form_state->loadInclude('islandora', 'inc', 'includes/ingest.form');
     islandora_ingest_form_submit($form, $form_state);
   }
 
