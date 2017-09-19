@@ -240,43 +240,6 @@ class DefaultController extends ControllerBase {
 
   }
 
-  public function islandora_datastream_access($op, $datastream, $user = NULL, AccountInterface $account) {
-    $cache = &drupal_static(__FUNCTION__);
-
-    if (!is_object($datastream)) {
-      // The object could not be loaded... Presumably, we don't have
-    // permission.
-      return NULL;
-    }
-    if ($user === NULL) {
-      $user = \Drupal::currentUser();
-    }
-
-    // Populate the cache on a miss.
-    if (!isset($cache[$op][$datastream->parent->id][$datastream->id][$user->id()])) {
-      module_load_include('inc', 'islandora', 'includes/utilities');
-      $object_results = islandora_invoke_hook_list('islandora_object_access', $datastream->parent->models, [
-        $op,
-        $datastream->parent,
-        $user,
-      ]);
-
-      $datastream_results = islandora_invoke_hook_list('islandora_datastream_access', $datastream->parent->models, [
-        $op,
-        $datastream,
-        $user,
-      ]);
-
-      // The datastream check returned FALSE, and one in the object or datastream
-      // checks returned TRUE.
-      $cache[$op][$datastream->parent->id][$datastream->id][$user->id()] = (
-        !in_array(FALSE, $datastream_results, TRUE) && (in_array(TRUE, $object_results, TRUE) || in_array(TRUE, $datastream_results, TRUE))
-        );
-    }
-
-    return $cache[$op][$datastream->parent->id][$datastream->id][$user->id()];
-  }
-
   public function islandoraViewDatastreamTitle(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
     return $datastream->id;
   }
