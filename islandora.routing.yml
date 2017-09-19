@@ -263,6 +263,21 @@ islandora.datastream_version_table:
         type: object
       datastream:
         type: datastream
+islandora.view_datastream_version:
+  path: '/islandora/object/{object}/datastream/{datastream}/version/{version}/view'
+  defaults:
+    perms: 'view old datastream versions'
+    _title: 'View Datastream Version'
+    download: false
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraViewDatastream'
+  requirements:
+    _islandora_datastream_access: 'TRUE'
+  options:
+    parameters:
+      object:
+        type: object
+      datastream:
+        type: datastream
 islandora.datastream_version_replace_form:
   path: '/islandora/object/{object}/datastream/{datastream}/replace'
   defaults:

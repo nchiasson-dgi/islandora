@@ -18,6 +18,7 @@ class Links {
   use StringTranslationTrait;
 
   protected $config;
+  protected $moduleHandler;
 
   /**
    * Constructor.
@@ -64,7 +65,14 @@ class Links {
         ['#plain_text' => $label];
     }
     else {
-      // TODO: Revisit when the datastream version viewing is possible.
+        ksm($version);
+        ksm(Url::fromRoute('islandora.view_datastream_version', [
+            'object' => $datastream->parent->id,
+            'datastream' => $datastream->id,
+            'version' => $version,
+        ])->toString());
+        ksm($label);
+return [];
       return islandora_datastream_access(ISLANDORA_VIEW_DATASTREAM_HISTORY, $datastream) ?
         [
           '#title' => $label,
@@ -189,7 +197,7 @@ class Links {
    */
   public function replace(AbstractDatastream $datastream) {
     if (islandora_datastream_access(ISLANDORA_REPLACE_DATASTREAM_CONTENT, $datastream)) {
-      $var_string = $this->config->get("islandora_ds_replace_exclude_enforced");
+      $var_string = $this->config->get('islandora_ds_replace_exclude_enforced');
       $replace_exclude = explode(",", $var_string);
       if (!in_array($datastream->id, $replace_exclude)) {
         return [

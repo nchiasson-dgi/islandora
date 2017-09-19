@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Link;
+use Drupal\islandora\Utility\Links;
 
 /**
  * Function that returns markup for the datastream versions page.
@@ -13,6 +14,11 @@ use Drupal\Core\Link;
 function islandora_datastream_version_table($datastream) {
   module_load_include('inc', 'islandora', 'includes/datastream');
   module_load_include('inc', 'islandora', 'includes/utilities');
+
+  $linker = new Links(
+    \Drupal::config('islandora'),
+    \Drupal::getContainer()->get('module_handler')
+  );
   $parent = $datastream->parent;
   $table = [];
   $table['#title'] = t("@dsid Previous Versions", ['@dsid' => $datastream->id]);
@@ -44,23 +50,11 @@ function islandora_datastream_version_table($datastream) {
     else {
       $user_val = $reponsibility;
     }
-    // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $row[] = array(
-//       'class' => 'datastream-date',
-//       'data' => theme('islandora_datastream_view_link', array(
-//         'datastream' => $datastream,
-//         'label' => $datastream_version->createdDate->format(DATE_RFC850),
-//         'version' => $version,
-//       )),
-//     );
-
+//fixme: $linker was originally rendered
+    $row[] = [
+      'class' => 'datastream-date',
+      'data' => $linker->view($datastream, $version, $datastream_version->createdDate->format(DATE_RFC850)),
+    ];
     $row[] = array(
       'class' => 'datastream-size',
       'data' => islandora_datastream_get_human_readable_size($datastream_version),
@@ -77,37 +71,14 @@ function islandora_datastream_version_table($datastream) {
       'class' => 'datastream-mime',
       'data' => $datastream_version->mimeType,
     );
-    // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $row[] = array(
-//       'class' => 'datastream-delete',
-//       'data' => theme('islandora_datastream_delete_link', array(
-//         'datastream' => $datastream,
-//         'version' => $version,
-//       )),
-//     );
-
-    // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $row[] = array(
-//       'class' => 'datastream-revert',
-//       'data' => theme('islandora_datastream_revert_link', array(
-//         'datastream' => $datastream,
-//         'version' => $version,
-//       )),
-//     );
+    $row[] = [
+      'class' => 'datastream-delete',
+      'data' => $linker->delete($datastream, $version),
+    ];
+    $row[] = [
+      'class' => 'datastream-revert',
+      'data' => $linker->revert($datastream, $version),
+    ];
 
     $rows[] = $row;
   }
