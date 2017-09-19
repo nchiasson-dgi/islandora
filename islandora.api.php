@@ -480,7 +480,7 @@ function hook_islandora_undeletable_datastreams(array $models) {
  *   array of properties (keys) which take different paramaters based upon type:
  *   - type: Type of step.  Only "form" and "callback" are implemented so far.
  *   Required "form" type specific parameters:
- *   - form_id: The form building function to call to get the form structure
+ *   - form_class: The form class to call to get the form structure
  *     for this step.
  *   - args: An array of arguments to pass to the form building function.
  *   "Callback" type specific parameters:
@@ -509,7 +509,7 @@ function hook_islandora_ingest_steps(array $form_state) {
     'my_cool_step_definition' => array(
       'type' => 'form',
       'weight' => 1,
-      'form_id' => 'my_cool_form',
+      'form_class' => 'my_cool_form',
       'args' => array('arg_one', 'numero deux'),
     ),
     'my_cool_step_callback' => array(
@@ -715,12 +715,12 @@ function hook_cmodel_pid_islandora_overview_object_alter(AbstractObject &$object
  *       - message: A string passed through t() describing the
  *         outcome of the operation.
  *       - message_sub: (Optional) A substitution array as acceptable by t() or
- *         watchdog.
+ *         the logger.
  *       - type: A string denoting whether the output is to be
- *         drupal_set_messaged (dsm) or watchdogged (watchdog).
+ *         drupal_set_messaged (dsm) or logged (log).
  *       - severity: (Optional) A severity level / status to be used when
  *         logging messages. Uses the defaults of drupal_set_message and
- *         watchdog if not defined.
+ *         the logger if not defined.
  *   - file: A string denoting the path to the file where the function
  *     is being called from.
  */

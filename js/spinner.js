@@ -4,12 +4,12 @@
  * @file
  * Triggers the display of a spinning icon when the form is submitted.
  */
-(function ($) {
+(function ($, Drupal) {
   'use strict';
   Drupal.behaviors.spinner = {
     attach: function(context, settings) {
       // Store what triggered the submit.
-      $('form').once('submit-resolver', function() {
+      $('form').once('submit-resolver').each(function() {
         $(this).click(function(event) {
           $(this).data('clicked', $(event.target));
         });
@@ -26,7 +26,7 @@
         var id = '#' + base,
           message = $('<div/>').text(settings.spinner[base].message);
         if (id !== '#edit-hidden-next') {
-          $(id, context).once('spinner', function () {
+          $(id, context).once('spinner').each(function () {
             var spinner = new Spinner(settings.spinner[base].opts);
             $(id).parents('form').submit(function (event) {
               // If some other widget is preventing form submission we should
@@ -35,7 +35,6 @@
                 return;
               }
               if ($(this).data('clicked').is(id) && $(this).data('submitted') === undefined) {
-                event.preventDefault();
                 // Prevent this from being entered a second time.
                 $(this).data('submitted', true);
                 // Add Message.
@@ -51,13 +50,8 @@
                   $(':submit').attr('disabled', 'disabled');
                 }
                 setTimeout(function () {
-                  // Allow for the button to be clicked, then click it then
-                  // prevent the default behaviour.
-                  $(id).removeAttr('disabled')
-                    .click()
-                    .click(function (event) {
-                      event.preventDefault();
-                    });
+                  $(id).removeAttr('disabled');
+                  $(id).click();
                 }, 500);
               }
               return true;
@@ -67,4 +61,4 @@
       });
     }
   };
-})(jQuery);
+})(jQuery, Drupal);

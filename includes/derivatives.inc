@@ -4,6 +4,9 @@
  * Defines functions used when constructing derivatives.
  */
 
+use Drupal\Core\Logger\RfcLogLevel;
+use Drupal\Core\Link;
+
 // Relations.
 define('ISLANDORA_DEFER_DERIVATIVES_FLAG', 'deferDerivatives');
 
@@ -74,12 +77,12 @@ function islandora_run_derivatives(AbstractObject $object, $dsid) {
  *     - message: A string passed through t() describing the
  *       outcome of the operation.
  *     - message_sub: (Optional) Substitutions to be passed along to t() or
- *       watchdog.
+ *       the logger.
  *     - type: A string denoting whether the output is to be
- *       drupal_set_messaged (dsm) or watchdogged (watchdog).
+ *       drupal_set_messaged (dsm) or logged (log).
  *     - severity: (Optional) A severity level / status to be used when
  *       logging messages. Uses the defaults of drupal_set_message and
- *       watchdog if not defined.
+ *       the logger if not defined.
  */
 function islandora_do_derivatives(AbstractObject $object, array $options) {
   $results = array();
@@ -96,7 +99,10 @@ function islandora_do_derivatives(AbstractObject $object, array $options) {
         }
       }
       else {
-        \Drupal::logger('islandora')->error('Unable to call derivative function @function as it was not found!', array('@function' => $function));
+        \Drupal::logger('islandora')->error(
+          'Unable to call derivative function @function as it was not found!',
+          array('@function' => $function)
+        );
       }
     }
   }
@@ -114,12 +120,12 @@ function islandora_do_derivatives(AbstractObject $object, array $options) {
  *     - message: A string passed through t() describing the
  *       outcome of the operation.
  *     - message_sub: (Optional) Substitutions to be passed along to t() or
- *       watchdog.
+ *       the logger.
  *     - type: A string denoting whether the output is to be
- *       drupal_set_messaged (dsm) or watchdogged (watchdog).
+ *       drupal_set_messaged (dsm) or logged (log).
  *     - severity: (Optional) A severity level / status to be used when
  *       logging messages. Uses the defaults of drupal_set_message and
- *       watchdog if not defined.
+ *       log if not defined.
  */
 function islandora_derivative_logging(array $logging_results) {
   foreach ($logging_results as $result) {
@@ -136,18 +142,22 @@ function islandora_derivative_logging(array $logging_results) {
             'message' => \Drupal\Component\Utility\Xss::filter(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : array())),
             'severity' => 'status',
           );
-          // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// drupal_set_message(l(t('Derivatives successfully created.'), 'islandora/event-status'), 'status', FALSE);
-
+          drupal_set_message(
+            Link::createFromRoute(
+              t('Derivatives successfully created.'),
+              'islandora.event_status'
+            )->toString(),
+            'status',
+            FALSE
+          );
         }
       }
       else {
-        // We know what we are doing here. Passing through the translated
-        // message and the substitutions needed. We are using
-        // call_user_func until such time as the @ignore changes
-        // are merged into the standard release for Coder.
-        call_user_func('watchdog', 'islandora_derivatives', $message['message'], isset($message['message_sub']) ? $message['message_sub'] : array(), isset($message['severity']) ? $message['severity'] : WATCHDOG_NOTICE);
+        \Drupal::logger('islandora_derivatives')->log(
+          isset($message['severity']) ? $message['severity'] : RfcLogLevel::NOTICE,
+          $message['message'],
+          isset($message['message_sub']) ? $message['message_sub'] : []
+        );
       }
     }
   }
