@@ -5,6 +5,8 @@
  * The form displayed that shows the datastream version history.
  */
 
+use Drupal\Core\Link;
+
 /**
  * Function that returns markup for the datastream versions page.
  */
@@ -12,27 +14,21 @@ function islandora_datastream_version_table($datastream) {
   module_load_include('inc', 'islandora', 'includes/datastream');
   module_load_include('inc', 'islandora', 'includes/utilities');
   $parent = $datastream->parent;
-  // @FIXME
-// drupal_set_title() has been removed. There are now a few ways to set the title
-// dynamically, depending on the situation.
-//
-//
-// @see https://www.drupal.org/node/2067859
-// drupal_set_title(t("@dsid Previous Versions", array('@dsid' => $datastream->id)));
-
+  $table = [];
+  $table['#title'] = t("@dsid Previous Versions", ['@dsid' => $datastream->id]);
   $audit_values = islandora_get_audit_trail($parent->id, $datastream->id);
 
-  $header = array();
+  $header = [];
   $header[] = array('data' => t('Created Date'));
   $header[] = array('data' => t('Size'));
   $header[] = array('data' => t('Label'));
   $header[] = array('data' => t('Responsibility'));
   $header[] = array('data' => t('Mime type'));
   $header[] = array('data' => t('Operations'), 'colspan' => '2');
-  $rows = array();
+  $rows = [];
 
   foreach ($datastream as $version => $datastream_version) {
-    $row = array();
+    $row = [];
     $reponsibility = $parent->owner;
     foreach ($audit_values as $audit_value) {
       $internal = $datastream_version->createdDate;
@@ -43,10 +39,7 @@ function islandora_datastream_version_table($datastream) {
     $user = user_load_by_name($reponsibility);
     if ($user) {
       $user_id = $user->id();
-      // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $user_val = l($reponsibility, "user/$user_id");
-
+      $user_val = Link::createFromRoute($reponsibility, 'entity.user.canonical', ['user' => $user_id]);
     }
     else {
       $user_val = $reponsibility;
@@ -119,16 +112,11 @@ function islandora_datastream_version_table($datastream) {
     $rows[] = $row;
   }
 
-  // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// return theme('table', array('header' => $header, 'rows' => $rows));
+  $table['#type'] = 'table';
+  $table['#header'] = $header;
+  $table['#rows'] = $rows;
 
+  return $table;
 }
 
 /**
