@@ -883,21 +883,20 @@ function islandora_event_status() {
  *   TRUE if successful, FALSE otherwise.
  */
 function islandora_scale_thumbnail($file, $width, $height) {
-  $real_path = \Drupal::service("file_system")->realpath($file->uri);
-  $image = image_load($real_path);
+  $image = Drupal::service('image.factory')->get($file->getFileUri());
   try {
     if (!empty($image)) {
-      $scale = image_scale($image, $width, $height, TRUE);
+      $scale = $image->scale($width, $height);
       if ($scale) {
-        return image_save($image);
+        return $image->save();
       }
     }
   }
   catch (exception $e) {
     drupal_set_message(t(
         "Islandora failed to scale image with message: '@message'",
-        array("@message" => $e->getMessage())));
-    \Drupal::logger('islandora')->error('Islandora failed to scale image.<br/> With stack: @trace', array('@trace' => $e->getTraceAsString()));
+        ["@message" => $e->getMessage()]));
+    \Drupal::logger('islandora')->error('Islandora failed to scale image.<br/> With stack: @trace', ['@trace' => $e->getTraceAsString()]);
   }
   return FALSE;
 }
