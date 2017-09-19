@@ -761,7 +761,7 @@ function islandora_ingest_form_ingest_button_process(array $element) {
   ];
 
   $islandora_path = drupal_get_path('module', 'islandora');
-  $element['#attached']['drupalSettings']['spinner'] = 'islandora-spin-js';
+  $element['#attached']['drupalSettings']['spinner'] = $settings;
   $element['#attached']['library'][] = 'islandora/islandora-spin-js';
   $element['#attributes']['class'][] = 'islandora-spinner-submit';
   return $element;
