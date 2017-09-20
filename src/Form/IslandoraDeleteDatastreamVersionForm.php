@@ -62,8 +62,8 @@ class IslandoraDeleteDatastreamVersionForm extends ConfirmFormBase {
 
     $this->datastream = $datastream;
 
-    $form_state->set(['datastream'], $datastream);
-    $form_state->set(['version'], $version);
+    $form_state->set('datastream', $datastream);
+    $form_state->set('version', $version);
 
     return parent::buildForm($form, $form_state);
   }

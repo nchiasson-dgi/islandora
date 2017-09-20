@@ -32,7 +32,7 @@ class IslandoraRevertDatastreamVersionForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to revert the the selected version of this datastream?');
+    return $this->t('Are you sure you want to revert the selected version of this datastream?');
   }
 
   /**
