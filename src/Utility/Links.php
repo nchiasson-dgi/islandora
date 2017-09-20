@@ -65,14 +65,6 @@ class Links {
         ['#plain_text' => $label];
     }
     else {
-        ksm($version);
-        ksm(Url::fromRoute('islandora.view_datastream_version', [
-            'object' => $datastream->parent->id,
-            'datastream' => $datastream->id,
-            'version' => $version,
-        ])->toString());
-        ksm($label);
-return [];
       return islandora_datastream_access(ISLANDORA_VIEW_DATASTREAM_HISTORY, $datastream) ?
         [
           '#title' => $label,

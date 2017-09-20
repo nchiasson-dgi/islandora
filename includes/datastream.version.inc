@@ -50,7 +50,7 @@ function islandora_datastream_version_table($datastream) {
     else {
       $user_val = $reponsibility;
     }
-//fixme: $linker was originally rendered
+
     $row[] = [
       'class' => 'datastream-date',
       'data' => $linker->view($datastream, $version, $datastream_version->createdDate->format(DATE_RFC850)),
