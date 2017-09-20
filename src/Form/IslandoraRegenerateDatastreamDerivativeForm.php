@@ -80,7 +80,7 @@ class IslandoraRegenerateDatastreamDerivativeForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    module_load_include('inc', 'islandora', 'includes/derivatives');
+    $form_state->loadInclude('islandora', 'inc', 'includes/regenerate_derivatives.form');
     $object = islandora_object_load($form_state->get(['datastream_info', 'object_id']));
     $datastream = $object[$form_state->get(['datastream_info', 'dsid'])];
     $batch = islandora_regenerate_datastream_derivative_batch($datastream);
