@@ -4,6 +4,7 @@ namespace Drupal\islandora\Form;
 
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 
 use AbstractDatastream;
 
@@ -75,9 +76,9 @@ class IslandoraRevertDatastreamVersionForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $islandora_object = islandora_object_load($form_state->get(['object_id']));
+    $islandora_object = islandora_object_load($form_state->get('object_id'));
 
-    $datastream_to_revert = $islandora_object[$form_state['dsid']];
+    $datastream_to_revert = $islandora_object[$form_state->get('dsid')];
     $version = $form_state->get(['version']);
 
     // Create file holding specified datastream version, and set datastream to
@@ -87,7 +88,7 @@ class IslandoraRevertDatastreamVersionForm extends ConfirmFormBase {
       $datastream_to_revert->url = $datastream_to_revert_to->url;
     }
     else {
-      // TODO: Fix the file handling.
+      // TODO: Use managed file.
       $filename = file_create_filename('datastream_temp_file', 'temporary://');
       $datastream_to_revert_to->getContent($filename);
       $datastream_to_revert->setContentFromFile($filename);
