@@ -50,13 +50,13 @@ class IslandoraDatastreamVersionReplaceForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, AbstractDatastream $datastream = NULL) {
-    module_load_include('inc', 'islandora', 'includes/content_model');
-    module_load_include('inc', 'islandora', 'includes/utilities');
-    module_load_include('inc', 'islandora', 'includes/mimetype.utils');
+    $form_state->loadInclude('islandora', 'inc', 'includes/content_model');
+    $form_state->loadInclude('islandora', 'inc', 'includes/utilities');
+    $form_state->loadInclude('islandora', 'inc', 'includes/mimetype.utils');
 
     $object = islandora_object_load($datastream->parent->id);
-    $form_state->set(['object_id'], $object->id);
-    $form_state->set(['dsid'], $datastream->id);
+    $form_state->set('object_id', $object->id);
+    $form_state->set('dsid', $datastream->id);
 
     $extensions = islandora_get_extensions_for_datastream($object, $datastream->id);
     $valid_extensions = implode(' ', $extensions);
@@ -123,7 +123,7 @@ class IslandoraDatastreamVersionReplaceForm extends FormBase {
       $file->delete();
     }
     catch (exception $e) {
-      drupal_set_message($this->t('An error occurred during datastream updates. See watchlog for more information.'), 'error');
+      drupal_set_message($this->t('An error occurred during datastream updates. See the log for more information.'), 'error');
       $this->getLogger('islandora')->error('Failed to add new versionable datastream.<br/>code: @code<br/>message: @msg', [
         '@code' => $e->getCode(),
         '@msg' => $e->getMessage(),

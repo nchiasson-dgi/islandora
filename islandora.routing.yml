@@ -256,7 +256,22 @@ islandora.datastream_version_table:
     _title: 'Datastream Versions'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_datastream_version_table'
   requirements:
-    _custom_access: '\Drupal\islandora\Controller\DefaultController::islandora_datastream_access'
+    _islandora_datastream_access: 'TRUE'
+  options:
+    parameters:
+      object:
+        type: object
+      datastream:
+        type: datastream
+islandora.view_datastream_version:
+  path: '/islandora/object/{object}/datastream/{datastream}/version/{version}/view'
+  defaults:
+    perms: 'view old datastream versions'
+    _title: 'View Datastream Version'
+    download: false
+    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraViewDatastream'
+  requirements:
+    _islandora_datastream_access: 'TRUE'
   options:
     parameters:
       object:
@@ -284,7 +299,7 @@ islandora.delete_datastream_version_form:
     _title: 'Delete datastream version'
     _form: '\Drupal\islandora\Form\IslandoraDeleteDatastreamVersionForm'
   requirements:
-    _custom_access: '\Drupal\islandora\Form\IslandoraDeleteDatastreamVersionForm::islandora_datastream_access'
+    _islandora_datastream_access: 'TRUE'
   options:
     parameters:
       object:
@@ -298,7 +313,7 @@ islandora.revert_datastream_version_form:
     _title: 'Revert to datastream version'
     _form: '\Drupal\islandora\Form\IslandoraRevertDatastreamVersionForm'
   requirements:
-    _custom_access: '\Drupal\islandora\Form\IslandoraRevertDatastreamVersionForm::islandora_datastream_access'
+    _islandora_datastream_access: 'TRUE'
   options:
     parameters:
       object:
