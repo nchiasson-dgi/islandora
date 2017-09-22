@@ -342,14 +342,14 @@ islandora.event_status:
   requirements:
     _access: 'true'
 islandora.content_model_autocomplete:
-  path: '/ISLANDORA_CONTENT_MODELS_AUTOCOMPLETE/{string}'
+  path: '/islandora/autocomplete/content-models'
   defaults:
     _title: 'Autocomplete callback'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_content_model_autocomplete'
   requirements:
     _permission: 'administer site configuration'
 islandora.mime_type_autocomplete:
-  path: '/ISLANDORA_MIME_TYPES_AUTOCOMPLETE/{string}'
+  path: '/islandora/autocomplete/mime-types'
   defaults:
     _title: 'Autocomplete callback'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_mime_type_autocomplete'
