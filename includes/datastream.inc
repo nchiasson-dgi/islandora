@@ -112,7 +112,7 @@ function islandora_view_datastream_retrieve_file_uri(AbstractDatastream $datastr
             }
           }
           catch (RepositoryException $e) {
-            file_delete($file);
+            $file->delete();
             throw $e;
           }
         }
