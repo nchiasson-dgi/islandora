@@ -340,7 +340,7 @@ islandora.event_status:
     _title: 'Event Status'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_event_status'
   requirements:
-    _access: 'true'
+    _access: 'TRUE'
 islandora.content_model_autocomplete:
   path: '/islandora/autocomplete/content-models'
   defaults:
