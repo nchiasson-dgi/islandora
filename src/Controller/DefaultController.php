@@ -14,6 +14,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 use AbstractObject;
 use AbstractDatastream;
@@ -224,11 +226,16 @@ class DefaultController extends ControllerBase {
     return $has_access;
   }
 
-  public function islandora_add_datastream_form_autocomplete_callback(AbstractObject $object, $query = '') {
+  /**
+   * Callback for an autocomplete field in the admin add datastream form.
+   *
+   * It lists the missing required (may be optional) datastreams.
+   */
+  public function islandora_add_datastream_form_autocomplete_callback(AbstractObject $object, Request $request) {
     module_load_include('inc', 'islandora', 'includes/content_model');
     module_load_include('inc', 'islandora', 'includes/utilities');
+    $query = $request->query->get('q');
     $dsids = array_keys(islandora_get_missing_datastreams_requirements($object));
-    $dsids = array_combine($dsids, $dsids);
     $query = trim($query);
     if (!empty($query)) {
       $filter = function($id) use($query) {
@@ -236,8 +243,11 @@ class DefaultController extends ControllerBase {
       };
       $dsids = array_filter($dsids, $filter);
     }
-    drupal_json_output($dsids);
-
+    $output = [];
+    foreach ($dsids as $dsid) {
+      $output = ['value' => $dsid, 'label' => $dsid];
+    }
+    return new JsonResponse($ouput);
   }
 
   public function islandoraViewDatastreamTitle(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
@@ -395,27 +405,36 @@ class DefaultController extends ControllerBase {
     return ['#markup' => $text];
   }
 
-  public function islandora_content_model_autocomplete($string) {
+  /**
+   * Autocomplete the content model name.
+   */
+  public function islandora_content_model_autocomplete(Request $request) {
+    module_load_include('inc', 'islandora', 'includes/content_model.autocomplete');
+    $string = $request->query->get('q');
     $content_models = islandora_get_content_model_names();
     $output = [];
     foreach ($content_models as $model => $label) {
       if (preg_match("/{$string}/i", $label) !== 0) {
-        $output[$model] = $label;
+        $output[] = ['value' => $model, 'label' => $label];
       }
     }
-    return drupal_json_output($output);
+    return new JsonResponse($output);
   }
 
-  public function islandora_mime_type_autocomplete($string) {
+  /**
+   * Autocomplete the MIME type name.
+   */
+  public function islandora_mime_type_autocomplete(Request $request) {
     require_once \Drupal::root() . "/includes/file.mimetypes.inc";
+    $string = $request->query->get('q');
     $mime_types = file_mimetype_mapping();
     $output = [];
     foreach ($mime_types as $mime_type) {
       if (preg_match("/{$string}/i", $mime_type) !== 0) {
-        $output[$mime_type] = $mime_type;
+        $output[] = ['value' => $mime_type, 'label' => $mime_type];
       }
     }
-    return drupal_json_output($output);
+    return new JsonResponse($output);
   }
 
 }

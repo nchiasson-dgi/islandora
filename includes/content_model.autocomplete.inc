@@ -5,26 +5,6 @@
  */
 
 /**
- * Autocomplete the content model name.
- *
- * @param string $string
- *   A search string.
- *
- * @return string
- *   The rendered JSON results.
- */
-function islandora_content_model_autocomplete($string) {
-  $content_models = islandora_get_content_model_names();
-  $output = array();
-  foreach ($content_models as $model => $label) {
-    if (preg_match("/{$string}/i", $label) !== 0) {
-      $output[$model] = $label;
-    }
-  }
-  return drupal_json_output($output);
-}
-
-/**
  * Gets a map of form names suitable for use as select #options.
  */
 function islandora_get_content_model_names() {
