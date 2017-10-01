@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Autocomplete functionality for content models in Islandora.
@@ -10,7 +11,7 @@
 function islandora_get_content_model_names() {
   module_load_include('inc', 'islandora', 'includes/utilities');
   $results = islandora_get_content_models();
-  $ret = array();
+  $ret = [];
   foreach ($results as $result) {
     $ret[$result['pid']] = "{$result['label']} ({$result['pid']})";
   }
@@ -26,8 +27,8 @@ function islandora_get_content_model_names() {
  * @return array
  *   An array of results in a more usable format.
  */
-function islandora_parse_query($content) {
-  $content_models = array();
+function islandora_parse_query(array $content) {
+  $content_models = [];
   foreach ($content as $model) {
     $content_models[] = $model['object']['value'];
   }
