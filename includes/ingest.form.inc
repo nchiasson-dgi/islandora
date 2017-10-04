@@ -306,7 +306,7 @@ function islandora_ingest_form_execute_step(array $form, FormStateInterface $for
  *   The form definition of the given step.
  */
 function islandora_ingest_form_execute_form_step(array $form, FormStateInterface $form_state, array $step) {
-  $args = array($form, $form_state);
+  $args = [$form, $form_state];
   $args = isset($step['args']) ? array_merge($args, $step['args']) : $args;
   $shared_storage = islandora_ingest_form_get_shared_storage($form_state);
   // Build the form step.
@@ -424,10 +424,10 @@ function islandora_ingest_form_undo_callback_step(array $form, FormStateInterfac
 function islandora_ingest_form_stepify(array $form, FormStateInterface $form_state, array $step, $form_id) {
   $first_form_step = islandora_ingest_form_on_first_form_step($form_state);
   $last_form_step = islandora_ingest_form_on_last_form_step($form_state);
-  $form['form_step_id'] = array(
+  $form['form_step_id'] = [
     '#type' => 'hidden',
     '#value' => islandora_ingest_form_get_current_step_id($form_state),
-  );
+  ];
   $form['prev'] = $first_form_step ? NULL : islandora_ingest_form_previous_button($form_state);
   $form['next'] = $last_form_step ? islandora_ingest_form_ingest_button($form_state) : islandora_ingest_form_next_button($form_state);
   // Duplicate next button and hide it at the top of the form so that the form
@@ -444,7 +444,7 @@ function islandora_ingest_form_stepify(array $form, FormStateInterface $form_sta
     islandora_ingest_form_add_step_context($form, $form_state);
   }
   // Allow for a hook_form_FORM_ID_alter().
-  \Drupal::moduleHandler()->alter(array('form_' . $form_id, 'form'), $form, $form_state, $form_id);
+  \Drupal::moduleHandler()->alter(['form_' . $form_id, 'form'], $form, $form_state, $form_id);
   return $form;
 }
 

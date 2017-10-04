@@ -10,14 +10,14 @@ require_once __DIR__ . '/../src/Tuque/Base.php';
 class IslandoraTuque {
 
   /**
-   * Connection to the repository
+   * Connection to the repository.
    *
    * @var RepositoryConnection
    */
   public $connection = NULL;
 
   /**
-   * The Fedora API we are using
+   * The Fedora API we are using.
    *
    * @var FedoraAPI
    */
