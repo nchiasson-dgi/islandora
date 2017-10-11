@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Defines functions used when constructing derivatives.
@@ -21,17 +22,17 @@ define('ISLANDORA_DEFER_DERIVATIVES_FLAG', 'deferDerivatives');
 function islandora_run_derivatives(AbstractObject $object, $dsid) {
   $batch_array = batch_get();
   if (empty($batch_array)) {
-    $logging_results = islandora_do_derivatives($object, array(
+    $logging_results = islandora_do_derivatives($object, [
       'source_dsid' => $dsid,
-    ));
+    ]);
     islandora_derivative_logging($logging_results);
   }
   else {
     $operations = islandora_do_batch_derivatives(
       $object,
-      array(
+      [
         'source_dsid' => $dsid,
-      )
+      ]
     );
     if ($operations) {
       batch_set(
