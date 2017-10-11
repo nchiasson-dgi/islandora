@@ -5,6 +5,8 @@
  * This file contains functions to create breadcrumbs on Islandora object pages.
  */
 
+use Drupal\Core\Link;
+
 /**
  * Get an array of links to be passed to drupal_set_breadcrumb().
  *
@@ -25,13 +27,9 @@
  *   drupal_set_breadcrumb().
  */
 function islandora_get_breadcrumbs(AbstractObject $object) {
-  $breadcrumbs = array();
+  $breadcrumbs = [];
   if (\Drupal::config('islandora.settings')->get('islandora_render_drupal_breadcrumbs')) {
-    // @FIXME
-// Could not extract the default value because it is either indeterminate, or
-// not scalar. You'll need to provide a default value in
-// config/install/islandora.settings.yml and config/schema/islandora.schema.yml.
-$backend = \Drupal::config('islandora.settings')->get('islandora_breadcrumbs_backends');
+    $backend = \Drupal::config('islandora.settings')->get('islandora_breadcrumbs_backends');
     $backends = \Drupal::moduleHandler()->invokeAll('islandora_breadcrumbs_backends');
     if ($backend === ISLANDORA_BREADCRUMB_LEGACY_BACKEND || !isset($backends[$backend])) {
       $breadcrumbs = islandora_get_breadcrumbs_legacy($object->id, $object->repository);
@@ -97,7 +95,7 @@ function islandora_get_breadcrumbs_recursive($pid, FedoraRepository $repository,
     $title = 'Islandora Repository';
     $mlid = db_select('menu_links', 'ml')
       ->condition('ml.link_path', 'islandora')
-      ->fields('ml', array('mlid'))
+      ->fields('ml', ['mlid'])
       ->execute()
       ->fetchField();
 
@@ -106,12 +104,10 @@ function islandora_get_breadcrumbs_recursive($pid, FedoraRepository $repository,
       $title = (isset($link['title']) ? $link['title'] : $title);
     }
 
-    // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// return array(
-//       l(t('Home'), '<front>'),
-//       l($title, 'islandora'),
-//     );
+    return [
+      Link::createFromRoute(t('Home'), '<front>'),
+      Link::createFromRoute($title, 'islandora.view_default_object'),
+    ];
 
   }
   else {
@@ -138,21 +134,21 @@ EOQ;
       return "FILTER($filter)";
     };
     $object = islandora_object_load($pid);
-    $breadcrumb_predicates = islandora_invoke_hook_list(ISLANDORA_BREADCRUMB_FILTER_PREDICATE_HOOK, $object->models, array($object));
+    $breadcrumb_predicates = islandora_invoke_hook_list(ISLANDORA_BREADCRUMB_FILTER_PREDICATE_HOOK, $object->models, [$object]);
     $same_term_map = function ($predicate) {
       return "sameTerm(?collection_predicate, <$predicate>)";
     };
     $collection_predicate_filters = array_map($same_term_map, $breadcrumb_predicates);
     $query_filters[] = implode(' || ', $collection_predicate_filters);
     $query_order = "ORDER BY DESC(?label)";
-    $query = format_string($query, array(
+    $query = format_string($query, [
       '!optionals' => !empty($query_optionals) ? ('OPTIONAL {{' . implode('} UNION {', $query_optionals) . '}}') : '',
       '!filters' => implode(' ', array_map($filter_map, $query_filters)),
       '!order' => $query_order,
-    ));
-    $query = format_string($query, array(
+    ]);
+    $query = format_string($query, [
       '!pid' => $pid,
-    ));
+    ]);
     $results = $repository->ri->sparqlQuery($query, 'unlimited');
 
     if (count($results) > 0 && $context['level'] > 0) {
@@ -164,11 +160,9 @@ EOQ;
       }
 
       $context['level']--;
-      // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// return array_merge(islandora_get_breadcrumbs_recursive($parent, $repository, $context), array(
-//         l($this_label, "islandora/object/$pid"),
-//       ));
+      return array_merge(islandora_get_breadcrumbs_recursive($parent, $repository, $context), [
+        Link::createFromRoute($this_label, 'islandora.view_object', ['object' => $pid]),
+      ]);
 
     }
     else {
@@ -176,7 +170,7 @@ EOQ;
       // render the last two links and break (on the next pass).
       return array_merge(
         islandora_get_breadcrumbs_recursive($root, $repository, $context),
-        array('...')
+        ['...']
       );
     }
   }
