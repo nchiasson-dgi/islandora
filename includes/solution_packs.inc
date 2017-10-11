@@ -49,12 +49,12 @@ function islandora_solution_packs_get_required_objects($module = NULL) {
       return $required_objects[$module];
     }
     else {
-      \Drupal::logger('islandora')->notice('Attempted to get required objects for %module... %module does not appear to have any required objects. Clear caches?', array(
+      \Drupal::logger('islandora')->notice('Attempted to get required objects for %module... %module does not appear to have any required objects. Clear caches?', [
         '%module' => $module,
-      ));
-      throw new Exception(t('Module "@module" has no required objects!', array(
+      ]);
+      throw new Exception(t('Module "@module" has no required objects!', [
         '@module' => $module,
-      )));
+      ]));
     }
   }
   else {
@@ -95,11 +95,11 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
   $admin_link = Link::fromTextAndUrl($t('Solution Pack admin'), Url::fromRoute('islandora.solution_packs_admin'))->toString();
   $config_link = Link::fromTextAndUrl($t('Islandora configuration'), Url::fromRoute('islandora.repository_admin'))->toString();
 
-  $t_params = array(
+  $t_params = [
     '@module' => $module,
     '@config_link' => $config_link,
     '@admin_link' => $admin_link,
-  );
+  ];
 
   module_load_include('module', 'islandora', 'islandora');
   module_load_include('inc', 'islandora', 'includes/utilities');
@@ -115,12 +115,12 @@ function islandora_install_solution_pack($module, $op = 'install', $force = FALS
   }
   $required_objects = islandora_solution_packs_get_required_objects($module);
   $objects = $required_objects['objects'];
-  $status_messages = array(
+  $status_messages = [
     'up_to_date' => $t('The object already exists and is up-to-date.', $t_params),
     'missing_datastream' => $t('The object already exists but is missing a datastream. Please reinstall the object on the @admin_link page.', $t_params),
     'out_of_date' => $t('The object already exists but is out-of-date. Please update the object on the @admin_link page.', $t_params),
     'modified_datastream' => $t('The object already exists but datastreams are modified. Please reinstall the object on the @admin_link page.', $t_params),
-  );
+  ];
   foreach ($objects as $object) {
     $already_exists = islandora_object_load($object->id);
 
