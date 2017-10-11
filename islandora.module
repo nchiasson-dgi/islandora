@@ -93,7 +93,7 @@ function islandora_admin_paths() {
  * @link https://jira.duraspace.org/browse/ISLANDORA-934. @endlink
  */
 function islandora_theme() {
-  return array(
+  return [
     // Default object template.
     'islandora_default' => array(
       'file' => 'theme/theme.inc',
@@ -186,49 +186,7 @@ function islandora_theme() {
       'file' => 'includes/solution_packs.inc',
       'render element' => 'form',
     ),
-  );
-}
-
-/**
- * Implements hook_i18n_string_info().
- */
-function islandora_i18n_string_info() {
-  return array(
-    'islandora' => array(
-      'title' => t('Islandora'),
-      'description' => t('Translatable Metadata labels, etc.'),
-      'format' => FALSE,
-      'list' => TRUE,
-    ),
-  );
-}
-
-/**
- * Implements islandora_i18n_string_list().
- */
-function islandora_i18n_string_list($group) {
-  if ($group == 'islandora') {
-    return array(
-      'islandora' => array(
-        'dc' => array(
-          'title' => array('label' => 'Title'),
-          'creator' => array('label' => 'Creator'),
-          'subject' => array('label' => 'Subject'),
-          'description' => array('label' => 'Description'),
-          'publisher' => array('label' => 'Publisher'),
-          'contributor' => array('label' => 'Contributor'),
-          'date' => array('label' => 'Date'),
-          'type' => array('label' => 'Type'),
-          'format' => array('label' => 'Format'),
-          'identifier' => array('label' => 'Identifier'),
-          'source' => array('label' => 'Source'),
-          'language' => array('label' => 'Language'),
-          'relation' => array('label' => 'Relation'),
-          'coverage' => array('label' => 'Coverage'),
-        ),
-      ),
-    );
-  }
+  ];
 }
 
 /**
