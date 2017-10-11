@@ -73,18 +73,6 @@ define('ISLANDORA_MIME_TYPES_AUTOCOMPLETE', 'islandora/autocomplete/mime-types')
 const ISLANDORA_BREADCRUMB_LEGACY_BACKEND = 'islandora_breadcrumbs_legacy_sparql';
 
 /**
- * Implements hook_admin_paths().
- */
-function islandora_admin_paths() {
-  $paths = array();
-  $paths['islandora/object/*/manage*'] = TRUE;
-  $paths['islandora/object/*/delete*'] = TRUE;
-  $paths['islandora/object/*/datastream/*/edit'] = TRUE;
-  $paths['islandora/object/*/datastream/*/versions'] = TRUE;
-  return $paths;
-}
-
-/**
  * Implements hook_theme().
  *
  * The theme entries 'islandora_objects' and 'islandora_objects_subset'
@@ -95,68 +83,68 @@ function islandora_admin_paths() {
 function islandora_theme() {
   return [
     // Default object template.
-    'islandora_default' => array(
+    'islandora_default' => [
       'file' => 'theme/theme.inc',
       'template' => 'islandora-default',
-      'variables' => array('islandora_object' => NULL),
-    ),
+      'variables' => ['islandora_object' => NULL],
+    ],
     // Admin table for solution pack viewer selection.
-    'islandora_viewers_table' => array(
+    'islandora_viewers_table' => [
       'file' => 'includes/solution_packs.inc',
       'render element' => 'form',
-    ),
+    ],
     // Print used by the clipper.
-    'islandora_object_print' => array(
+    'islandora_object_print' =>[
       'file' => 'theme/theme.inc',
-      'variables' => array('object' => NULL, 'content' => array()),
-    ),
+      'variables' => ['object' => NULL, 'content' => []],
+    ],
     // Print object view, prints islandora objects.
-    'islandora_object_print_object' => array(
+    'islandora_object_print_object' => [
       'file' => 'theme/theme.inc',
       'template' => 'islandora-object-print',
-      'variables' => array(
+      'variables' => [
         'object' => NULL,
         'content' => NULL,
         'metadata' => NULL,
         'islandora_content' => NULL,
-      ),
-    ),
+      ],
+    ],
     // Render a bunch of objects as either a grid or a list.
-    'islandora_objects' => array(
+    'islandora_objects' => [
       'file' => 'theme/theme.inc',
       'template' => 'islandora-objects',
-      'variables' => array(
+      'variables' => [
         'objects' => NULL,
         'display' => NULL,
         'page_size' => 20,
         'limit' => 12,
-      ),
-    ),
+      ],
+    ],
     // Render a bunch of objects as either a grid or a list.
-    'islandora_objects_subset' => array(
+    'islandora_objects_subset' => [
       'file' => 'theme/theme.inc',
       'template' => 'islandora-objects',
-      'variables' => array(
+      'variables' => [
         'objects' => NULL,
         'display' => 'grid',
         'limit' => 10,
         'total' => NULL,
         'pager_element' => 0,
-      ),
-    ),
+      ],
+    ],
     // Render a bunch of objects as a grid.
-    'islandora_objects_grid' => array(
+    'islandora_objects_grid' => [
       'file' => 'theme/theme.inc',
       'template' => 'islandora-objects-grid',
-      'variables' => array('objects' => NULL),
-    ),
+      'variables' => ['objects' => NULL],
+    ],
     // Render a bunch of objects as a list.
-    'islandora_objects_list' => array(
+    'islandora_objects_list' => [
       'file' => 'theme/theme.inc',
       'template' => 'islandora-objects-list',
-      'variables' => array('objects' => NULL),
-    ),
-    'islandora_dublin_core_display' => array(
+      'variables' => ['objects' => NULL],
+    ],
+    'islandora_dublin_core_display' => [
       'file' => 'theme/theme.inc',
       'template' => 'islandora-dublin-core-display',
       // We can add PIDs to the end of this pattern in our preprocess function
@@ -165,12 +153,12 @@ function islandora_theme() {
       // An example template might be named:
       // "islandora-dublin-core-display--islandora-27.tpl.php".
       'pattern' => 'islandora_dublin_core_display__',
-      'variables' => array(
+      'variables' => [
         'islandora_object' => NULL,
         'print' => NULL,
-      ),
-    ),
-    'islandora_dublin_core_description' => array(
+      ],
+    ],
+    'islandora_dublin_core_description' => [
       'file' => 'theme/theme.inc',
       'template' => 'theme/islandora-dublin-core-description',
       // We can add PIDs to the end of this pattern in our preprocess function
@@ -179,13 +167,13 @@ function islandora_theme() {
       // An example template might be named:
       // "islandora-dublin-core-description--islandora-27.tpl.php".
       'pattern' => 'islandora_dublin_core_description__',
-      'variables' => array('islandora_object' => NULL),
-    ),
+      'variables' => ['islandora_object' => NULL],
+    ],
     // Table for install/reinstall content model and collections.
-    'islandora_solution_pack_table' => array(
+    'islandora_solution_pack_table' => [
       'file' => 'includes/solution_packs.inc',
       'render element' => 'form',
-    ),
+    ],
   ];
 }
 
@@ -251,9 +239,9 @@ function islandora_print_object_access($op, $object) {
  * Implements hook_forms().
  */
 function islandora_forms($form_id) {
-  $forms = array();
+  $forms = [];
   if (strpos($form_id, 'islandora_solution_pack_form_') !== FALSE) {
-    $forms[$form_id] = array('callback' => 'islandora_solution_pack_form');
+    $forms[$form_id] = ['callback' => 'islandora_solution_pack_form'];
   }
   return $forms;
 }
@@ -488,7 +476,7 @@ function islandora_view_object(AbstractObject $object) {
   // Optional pager parameters.
   $page_number = (empty($_GET['page'])) ? '1' : $_GET['page'];
   $page_size = (empty($_GET['pagesize'])) ? '10' : $_GET['pagesize'];
-  $output = array();
+  $output = [];
   $hooks = islandora_build_hook_list(ISLANDORA_VIEW_HOOK, $object->models);
   foreach ($hooks as $hook) {
     // @todo Remove page number and size from this hook, implementers of the
@@ -524,8 +512,8 @@ function islandora_view_object(AbstractObject $object) {
  *   An HTML representation of this object.
  */
 function islandora_printer_object(AbstractObject $object) {
-  $output = array();
-  $temp_arr = array();
+  $output = [];
+  $temp_arr = [];
 
   // Dispatch print hook.
   foreach (islandora_build_hook_list(ISLANDORA_PRINT_HOOK, $object->models) as $hook) {
@@ -538,16 +526,6 @@ function islandora_printer_object(AbstractObject $object) {
   $output = islandora_default_islandora_printer_object($object, \Drupal::service("renderer")->render($temp_arr));
   arsort($output);
   islandora_as_renderable_array($output);
-
-  // Prompt to print.
-  // @FIXME
-// The Assets API has totally changed. CSS, JavaScript, and libraries are now
-// attached directly to render arrays using the #attached property.
-//
-//
-// @see https://www.drupal.org/node/2169605
-// @see https://www.drupal.org/node/2408597
-// drupal_add_js('jQuery(document).ready(function () { window.print(); });', 'inline');
 
   return $output;
 }
@@ -591,15 +569,15 @@ function islandora_default_islandora_view_object($object) {
 //
 // @see https://www.drupal.org/node/2195739
 // $output = theme('islandora_default', array('islandora_object' => $object));
-  return array(
+  return [
     // @FIXME
     // Themeing expects islandora_object to be an AbstractObject but it's coming
     // through as a markup, so this won't render anything.
-    'Default output' => array(
+    'Default output' => [
       '#theme' => 'islandora_default',
       '#islandora_object' => $object,
-    ),
-  );
+    ],
+  ];
 }
 
 /**
@@ -628,10 +606,10 @@ function islandora_default_islandora_printer_object($object, $alter) {
     $dc_object = \Drupal\islandora\DublinCore::importFromXMLString($dc);
   }
   catch (Exception $e) {
-    drupal_set_message(t('Error retrieving object %s %t', array('%s' => $islandora_object->id, '%t' => $e->getMessage())), 'error', FALSE);
+    drupal_set_message(t('Error retrieving object %s %t', ['%s' => $islandora_object->id, '%t' => $e->getMessage()]), 'error', FALSE);
   }
   $metadata = islandora_retrieve_metadata_markup($object, TRUE);
-  $variables = isset($dc_object) ? $dc_object->asArray() : array();
+  $variables = isset($dc_object) ? $dc_object->asArray() : [];
   $output = [
     '#theme' => 'islandora_object_print_object',
     '#attached' => ['library' => ['islandora/islandora-print']],
@@ -666,7 +644,7 @@ function islandora_get_tuque_connection($user = NULL, $url = NULL) {
         $tuque = new IslandoraTuque($user, $url);
       }
       catch (Exception $e) {
-        drupal_set_message(t('Unable to connect to the repository %e', array('%e' => $e)), 'error');
+        drupal_set_message(t('Unable to connect to the repository %e', ['%e' => $e]), 'error');
       }
     }
     else {
@@ -858,19 +836,19 @@ function islandora_islandora_required_objects(IslandoraTuque $connection) {
   $datastream->mimetype = 'image/png';
   $datastream->setContentFromFile("$module_path/images/folder.png", FALSE);
   $root_collection->ingestDatastream($datastream);
-  return array(
-    'islandora' => array(
+  return [
+    'islandora' => [
       'title' => 'Islandora',
-      'objects' => array($root_collection),
-    ),
-  );
+      'objects' => [$root_collection],
+    ],
+  ];
 }
 
 /**
  * Implements hook_islandora_undeleteable_datastreams().
  */
 function islandora_islandora_undeletable_datastreams(array $models) {
-  return array('DC', 'RELS-EXT');
+  return ['DC', 'RELS-EXT'];
 }
 
 /**
@@ -900,14 +878,14 @@ function islandora_add_object(\AbstractObject &$object) {
  */
 function islandora_copy_object(AbstractObject $object) {
   $clone = $object->repository->constructObject($object->id);
-  $object_properties = array(
+  $object_properties = [
     'state',
     'createdDate',
     'lastModifiedDate',
     'label',
     'owner',
     'logMessage',
-  );
+  ];
   // Copy Properties.
   foreach ($object_properties as $property) {
     if (isset($object->$property)) {
@@ -1144,11 +1122,11 @@ function islandora_object_access($op, $object, $account = NULL) {
   if (!isset($cache[$op][$object->id][$account->id()])) {
     module_load_include('inc', 'islandora', 'includes/utilities');
 
-    $results = islandora_invoke_hook_list('islandora_object_access', $object->models, array(
+    $results = islandora_invoke_hook_list('islandora_object_access', $object->models, [
       $op,
       $object,
       $account,
-    ));
+    ]);
     // Nothing returned FALSE, and something returned TRUE.
     $cache[$op][$object->id][$account->id()] = (!in_array(FALSE, $results, TRUE) && in_array(TRUE, $results, TRUE));
   }
@@ -1185,17 +1163,17 @@ function islandora_datastream_access($op, $datastream, $user = NULL) {
   // Populate the cache on a miss.
   if (!isset($cache[$op][$datastream->parent->id][$datastream->id][$user->id()])) {
     module_load_include('inc', 'islandora', 'includes/utilities');
-    $object_results = islandora_invoke_hook_list('islandora_object_access', $datastream->parent->models, array(
+    $object_results = islandora_invoke_hook_list('islandora_object_access', $datastream->parent->models, [
       $op,
       $datastream->parent,
       $user,
-    ));
+    ]);
 
-    $datastream_results = islandora_invoke_hook_list('islandora_datastream_access', $datastream->parent->models, array(
+    $datastream_results = islandora_invoke_hook_list('islandora_datastream_access', $datastream->parent->models, [
       $op,
       $datastream,
       $user,
-    ));
+    ]);
 
     // The datastream check returned FALSE, and one in the object or datastream
     // checks returned TRUE.
@@ -1217,7 +1195,7 @@ function islandora_islandora_basic_collection_get_query_filters() {
   if ($enforced) {
     $namespace_array = islandora_get_allowed_namespaces();
     $namespace_sparql = implode('|', $namespace_array);
-    return array('islandora_namespace_restrictions' => format_string('regex(str(?object), "info:fedora/(!namespaces):")', array('!namespaces' => $namespace_sparql)));
+    return ['islandora_namespace_restrictions' => format_string('regex(str(?object), "info:fedora/(!namespaces):")', ['!namespaces' => $namespace_sparql])];
   }
 }
 
@@ -1270,14 +1248,14 @@ function islandora_islandora_datastream_ingested(AbstractObject $object, Abstrac
  */
 function islandora_islandora_datastream_modified(AbstractObject $object, AbstractDatastream $datastream, $params) {
   module_load_include('inc', 'islandora', 'includes/derivatives');
-  $params += array(
+  $params += [
     'dsid' => $datastream->id,
-  );
-  $logging_results = islandora_do_derivatives($object, array(
+  ];
+  $logging_results = islandora_do_derivatives($object, [
     'source_dsid' => $datastream->id,
     'force' => TRUE,
     'ds_modified_params' => $params,
-  ));
+  ]);
   islandora_derivative_logging($logging_results);
   islandora_conditionally_clear_cache();
 }
@@ -1413,14 +1391,14 @@ function islandora_repair_drupal_filter() {
  * Implements hook_islandora_metadata_display_info().
  */
 function islandora_islandora_metadata_display_info() {
-  return array(
-    'dublin_core' => array(
+  return [
+    'dublin_core' => [
       'label' => t('Dublin Core'),
       'description' => t('Dublin Core metadata'),
       'metadata callback' => 'islandora_metadata_display_callback',
       'description callback' => 'islandora_metadata_description_callback',
-    ),
-  );
+    ],
+  ];
 }
 
 /**
