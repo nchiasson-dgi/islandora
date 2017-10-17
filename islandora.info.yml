@@ -5,9 +5,5 @@ dependencies:
   - image
   - file
 core: 8.x
-stylesheets:
-  all:
-    - css/islandora.base.css
-    - css/islandora.theme.css
 php: '5.5.9'
 type: module
