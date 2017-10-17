@@ -104,6 +104,7 @@ islandora.manage_overview_object:
   requirements:
     _islandora_object_access: 'TRUE'
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object
@@ -119,6 +120,7 @@ islandora.edit_object:
   requirements:
     _islandora_object_access: 'true'
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object
@@ -131,6 +133,7 @@ islandora.object_properties_form:
   requirements:
     _islandora_object_access: 'TRUE'
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object
@@ -143,6 +146,7 @@ islandora.delete_object_form:
   requirements:
     _islandora_object_access: 'true'
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object
@@ -167,6 +171,7 @@ islandora.add_datastream_form:
   requirements:
     _islandora_object_access: 'true'
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object
@@ -175,6 +180,8 @@ islandora.add_datastream_form_autocomplete_callback:
   defaults:
     perm: 'add fedora datastreams'
     _controller: '\Drupal\islandora\Controller\DefaultController::islandora_add_datastream_form_autocomplete_callback'
+  options:
+    _admin_route: TRUE
   requirements:
     _custom_access: '\Drupal\islandora\Controller\DefaultController::islandora_object_access_callback'
 islandora.view_datastream:
@@ -230,6 +237,7 @@ islandora.edit_datastream:
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object
@@ -244,6 +252,7 @@ islandora.delete_datastream_form:
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object
@@ -258,6 +267,7 @@ islandora.datastream_version_table:
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object
@@ -273,6 +283,7 @@ islandora.view_datastream_version:
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object
@@ -301,6 +312,7 @@ islandora.delete_datastream_version_form:
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object
@@ -315,6 +327,7 @@ islandora.revert_datastream_version_form:
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object

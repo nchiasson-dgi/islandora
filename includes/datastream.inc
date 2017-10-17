@@ -27,9 +27,7 @@ function islandora_datastream_get_human_readable_size(AbstractDatastream $datast
  * @param AbstractDatastream $datastream
  *   The datastream to generated the url to.
  * @param string $type
- *   One of:
- *   - download
- *   - view
+ *   One of download or view.
  * @param int $version
  *   (Optional) The version of the datastream to get a URL for.
  *

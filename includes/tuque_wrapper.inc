@@ -2,8 +2,7 @@
 
 /**
  * @file
- * Wrapper around the tuque library, allows for autoloading of Islandora Tuque
- * Objects.
+ * Wrapper around the Tuque library, for autoloading Islandora Tuque objects.
  *
  * @todo Overload functions and apply pre/post hooks.
  */

@@ -7,6 +7,9 @@
 
 require_once __DIR__ . '/../src/Tuque/Base.php';
 
+/**
+ * A class to include the Tuque library.
+ */
 class IslandoraTuque {
 
   /**
@@ -40,7 +43,7 @@ class IslandoraTuque {
   /**
    * Constructor.
    *
-   * @param array $user
+   * @param \Drupal\user\Entity\User $user
    *   A Drupal user.
    * @param string $url
    *   The url to the fedora instance.
@@ -90,7 +93,8 @@ class IslandoraTuque {
   public static function getError() {
     $islandora_doc_link = \Drupal::l(t('Islandora documentation'), \Drupal\Core\Url::fromUri('https://wiki.duraspace.org/display/ISLANDORA/Islandora'));
     $tuque_link = \Drupal::l(t('Tuque Fedora API'), \Drupal\Core\Url::fromUri('http://github.com/islandora/tuque'));
-    $message = t('Islandora requires the !tuque_url. Please install in /sites/all/libraries/tuque before continuing. See the !islandora_url.', array('!tuque_url' => $tuque_link, '!islandora_url' => $islandora_doc_link));
+    $message = t('Islandora requires the @tuque_url. Please install in /sites/all/libraries/tuque before continuing. See the @islandora_url.', ['@tuque_url' => $tuque_link, '@islandora_url' => $islandora_doc_link]);
     drupal_set_message(\Drupal\Component\Utility\Xss::filter($message), 'error', FALSE);
   }
+
 }
