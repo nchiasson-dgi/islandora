@@ -159,7 +159,6 @@ function islandora_theme() {
     ],
     'islandora_dublin_core_description' => [
       'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-dublin-core-description',
       // We can add PIDs to the end of this pattern in our preprocess function
       // and templates will be able to have have a pid appended to the
       // template name to overide a template on a per object basis.
