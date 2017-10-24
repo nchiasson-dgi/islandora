@@ -198,12 +198,16 @@ function islandora_invoke_hook_list($hook, array $refinements, array $args) {
     $return = array_merge_recursive($return, $result);
   }
   if (\Drupal::moduleHandler()->moduleExists('rules')) {
-    $event_info = rules_get_event_info($hook);
-    if (isset($event_info['module'])) {
-      $parameters = $event_info['variables'];
+    $event_manager = \Drupal::service('plugin.manager.rules_event');
+    try {
+      $event_info = $event_manager->getDefinition($hook);
+      $parameters = $event_info['context'];
       $rule_args = array_slice($args, 0, count($parameters));
-      array_unshift($rule_args, $hook);
-      $result = call_user_func_array('rules_invoke_event', $rule_args);
+      $event = Drupal\islandora\Event\IslandoraRepositoryEvent::create($hook, array_combine(array_keys($parameters), $rule_args));
+      \Drupal::service('event_dispatcher')->dispatch($event->getEventName(), $event);
+    }
+    catch (Exception $e) {
+      // No-op.
     }
   }
   return $return;

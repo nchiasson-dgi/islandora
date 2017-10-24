@@ -1,0 +1,60 @@
+islandora_object_ingested:
+ category: 'Islandora'
+ label: 'Object ingested'
+ context:
+   object:
+     type: 'islandora_object'
+     label: 'The ingested object'
+     description: 'A Tuque object for the ingested Fedora object, as an entity.'
+islandora_datastream_ingested:
+ category: 'Islandora'
+ label: 'Datastream ingested'
+ context:
+   object:
+     type: 'islandora_object'
+     label: 'The ingested object'
+     description: 'A Tuque object for the Fedora object on which the datastream exists, as an entity.'
+   datastream:
+     type: 'islandora_datastream'
+     label: 'Datastream ID'
+     description: 'The ID of the ingested datastream.'
+islandora_object_modified:
+ category: 'Islandora'
+ label: 'Object modified'
+ variables:
+   object:
+     type: 'islandora_object'
+     label: 'The modified object'
+     description: 'A Tuque object for the modified Fedora object, as an entity.'
+islandora_datastream_modified:
+ category: 'Islandora'
+ label: 'Datastream modified'
+ variables:
+   object:
+     type: 'islandora_object'
+     label: 'The modified object'
+     description: 'A Tuque object for the Fedora object on which the datastream exists, as an entity.'
+   datastream:
+     type: 'islandora_datastream'
+     label: 'Datastream'
+     description: 'The modified datastream.'
+islandora_object_purged:
+ category: 'Islandora'
+ label: 'Object purged'
+ variables:
+   object:
+     type: 'string'
+     label: 'Object ID'
+     description: 'The ID of the purged object.'
+islandora_datastream_purged:
+ category: 'Islandora'
+ label: 'Datastream purged'
+ variables:
+   object:
+     type: 'islandora_object'
+     label: 'Object'
+     description: 'A Tuque object for the Fedora object on which the datastream existed, as an entity.'
+   datastream:
+     type: 'string'
+     label: 'Datastream ID'
+     description: 'The identifier of the purged datastream.'
