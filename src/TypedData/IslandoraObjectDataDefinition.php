@@ -5,6 +5,10 @@ namespace Drupal\islandora\TypedData;
 use Drupal\Core\TypedData\ComplexDataDefinitionBase;
 
 class IslandoraObjectDataDefinition extends ComplexDataDefinitionBase {
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPropertyDefinitions() {
     if (!isset($this->propertyDefinitions)) {
       $this->propertyDefinitions = [
@@ -14,14 +18,17 @@ class IslandoraObjectDataDefinition extends ComplexDataDefinitionBase {
         'state' => $this->typedDataManager->createDataDefinition('string'),
         'models' => $this->typedDataManager->createListDataDefinition('string'),
         'createdDate' => $this->typedDataManager->createDataDefinition('datetime_iso8601'),
-        //'datastreams' => $this->typedDataManager->createListDataDefinition('islandora_datastream'),
       ];
     }
 
     return $this->propertyDefinitions;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getMainPropertyName() {
     return 'pid';
   }
+
 }
