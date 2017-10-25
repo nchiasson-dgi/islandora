@@ -13,23 +13,6 @@ use Drupal\Core\Link;
  * Implements template_preprocess_HOOK().
  */
 function template_preprocess_islandora_default(&$variables) {
-  // @FIXME
-// The Assets API has totally changed. CSS, JavaScript, and libraries are now
-// attached directly to render arrays using the #attached property.
-//
-//
-// @see https://www.drupal.org/node/2169605
-// @see https://www.drupal.org/node/2408597
-// drupal_add_js('misc/form.js');
-
-  // @FIXME
-// The Assets API has totally changed. CSS, JavaScript, and libraries are now
-// attached directly to render arrays using the #attached property.
-//
-//
-// @see https://www.drupal.org/node/2169605
-// @see https://www.drupal.org/node/2408597
-// drupal_add_js('misc/collapse.js');
   $islandora_object = $variables['islandora_object'];
   module_load_include('inc', 'islandora', 'includes/utilities');
   module_load_include('inc', 'islandora', 'includes/datastream');
@@ -37,7 +20,7 @@ function template_preprocess_islandora_default(&$variables) {
 
   $variables['parent_collections'] = islandora_get_parents_from_rels_ext($islandora_object);
 
-  $datastreams = array();
+  $datastreams = [];
   foreach ($islandora_object as $ds) {
     try {
       $pid = $islandora_object->id;
@@ -46,12 +29,7 @@ function template_preprocess_islandora_default(&$variables) {
       $download_path = islandora_datastream_get_url($ds, 'download');
       $datastreams[$id]['id'] = $id;
       $datastreams[$id]['label'] = $label;
-      // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $datastreams[$id]['label_link'] = islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $ds) ?
-//         l($label, $download_path) :
-//         $label;
-      //$datastreams[$id]['label_link'] = islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $ds) ? \Drupal\Core\Link::createFromRoute($label, $download_path) : $label;
+      $datastreams[$id]['label_link'] = islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $ds) ? Link::createFromRoute($label, 'islandora.download_datastream', ['object' => $islandora_object->id, 'datastream' => $id]) : $label;
       $datastreams[$id]['download_url'] = $download_path;
       $datastreams[$id]['mimetype'] = $ds->mimetype;
       $datastreams[$id]['size'] = islandora_datastream_get_human_readable_size($ds);
@@ -77,10 +55,7 @@ function template_preprocess_islandora_default(&$variables) {
   $variables['description'] = islandora_retrieve_description_markup($islandora_object);
   $variables['islandora_object_label'] = $islandora_object->label;
   if (isset($islandora_object['TN']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $islandora_object['TN'])) {
-    // @FIXME
-// url() expects a route name or an external URI.
-// $variables['islandora_thumbnail_url'] = url("islandora/object/{$islandora_object->id}/datastream/TN/view");
-  //$variables['islandora_thumbnail_url'] = URL::fromRoute('islandora.view_datastream', array('object' => $islandora_object->id, 'datastream' => 'TN'));
+    $variables['islandora_thumbnail_url'] = URL::fromRoute('islandora.view_datastream', ['object' => $islandora_object->id, 'datastream' => 'TN']);
   }
 }
 
@@ -88,31 +63,6 @@ function template_preprocess_islandora_default(&$variables) {
  * Implements template_preprocess_HOOK().
  */
 function template_preprocess_islandora_object_print(array &$variables) {
-  // Apply the print CSS in non print context.
-  $only_print_media = function($o) {
-    return $o['media'] == 'print';
-  };
-  // @FIXME
-// The Assets API has totally changed. CSS, JavaScript, and libraries are now
-// attached directly to render arrays using the #attached property.
-//
-//
-// @see https://www.drupal.org/node/2169605
-// @see https://www.drupal.org/node/2408597
-// $css = array_filter(drupal_add_css(), $only_print_media);
-
-  foreach ($css as $data => $options) {
-    $options['media'] = 'all';
-    // @FIXME
-// The Assets API has totally changed. CSS, JavaScript, and libraries are now
-// attached directly to render arrays using the #attached property.
-//
-//
-// @see https://www.drupal.org/node/2169605
-// @see https://www.drupal.org/node/2408597
-// drupal_add_css($data, $options);
-
-  }
   // Allow modules to define their own theme suggestions for the given object.
   // Suggestions are defined as islandora_object_print__CMODEL__PID. For
   // example for the image object islandora:1234.

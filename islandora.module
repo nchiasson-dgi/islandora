@@ -85,7 +85,6 @@ function islandora_theme() {
     // Default object template.
     'islandora_default' => [
       'file' => 'theme/theme.inc',
-      'template' => 'islandora-default',
       'variables' => ['islandora_object' => NULL],
     ],
     // Admin table for solution pack viewer selection.
@@ -160,7 +159,6 @@ function islandora_theme() {
     ],
     'islandora_dublin_core_description' => [
       'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-dublin-core-description',
       // We can add PIDs to the end of this pattern in our preprocess function
       // and templates will be able to have have a pid appended to the
       // template name to overide a template on a per object basis.
@@ -560,19 +558,7 @@ function islandora_drupal_title(AbstractObject $object) {
  *   The default rendering of the object view page, indexed at 'Default output'.
  */
 function islandora_default_islandora_view_object($object) {
-  // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $output = theme('islandora_default', array('islandora_object' => $object));
   return [
-    // @FIXME
-    // Themeing expects islandora_object to be an AbstractObject but it's coming
-    // through as a markup, so this won't render anything.
     'Default output' => [
       '#theme' => 'islandora_default',
       '#islandora_object' => $object,
