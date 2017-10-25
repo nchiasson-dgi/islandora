@@ -22,6 +22,7 @@ use Drupal\rules\Core\RulesConditionBase;
  */
 class IslandoraObjectHasRelationship extends RulesConditionBase {
   protected function doEvaluate($subject, $pred_uri, $pred, $object, $type) {
-    return !empty($subject->relationships->get($pred_uri, $pred, $object, $type));
+    $matches = $subject->relationships->get($pred_uri, $pred, $object, $type);
+    return !empty($matches);
   }
 }

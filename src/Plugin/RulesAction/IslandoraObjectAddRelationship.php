@@ -21,7 +21,7 @@ use Drupal\rules\Core\RulesActionBase;
  * )
  */
 class IslandoraObjectAddRelationship extends RulesActionBase {
-  protected function doEvaluate($subject, $pred_uri, $pred, $object, $type) {
+  protected function doExecute($subject, $pred_uri, $pred, $object, $type) {
     $subject->relationships->add($pred_uri, $pred, $object, $type);
   }
 }

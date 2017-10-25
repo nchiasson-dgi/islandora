@@ -21,7 +21,7 @@ use Drupal\rules\Engine\RulesActionBase;
  * )
  */
 class IslandoraObjectRemoveRelationship extends RulesActionBase {
-  protected function doEvaluate($subject, $pred_uri, $pred, $object, $type) {
-    $subject->getObject()->relationships->remove($pred_uri, $pred, $object, $type);
+  protected function doExecute($subject, $pred_uri, $pred, $object, $type) {
+    $subject->relationships->remove($pred_uri, $pred, $object, $type);
   }
 }

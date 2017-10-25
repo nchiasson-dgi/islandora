@@ -201,9 +201,7 @@ function islandora_invoke_hook_list($hook, array $refinements, array $args) {
     $event_manager = \Drupal::service('plugin.manager.rules_event');
     try {
       $event_info = $event_manager->getDefinition($hook);
-      $parameters = $event_info['context'];
-      $rule_args = array_slice($args, 0, count($parameters));
-      $event = Drupal\islandora\Event\IslandoraRepositoryEvent::create($hook, array_combine(array_keys($parameters), $rule_args));
+      $event = Drupal\islandora\Event\IslandoraRepositoryEvent::create($hook, $args);
       \Drupal::service('event_dispatcher')->dispatch($event->getEventName(), $event);
     }
     catch (Exception $e) {
