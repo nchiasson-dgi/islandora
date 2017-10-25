@@ -50,7 +50,7 @@ class Proxy extends Map {
    * {@inheritdoc}
    */
   public function onChange($property_name, $notify = TRUE) {
-    $this->object->{$property_name} = $this->get($property_name);
+    $this->object->{$property_name} = $this->get($property_name)->getValue();
   }
 
 }

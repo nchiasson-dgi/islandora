@@ -20,7 +20,8 @@ use Drupal\rules\Core\RulesActionBase;
  *       description = @Translation("A string containing the identity of the datastream to load from the object."))),
  *   },
  *   provides = {
- *     "datastream" = @ContextDefinition("islandora_datastream", label = "Loaded datastream instance"),
+ *     "datastream" = @ContextDefinition("islandora_datastream",
+ *       label = @Translation("Loaded datastream instance")),
  *   }
  * )
  */

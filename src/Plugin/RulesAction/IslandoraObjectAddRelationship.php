@@ -3,6 +3,7 @@
 namespace Drupal\islandora\Plugin\RulesAction;
 
 use Drupal\rules\Core\RulesActionBase;
+use AbstractObject;
 
 /**
  * Rules action; add a relationship to an object.
@@ -27,7 +28,7 @@ class IslandoraObjectAddRelationship extends RulesActionBase {
   /**
    * {@inheritdoc}
    */
-  protected function doExecute($subject, $pred_uri, $pred, $object, $type) {
+  protected function doExecute(AbstractObject $subject, $pred_uri, $pred, $object, $type) {
     $subject->relationships->add($pred_uri, $pred, $object, $type);
   }
 

@@ -3,6 +3,7 @@
 namespace Drupal\islandora\Plugin\RulesAction;
 
 use Drupal\rules\Engine\RulesActionBase;
+use AbstractObject;
 
 /**
  * Rules action; remove a relationship from an object.
@@ -27,7 +28,7 @@ class IslandoraObjectRemoveRelationship extends RulesActionBase {
   /**
    * {@inheritdoc}
    */
-  protected function doExecute($subject, $pred_uri, $pred, $object, $type) {
+  protected function doExecute(AbstractObject $subject, $pred_uri, $pred, $object, $type) {
     $subject->relationships->remove($pred_uri, $pred, $object, $type);
   }
 

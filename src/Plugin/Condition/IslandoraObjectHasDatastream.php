@@ -3,6 +3,7 @@
 namespace Drupal\islandora\Plugin\RulesAction;
 
 use Drupal\rules\Core\RulesConditionBase;
+use AbstractObject;
 
 /**
  * Rules condition; Check if a datastream exists on an object.
@@ -26,7 +27,7 @@ class IslandoraObjectHasDatastream extends RulesConditionBase {
   /**
    * {@inheritdoc}
    */
-  protected function doEvaluate($object, $datastream_id) {
+  protected function doEvaluate(AbstractObject $object, $datastream_id) {
     return isset($object[$datastream_id]);
   }
 

@@ -3,6 +3,7 @@
 namespace Drupal\islandora\Plugin\Condition;
 
 use Drupal\rules\Core\RulesConditionBase;
+use AbstractObject;
 
 /**
  * Rules condition; check that an object has a relationship.
@@ -27,7 +28,7 @@ class IslandoraObjectHasRelationship extends RulesConditionBase {
   /**
    * {@inheritdoc}
    */
-  protected function doEvaluate($subject, $pred_uri, $pred, $object, $type) {
+  protected function doEvaluate(AbstractObject $subject, $pred_uri, $pred, $object, $type) {
     $matches = $subject->relationships->get($pred_uri, $pred, $object, $type);
     return !empty($matches);
   }
