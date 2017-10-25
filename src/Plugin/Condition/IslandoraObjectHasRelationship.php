@@ -5,6 +5,8 @@ namespace Drupal\islandora\Plugin\Condition;
 use Drupal\rules\Core\RulesConditionBase;
 
 /**
+ * Rules condition; check that an object has a relationship.
+ *
  * @Condition(
  *   id = "islandora_object_has_relationship",
  *   label = @Translation("Check object for a relationship"),
@@ -21,8 +23,13 @@ use Drupal\rules\Core\RulesConditionBase;
  * )
  */
 class IslandoraObjectHasRelationship extends RulesConditionBase {
+
+  /**
+   * {@inheritdoc}
+   */
   protected function doEvaluate($subject, $pred_uri, $pred, $object, $type) {
     $matches = $subject->relationships->get($pred_uri, $pred, $object, $type);
     return !empty($matches);
   }
+
 }

@@ -2,19 +2,25 @@
 
 namespace Drupal\islandora\TypedData;
 
-use Drupal\Core\TypedData\ComplexDataInterface;
 use Drupal\Core\TypedData\Plugin\DataType\Map;
-use IteratorAggregate;
-use Exception;
 
-class Proxy extends Map implements IteratorAggregate, ComplexDataInterface {
+/**
+ * Helper; wrap around a given object.
+ */
+class Proxy extends Map {
+
+  /**
+   * The object being wrapped.
+   *
+   * @var mixed
+   */
   protected $object;
 
   /**
-   * {@inheritDoc}
+   * {@inheritdoc}
    *
-   * Largely copypasta from Map, except made to reference the datastream instead of
-   * an arbitrary associative array.
+   * Largely copypasta from Map, except made to reference the datastream
+   * instead of an arbitrary associative array.
    */
   public function get($property_name) {
     if (!isset($this->properties[$property_name])) {
@@ -27,21 +33,21 @@ class Proxy extends Map implements IteratorAggregate, ComplexDataInterface {
   }
 
   /**
-   * {@inheritDoc}
+   * {@inheritdoc}
    */
   public function getValue() {
     return $this->object;
   }
 
   /**
-   * {@inheritDoc}
+   * {@inheritdoc}
    */
   public function setValue($value, $notify = TRUE) {
     $this->object = $value;
   }
 
   /**
-   * {@inheritDoc}
+   * {@inheritdoc}
    */
   public function onChange($property_name, $notify = TRUE) {
     $this->object->{$property_name} = $this->get($property_name);

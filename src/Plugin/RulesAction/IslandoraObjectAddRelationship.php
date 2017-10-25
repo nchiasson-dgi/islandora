@@ -5,6 +5,8 @@ namespace Drupal\islandora\Plugin\RulesAction;
 use Drupal\rules\Core\RulesActionBase;
 
 /**
+ * Rules action; add a relationship to an object.
+ *
  * @RulesAction(
  *   id = "islandora_object_add_relationship",
  *   label = @Translation("Add a relationship to an object"),
@@ -21,7 +23,12 @@ use Drupal\rules\Core\RulesActionBase;
  * )
  */
 class IslandoraObjectAddRelationship extends RulesActionBase {
+
+  /**
+   * {@inheritdoc}
+   */
   protected function doExecute($subject, $pred_uri, $pred, $object, $type) {
     $subject->relationships->add($pred_uri, $pred, $object, $type);
   }
+
 }

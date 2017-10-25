@@ -4,6 +4,9 @@ namespace Drupal\islandora\TypedData;
 
 use Drupal\Core\TypedData\ComplexDataDefinitionBase;
 
+/**
+ * Tuque Datastream TypedData wrapper definition.
+ */
 class IslandoraDatastreamDataDefinition extends ComplexDataDefinitionBase {
 
   /**
