@@ -6,131 +6,6 @@
  */
 
 /**
- * Implements hook_rules_event_info().
- */
-function islandora_rules_event_info() {
-  return array(
-    'islandora_object_ingested' => array(
-      'group' => t('Islandora'),
-      'label' => t('Object ingested'),
-      'variables' => array(
-        'object' => array(
-          'type' => 'islandora_object',
-          'label' => t('The ingested object'),
-          'description' => t('A Tuque object for the ingested Fedora object, as an entity.'),
-        ),
-      ),
-    ),
-    'islandora_datastream_ingested' => array(
-      'group' => t('Islandora'),
-      'label' => t('Datastream ingested'),
-      'variables' => array(
-        'object' => array(
-          'type' => 'islandora_object',
-          'label' => t('The ingested object'),
-          'description' => t('A Tuque object for the Fedora object on which the datastream exists, as an entity.'),
-        ),
-        'datastream' => array(
-          'type' => 'islandora_datastream',
-          'label' => t('Datastream ID'),
-          'description' => t('The ID of the ingested datastream.'),
-        ),
-      ),
-    ),
-    'islandora_object_modified' => array(
-      'group' => t('Islandora'),
-      'label' => t('Object modified'),
-      'variables' => array(
-        'object' => array(
-          'type' => 'islandora_object',
-          'label' => t('The modified object'),
-          'description' => t('A Tuque object for the modified Fedora object, as an entity.'),
-        ),
-      ),
-    ),
-    'islandora_datastream_modified' => array(
-      'group' => t('Islandora'),
-      'label' => t('Datastream modified'),
-      'variables' => array(
-        'object' => array(
-          'type' => 'islandora_object',
-          'label' => t('The modified object'),
-          'description' => t('A Tuque object for the Fedora object on which the datastream exists, as an entity.'),
-        ),
-        'datastream' => array(
-          'type' => 'islandora_datastream',
-          'label' => t('Datastream'),
-          'description' => t('The modified datastream.'),
-        ),
-      ),
-    ),
-    'islandora_object_purged' => array(
-      'group' => t('Islandora'),
-      'label' => t('Object purged'),
-      'variables' => array(
-        'object' => array(
-          'type' => 'text',
-          'label' => t('Object ID'),
-          'description' => t('The ID of the purged object.'),
-        ),
-      ),
-    ),
-    'islandora_datastream_purged' => array(
-      'group' => t('Islandora'),
-      'label' => t('Datastream purged'),
-      'variables' => array(
-        'object' => array(
-          'type' => 'islandora_object',
-          'label' => t('Object'),
-          'description' => t('A Tuque object for the Fedora object on which the datastream existed, as an entity.'),
-        ),
-        'datastream' => array(
-          'type' => 'text',
-          'label' => t('Datastream ID'),
-          'description' => t('The identifier of the purged datastream.'),
-        ),
-      ),
-    ),
-  );
-}
-
-/**
- * Helper function to get reused "parameter" array.
- */
-function islandora_rules_relationship_parameter_array() {
-  return array(
-    'subject' => array(
-      'type' => 'islandora_object',
-      'label' => t('Subject'),
-      'description' => t('An object of which we should check the relationships (The "subject" of the relationship).'),
-    ),
-    'pred_uri' => array(
-      'type' => 'text',
-      'label' => t('Predicate URI'),
-      'description' => t('The URI namespace to which the predicate belongs.'),
-    ),
-    'pred' => array(
-      'type' => 'text',
-      'label' => t('Predicate'),
-      'description' => t('The predicate of the relationship.'),
-    ),
-    'object' => array(
-      'type' => 'text',
-      'label' => t('Object'),
-      'description' => t('The object of the relationship.'),
-      'allow null' => TRUE,
-      'default value' => NULL,
-    ),
-    'type' => array(
-      'type' => 'integer',
-      'label' => t('Object type in the relationship'),
-      'description' => t('0=URI, 1=plain literal'),
-      'default value' => 0,
-    ),
-  );
-}
-
-/**
  * Helper function; get default parameters for the XPath condition and action.
  */
 function islandora_rules_base_xpath_parameters() {
@@ -165,27 +40,6 @@ function islandora_rules_base_xpath_parameters() {
 function islandora_rules_condition_info() {
   $cond = array();
 
-  $cond['islandora_object_has_relationship'] = array(
-    'label' => t('Check object for a relationship'),
-    'group' => t('Islandora'),
-    'parameter' => islandora_rules_relationship_parameter_array(),
-  );
-  $cond['islandora_object_has_datastream'] = array(
-    'label' => t('Check object for existence of a datastream'),
-    'group' => t('Islandora'),
-    'parameter' => array(
-      'object' => array(
-        'type' => 'islandora_object',
-        'label' => t('Object'),
-        'description' => t('The object containing the datastream to check.'),
-      ),
-      'datastream_id' => array(
-        'type' => 'text',
-        'label' => t('Datastream'),
-        'description' => t('The identifier of the datastream to check.'),
-      ),
-    ),
-  );
   $cond['islandora_rules_datastream_has_xpath'] = array(
     'label' => t('Check for an XPath match in an XML datastream'),
     'group' => t('Islandora'),
@@ -201,40 +55,6 @@ function islandora_rules_condition_info() {
 function islandora_rules_action_info() {
   $cond = array();
 
-  $cond['islandora_object_remove_relationship'] = array(
-    'label' => t('Remove a relationship from an object'),
-    'group' => t('Islandora'),
-    'parameter' => islandora_rules_relationship_parameter_array(),
-  );
-
-  $cond['islandora_object_add_relationship'] = array(
-    'label' => t('Add a relationship to an object'),
-    'group' => t('Islandora'),
-    'parameter' => islandora_rules_relationship_parameter_array(),
-  );
-
-  $cond['islandora_rules_datastream_load'] = array(
-    'label' => t('Load a datastream from an object.'),
-    'group' => t('Islandora'),
-    'parameter' => array(
-      'object' => array(
-        'type' => 'islandora_object',
-        'label' => t('Object'),
-        'description' => t('A Tuque object for the Fedora object from which to load the datastream, as an entity.'),
-      ),
-      'datastream_id' => array(
-        'type' => 'text',
-        'label' => t('Datastream ID'),
-        'description' => t('A string containing the identity of the datastream to load from the object.'),
-      ),
-    ),
-    'provides' => array(
-      'datastream' => array(
-        'type' => 'islandora_datastream',
-        'label' => t('Loaded datastream instance'),
-      ),
-    ),
-  );
   $cond['islandora_rules_datastream_load_domxpath'] = array(
     'label' => t('Load a DOMXPath for a given XML.'),
     'group' => t('Islandora DOMXPath'),
@@ -329,53 +149,6 @@ function islandora_rules_action_info() {
   );
 
   return $cond;
-}
-
-/**
- * Rules action callback; grab a datastream from an object.
- */
-function islandora_rules_datastream_load(AbstractObject $object, $datastream_id) {
-  return array('datastream' => $object[$datastream_id]);
-}
-
-/**
- * Checks that there is a relationship match on the given object.
- *
- * Takes a subject (either a AbstractObject or a FedoraDatastream), as well as
- * the parameters for FedoraRelsExt::get() or FedoraRelsInt::get(), to try to
- * find a match.
- *
- * @see FedoraRelsExt::get()
- */
-function islandora_object_has_relationship($sub, $pred_uri, $pred, $object, $type) {
-  $relationships = $sub->relationships->get($pred_uri, $pred, $object, $type);
-  return !empty($relationships);
-}
-
-/**
- * Remove a relationship from the given object.
- *
- * Takes a subject (either a AbstractObject or a FedoraDatastream), as well as
- * the parameters for FedoraRelsExt::remove() or FedoraRelsInt::remove(), to
- * try to find a match.
- *
- * @see FedoraRelsExt::get()
- */
-function islandora_object_remove_relationship($sub, $pred_uri, $pred, $object, $type) {
-  $sub->relationships->remove($pred_uri, $pred, $object, $type);
-}
-
-/**
- * Add a relationship to the given object.
- *
- * Takes a subject (either a AbstractObject or a FedoraDatastream), as well as
- * the parameters for FedoraRelsExt::add() or FedoraRelsInt::add(), and adds
- * the represented relationship.
- *
- * @see FedoraRelsExt::get()
- */
-function islandora_object_add_relationship($sub, $pred_uri, $pred, $object, $type) {
-  $sub->relationships->add($pred_uri, $pred, $object, $type);
 }
 
 /**
