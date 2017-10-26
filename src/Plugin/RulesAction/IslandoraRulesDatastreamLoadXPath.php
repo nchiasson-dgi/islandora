@@ -10,7 +10,7 @@ use Drupal\islandora\TypedData\IslandoraXPathTrait;
  *
  * @RulesAction(
  *   id = "islandora_rules_datastream_load_xpath",
- *   label = @Translation("Load a DOMXPath for a given XML"),
+ *   label = @Translation("Load a DOMXPath for a given datastream"),
  *   category = @Translation("Islandora DOMXPath"),
  *   context = {
  *     "datastream" = @ContextDefinition("islandora_datastream",

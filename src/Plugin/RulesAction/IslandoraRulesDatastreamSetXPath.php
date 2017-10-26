@@ -3,7 +3,6 @@
 namespace Drupal\islandora\Plugin\RulesAction;
 
 use Drupal\rules\Core\RulesActionBase;
-use DOMXPath;
 use Drupal\islandora\TypedData\IslandoraXPathTrait;
 
 /**

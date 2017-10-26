@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\islandora\Plugin\RulesAction;
+namespace Drupal\islandora\Plugin\Condition;
 
 use Drupal\rules\Core\RulesConditionBase;
 use AbstractObject;

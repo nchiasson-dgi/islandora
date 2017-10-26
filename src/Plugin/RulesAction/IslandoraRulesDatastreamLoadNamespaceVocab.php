@@ -17,7 +17,7 @@ use Drupal\taxonomy\VocabularyInterface;
  *     "value" = @ContextDefinition("islandora_domxpath",
  *       label = @Translation("DOMXPath instance"),
  *       description = @Translation("The DOMXPath instance on which to register the namespaces.")),
- *     "xpath_namespaces" = @ContextDefinition("taxonomy_vocabulary",
+ *     "xpath_namespaces" = @ContextDefinition("entity:taxonomy_vocabulary",
  *       label = @Translation("XPath Namespace Taxonomy"),
  *       description = @Translation("A flat taxonomy of which the terms are namespace prefixes and the description contains the URI for the namespace."))
  *   },
@@ -30,7 +30,7 @@ class IslandoraRulesDatastreamLoadNamespaceVocab extends RulesActionBase {
    * {@inheritdoc}
    */
   protected function doExecute($value, VocabularyInterface $xpath_namespaces) {
-    $this->loadXpathVocab($value, $xpath_namespaces));
+    $this->loadXpathVocab($value, $xpath_namespaces);
   }
 
 }

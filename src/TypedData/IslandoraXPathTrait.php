@@ -18,11 +18,11 @@ trait IslandoraXPathTrait {
    *
    * @param string $xml
    *   Some XML to parse into a DOMDocument, with which to create a DOMXPath.
-   * @param VocabularyInterface $vocab
+   * @param \Drupal\taxonomy\VocabularyInterface $vocab
    *   An optional taxonomy vocabulary mapping terms and URIs for XML
    *   namespaces.
    *
-   * @return DOMXPath
+   * @return \DOMXPath
    *   A DOMXPath instance with the loaded XML.
    */
   protected function loadXpathFromString($xml, VocabularyInterface $vocab = NULL) {
@@ -40,13 +40,13 @@ trait IslandoraXPathTrait {
   /**
    * Load datastream XML into a DOMXPath with optional namespace registration.
    *
-   * @param AbstractDatastream $datastream
+   * @param \AbstractDatastream $datastream
    *   The datastream from which to grab content.
-   * @param VocabularyInterface $vocab
+   * @param \Drupal\taxonomy\VocabularyInterface $vocab
    *   An optional taxonomy vocabulary mapping terms and URIs for XML
    *   namespaces.
    *
-   * @return DOMXPath
+   * @return \DOMXPath
    *   A DOMXPath instance with the loaded XML.
    */
   protected function loadXpathFromDatastream(AbstractDatastream $datastream, VocabularyInterface $vocab = NULL) {
@@ -56,15 +56,15 @@ trait IslandoraXPathTrait {
   /**
    * Load datastream XML into a DOMXPath with optional namespace registration.
    *
-   * @param AbstractObject $object
+   * @param \AbstractObject $object
    *   The object from which to grab content.
    * @param string $datastream_id
    *   The ID of the datastream on the object from which to grab content.
-   * @param VocabularyInterface $vocab
+   * @param \Drupal\taxonomy\VocabularyInterface $vocab
    *   An optional taxonomy vocabulary mapping terms and URIs for XML
    *   namespaces.
    *
-   * @return DOMXPath
+   * @return \DOMXPath
    *   A DOMXPath instance with the loaded XML.
    */
   protected function loadXpathFromObject(AbstractObject $object, $datastream_id, VocabularyInterface $vocab = NULL) {
@@ -74,9 +74,9 @@ trait IslandoraXPathTrait {
   /**
    * Register namespaces described in a vocab on a DOMXPath instance.
    *
-   * @param DOMXPath $xpath
+   * @param \DOMXPath $xpath
    *   The DOMXPath instance on which to register namespaces.
-   * @param VocabularyInterface $vocab
+   * @param \Drupal\taxonomy\VocabularyInterface $vocab
    *   An optional taxonomy vocabulary mapping terms and URIs for XML
    *   namespaces.
    */
@@ -84,7 +84,7 @@ trait IslandoraXPathTrait {
     $tree = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($vocab->id());
 
     foreach ($tree as $term) {
-      $xpath->registerNamespace($term->getName(), $term->getDescription());
+      $xpath->registerNamespace($term->name, $term->description__value);
     }
   }
 

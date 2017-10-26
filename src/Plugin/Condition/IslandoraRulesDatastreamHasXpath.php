@@ -24,10 +24,10 @@ use AbstractObject;
  *     "xpath" = @ContextDefinition("string",
  *       label = @Translation("XPath"),
  *       description = @Translation("The XPath to test.")),
- *     "xpath_namespaces" = @ContextDefinition("taxonomy_vocabulary",
+ *     "xpath_namespaces" = @ContextDefinition("entity:taxonomy_vocabulary",
  *       label = @Translation("XPath Namespace Taxonomy"),
- *       description = @Translation("A flat taxonomy of which the terms are namespace prefixes and the description contains the URI for the namespace."))
- *       required = false,
+ *       description = @Translation("A flat taxonomy of which the terms are namespace prefixes and the description contains the URI for the namespace."),
+ *       required = false)
  *   }
  * )
  */

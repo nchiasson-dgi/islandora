@@ -13,12 +13,17 @@ use Drupal\islandora\TypedData\Proxy;
  *   definition_class = "\Drupal\islandora\TypedData\IslandoraDOMXPathDataDefinition"
  * )
  */
-class IslandoraDOMXPathData extends Proxy {
+class IslandoraDOMXPath extends Proxy {
+
+ /**
+  * {@inheritdoc}
+  */
  public function get($property_name) {
    if ($property_name === 'content') {
      return $this->getTypedDataManager()->getPropertyInstance($this, $property_name, $this->getValue()->document->saveXML());
    }
 
    return parent::get($property_name);
- }
+  }
+
 }

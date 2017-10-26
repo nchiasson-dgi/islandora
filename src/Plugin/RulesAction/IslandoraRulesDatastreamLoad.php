@@ -9,7 +9,7 @@ use Drupal\rules\Core\RulesActionBase;
  *
  * @RulesAction(
  *   id = "islandora_rules_datastream_load",
- *   label = @Translation("Add a relationship to an object"),
+ *   label = @Translation("Load a datastream from an object."),
  *   category = @Translation("Islandora"),
  *   context = {
  *     "object" = @ContextDefinition("islandora_object",
