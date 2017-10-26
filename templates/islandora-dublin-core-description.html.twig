@@ -1,4 +1,4 @@
-<?php
+{#
 /**
  * @file
  * This is the template file for the Dublin Core metadata description.
@@ -11,10 +11,10 @@
  * @see template_preprocess_islandora_dublin_core_description()
  * @see theme_islandora_dublin_core_description()
  */
-?>
+#}
 <div class="islandora-metadata-sidebar">
-  <?php if (!empty($dc_array['dc:description']['value'])): ?>
-    <h2><?php print $dc_array['dc:description']['label']; ?></h2>
-    <p property="description"><?php print $dc_array['dc:description']['value']; ?></p>
-  <?php endif; ?>
+  {% if dc_array['dc:description'].value is not empty %}
+    <h2>{{ dc_array['dc:description'].label }}</h2>
+    <p property="description">{{ dc_array['dc:description'].value }}</p>
+  {% endif %}
 </div>

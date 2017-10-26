@@ -89,17 +89,8 @@ function islandora_metadata_display_callback(AbstractObject $object, $print = FA
  *   Markup representing the rendered metadata from Dublin Core.
  */
 function islandora_metadata_description_callback(AbstractObject $islandora_object) {
-  $elements = array(
-    'islandora_object' => $islandora_object,
-  );
-  // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// return theme('islandora_dublin_core_description', $elements);
-
+  return [
+    '#theme' => 'islandora_dublin_core_description',
+    '#islandora_object' => $islandora_object,
+  ];
 }
