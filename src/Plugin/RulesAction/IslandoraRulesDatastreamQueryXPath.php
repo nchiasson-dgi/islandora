@@ -19,7 +19,7 @@ use DOMXPath;
  *     ),
  *     "query" = @ContextDefinition("string",
  *       label = @Translation("XPath query"),
- *       description = @Translation("A string containing the identity of the datastream to load from the object."),
+ *       description = @Translation("The XPath query to perform."),
  *     ),
  *     "context_node" = @ContextDefinition("islandora_domnode",
  *       label = @Translation("Context Node"),
