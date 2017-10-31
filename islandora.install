@@ -9,7 +9,7 @@
  * Implements hook_requirements().
  */
 function islandora_requirements($phase) {
-  $requirements = array();
+  $requirements = [];
 
   // Ensure translations don't break at install time.
   $t = 't';
@@ -18,7 +18,7 @@ function islandora_requirements($phase) {
     $requirements['islandora_xsltprocessor']['title'] = $t('Islandora XSLTProcessor Prerequisite');
     $requirements['islandora_xsltprocessor']['value'] = $t('Not installed');
     $link = \Drupal::l($t('PHP XSL extension'), \Drupal\Core\Url::fromUri('http://us2.php.net/manual/en/book.xsl.php'));
-    $requirements['islandora_xsltprocessor']['description'] = $t('The !xsllink is required. Check your installed PHP extensions and php.ini file.', array('!xsllink' => $link));
+    $requirements['islandora_xsltprocessor']['description'] = $t('The @xsllink is required. Check your installed PHP extensions and php.ini file.', ['@xsllink' => $link]);
     $requirements['islandora_xsltprocessor']['severity'] = REQUIREMENT_ERROR;
   }
 
@@ -32,7 +32,7 @@ function islandora_requirements($phase) {
  */
 function islandora_install() {
   module_load_include('inc', 'islandora', 'includes/solution_packs');
-  //islandora_install_solution_pack('islandora');
+  islandora_install_solution_pack('islandora');
 }
 
 /**
@@ -42,14 +42,14 @@ function islandora_install() {
  */
 function islandora_uninstall() {
   module_load_include('inc', 'islandora', 'includes/solution_packs');
-  //islandora_install_solution_pack('islandora', 'uninstall');
+  islandora_install_solution_pack('islandora', 'uninstall');
 }
 
 /**
  * Implements hook_schema().
  */
 function islandora_schema() {
-  $schema['islandora_authtokens'] = array(
+  $schema['islandora_authtokens'] = [
     'description' => 'The hub for all islandora authentication tokens',
     'fields' => array(
       'id' => array(
@@ -97,19 +97,7 @@ function islandora_schema() {
     'unique keys' => array(
       'id' => array('id'),
     ),
-    'primary key' => array('id'),
-  );
+    'primary key' => ['id'],
+  ];
   return $schema;
-}
-
-/**
- * Implements hook_update_N().
- *
- * Add the required table for handling authentication tokens.
- * This is the first instance that has this table.
- */
-function islandora_update_7001(&$sandbox) {
-  drupal_install_schema('islandora');
-  $t = 't';
-  return $t("Islandora database updates complete");
 }

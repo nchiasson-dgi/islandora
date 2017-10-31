@@ -5,6 +5,9 @@
  * This file contains all theme and preprocess functions.
  */
 
+use Drupal\Component\Utility\Unicode;
+use Drupal\Component\Utility\UrlHelper;
+use Drupal\Component\Utility\Xss;
 use Drupal\islandora\DublinCore;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
@@ -23,7 +26,6 @@ function template_preprocess_islandora_default(&$variables) {
   $datastreams = [];
   foreach ($islandora_object as $ds) {
     try {
-      $pid = $islandora_object->id;
       $id = $ds->id;
       $label = $ds->label;
       $download_path = islandora_datastream_get_url($ds, 'download');
@@ -34,7 +36,7 @@ function template_preprocess_islandora_default(&$variables) {
       $datastreams[$id]['mimetype'] = $ds->mimetype;
       $datastreams[$id]['size'] = islandora_datastream_get_human_readable_size($ds);
       $datastreams[$id]['created_date'] = $ds->createdDate->format("Y-m-d");
-      $datastreams[$id]['class'] = \Drupal\Component\Utility\Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $id));
+      $datastreams[$id]['class'] = Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $id));
     }
     catch (RepositoryException $e) {
 
@@ -48,7 +50,7 @@ function template_preprocess_islandora_default(&$variables) {
   }
   // We should eventually remove the DC object and dc_array code as it only
   // exists to not break legacy implementations.
-  $variables['dc_array'] = isset($dc_array) ? $dc_array : array();
+  $variables['dc_array'] = isset($dc_array) ? $dc_array : [];
   $variables['islandora_dublin_core'] = isset($dc_object) ? $dc_object : NULL;
 
   $variables['metadata'] = islandora_retrieve_metadata_markup($islandora_object, TRUE);
@@ -73,10 +75,10 @@ function template_preprocess_islandora_object_print(array &$variables) {
   // suggestion.
   $object = $variables['object'];
   $pid = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $object->id));
-  $models = array_diff($object->models, array('fedora-system:FedoraObject-3.0'));
+  $models = array_diff($object->models, ['fedora-system:FedoraObject-3.0']);
   foreach ($models as $model) {
     $model = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $model));
-    $suggestions = theme_get_suggestions(array($model, $pid), 'islandora_object_print');
+    $suggestions = theme_get_suggestions([$model, $pid], 'islandora_object_print');
     $variables['theme_hook_suggestions'] = array_merge($variables['theme_hook_suggestions'], $suggestions);
   }
 }
@@ -95,7 +97,7 @@ function template_preprocess_islandora_objects(array &$variables) {
   $display = (empty($_GET['display'])) ? 'grid' : $_GET['display'];
   $grid_display = $display == 'grid';
   $list_display = !$grid_display;
-  $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters($_GET);
+  $query_params = UrlHelper::filterQueryParameters($_GET);
 
   $renderable_grid_link = Link::createFromRoute(
     t('Grid view'),
@@ -157,13 +159,13 @@ function islandora_objects_object_mapper($object_id) {
   $object = islandora_object_load($object_id);
   $module_path = drupal_get_path('module', 'islandora');
 
-  $url = \Drupal\Core\Url::fromRoute('islandora.view_object', ['object' => $object_id]);
-  $img = array(
+  $url = Url::fromRoute('islandora.view_object', ['object' => $object_id]);
+  $img = [
     '#theme' => 'image',
     '#uri' => ($object && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['TN']) ?
       Url::fromRoute('islandora.view_datastream_view', ['object' => $object_id, 'datastream' => 'TN'])->toString() :
       "$module_path/images/folder.png"),
-  );
+  ];
   $img = \Drupal::service("renderer")->render($img);
 
   if ($object) {
@@ -175,24 +177,24 @@ function islandora_objects_object_mapper($object_id) {
         $description = $dc['dc:description']['value'];
       }
     }
-    return array(
+    return [
       'label' => $object->label,
-      'class' => \Drupal\Component\Utility\Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $object->id)),
+      'class' => Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $object->id)),
       'link' => Link::fromTextAndUrl($object->label, $url),
       'thumb' => Link::fromTextAndUrl($img, $url),
       'description' => $description,
       'pid' => $object->id,
-    );
+    ];
   }
   else {
-    return array(
+    return [
       'label' => t('(Unknown)'),
-      'class' => \Drupal\Component\Utility\Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $object_id)),
+      'class' => Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $object_id)),
       'link' => Link::fromTextAndUrl($object->label, $url),
       'thumb' => '',
       'description' => '',
       'pid' => $object_id,
-    );
+    ];
   }
 }
 
@@ -200,8 +202,6 @@ function islandora_objects_object_mapper($object_id) {
  * Prepares variables for islandora_objects_subset templates.
  *
  * A variant of "islandora_objects" which accepts a subset of objects to theme.
- *
- * @see template_preprocess_islandora_objects()
  *
  * @param array $variables
  *   An associative array containing:
@@ -221,12 +221,14 @@ function islandora_objects_object_mapper($object_id) {
  *     be toggled between a "grid" and "list" view.
  *   - pager: A renderable array for the pager.
  *   - content: A renderable array for the main content of the page.
+ *
+ * @see template_preprocess_islandora_objects()
  */
-function template_preprocess_islandora_objects_subset(&$variables) {
+function template_preprocess_islandora_objects_subset(array &$variables) {
   $display = (empty($_GET['display'])) ? $variables['display'] : $_GET['display'];
   $grid_display = $display == 'grid';
   $list_display = !$grid_display;
-  $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters($_GET);
+  $query_params = UrlHelper::filterQueryParameters($_GET);
 
   $renderable_grid_link = Link::createFromRoute(
     t('Grid view'),
@@ -252,11 +254,10 @@ function template_preprocess_islandora_objects_subset(&$variables) {
     $renderable_list_link,
   ];
 
-  $variables['pager'] = array(
+  $variables['pager'] = [
     '#type' => 'pager',
     '#element' => $variables['pager_element'],
-  );
-  $module_path = drupal_get_path('module', 'islandora');
+  ];
   $variables['content'] = [
     '#theme' => $grid_display ? 'islandora_objects_grid' : 'islandora_objects_list',
     '#objects' => $variables['objects'],
@@ -280,10 +281,10 @@ function template_preprocess_islandora_dublin_core_display(array &$variables) {
       $dc_object = DublinCore::importFromXMLString($dc);
     }
     catch (Exception $e) {
-      drupal_set_message(t('Error retrieving object %s %t', array('%s' => $islandora_object->id, '%t' => $e->getMessage())), 'error', FALSE);
+      drupal_set_message(t('Error retrieving object %s %t', ['%s' => $islandora_object->id, '%t' => $e->getMessage()]), 'error', FALSE);
     }
   }
-  $variables['dc_array'] = isset($dc_object) ? $dc_object->asArray() : array();
+  $variables['dc_array'] = isset($dc_object) ? $dc_object->asArray() : [];
 }
 
 /**
@@ -297,11 +298,11 @@ function template_preprocess_islandora_dublin_core_description(array &$variables
       $dc_object = DublinCore::importFromXMLString($dc);
     }
     catch (Exception $e) {
-      drupal_set_message(t('Error retrieving object %s %t', array('%s' => $islandora_object->id, '%t' => $e->getMessage())), 'error', FALSE);
+      drupal_set_message(t('Error retrieving object %s %t', ['%s' => $islandora_object->id, '%t' => $e->getMessage()]), 'error', FALSE);
     }
   }
-  $variables['dc_array'] = isset($dc_object) ? $dc_object->asArray() : array();
+  $variables['dc_array'] = isset($dc_object) ? $dc_object->asArray() : [];
   if (isset($variables['dc_array']['dc:description']['value'])) {
-    $variables['dc_array']['dc:description']['value'] = nl2br(\Drupal\Component\Utility\Xss::filter($variables['dc_array']['dc:description']['value']));
+    $variables['dc_array']['dc:description']['value'] = nl2br(Xss::filter($variables['dc_array']['dc:description']['value']));
   }
 }

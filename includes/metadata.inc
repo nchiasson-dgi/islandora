@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Defines functions used when viewing metadata displays on Islandora objects.
