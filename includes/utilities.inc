@@ -8,6 +8,7 @@
 use Drupal\file\Entity\File;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Url;
+use Drupal\Component\Utility\Unicode;
 
 /**
  * Convert bytes to human readable format.
@@ -114,7 +115,7 @@ function islandora_control_group_to_human_readable($control_group) {
  *   TRUE if valid, FALSE otherwise.
  */
 function islandora_is_valid_pid($pid) {
-  return \Drupal\Component\Utility\Unicode::strlen(trim($pid)) <= 64 && preg_match('/^([A-Za-z0-9]|-|\.)+:(([A-Za-z0-9])|-|\.|~|_|(%[0-9A-F]{2}))+$/', trim($pid));
+  return Unicode::strlen(trim($pid)) <= 64 && preg_match('/^([A-Za-z0-9]|-|\.)+:(([A-Za-z0-9])|-|\.|~|_|(%[0-9A-F]{2}))+$/', trim($pid));
 }
 
 /**
@@ -127,7 +128,7 @@ function islandora_is_valid_pid($pid) {
  *   TRUE if valid, FALSE otherwise.
  */
 function islandora_is_valid_namespace($namespace) {
-  return \Drupal\Component\Utility\Unicode::strlen(trim($namespace)) <= 64 && preg_match('/^([A-Za-z0-9]|-|\.)+$/', trim($namespace));
+  return Unicode::strlen(trim($namespace)) <= 64 && preg_match('/^([A-Za-z0-9]|-|\.)+$/', trim($namespace));
 }
 
 /**
@@ -140,7 +141,7 @@ function islandora_is_valid_namespace($namespace) {
  *   TRUE if valid, FALSE otherwise.
  */
 function islandora_is_valid_dsid($dsid) {
-  return \Drupal\Component\Utility\Unicode::strlen(trim($dsid)) <= 64 && preg_match('/^[a-zA-Z0-9\_\-\.]+$/', trim($dsid));
+  return Unicode::strlen(trim($dsid)) <= 64 && preg_match('/^[a-zA-Z0-9\_\-\.]+$/', trim($dsid));
 }
 
 /**
@@ -192,7 +193,7 @@ function islandora_describe_repository($url = NULL) {
  *   The merged results from all the hooks.
  */
 function islandora_invoke_hook_list($hook, array $refinements, array $args) {
-  $return = array();
+  $return = [];
   foreach (islandora_build_hook_list($hook, $refinements) as $refined_hook) {
     $result = \Drupal::moduleHandler()->invokeAll($refined_hook, $args);
     $return = array_merge_recursive($return, $result);
@@ -224,9 +225,9 @@ function islandora_invoke_hook_list($hook, array $refinements, array $args) {
  *   An array with each refinement escaped and concatenated with the base hook
  *   name, in addition to the base hook name.
  */
-function islandora_build_hook_list($hook, $refinements = array()) {
+function islandora_build_hook_list($hook, $refinements = []) {
   $refinements = array_unique($refinements);
-  $hooks = array($hook);
+  $hooks = [$hook];
   foreach ($refinements as $refinement) {
     $refinement = preg_replace('/[^a-zA-Z0-9_]/', '_', $refinement);
     $hooks[] = "{$refinement}_{$hook}";

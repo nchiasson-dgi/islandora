@@ -21,7 +21,7 @@
 function islandora_regenerate_datastream_derivative_form(array $form, array &$form_state, AbstractDatastream $datastream) {
   $form_state['datastream'] = $datastream;
   return confirm_form($form,
-    t('Are you sure you want to regenerate the derivative for the %dsid datastream?', array('%dsid' => $datastream->id)),
+    t('Are you sure you want to regenerate the derivative for the %dsid datastream?', ['%dsid' => $datastream->id]),
     "islandora/object/{$datastream->parent->id}/manage/datastreams",
     t('This will create a new version of the datastream. Please wait while this happens.'),
     t('Regenerate'),
@@ -57,15 +57,15 @@ function islandora_regenerate_datastream_derivative_form_submit(array $form, arr
 function islandora_regenerate_object_derivatives_batch(AbstractObject $object) {
   module_load_include('inc', 'islandora', 'includes/derivatives');
   islandora_remove_defer_derivatives_flag($object);
-  return array(
-    'title' => t('Regenerating all derivatives for @label', array('@label' => $object->label)),
-    'operations' => islandora_do_batch_derivatives($object, array('force' => TRUE)),
+  return [
+    'title' => t('Regenerating all derivatives for @label', ['@label' => $object->label]),
+    'operations' => islandora_do_batch_derivatives($object, ['force' => TRUE]),
     'init_message' => t('Preparing to regenerate derivatives...'),
     'progress_message' => t('Time elapsed: @elapsed <br/>Estimated time remaining @estimate.'),
     'error_message' => t('An error has occurred.'),
     'file' => drupal_get_path('module', 'islandora') . '/includes/regenerate_derivatives.form.inc',
     'finished' => 'islandora_regenerate_derivative_batch_finished',
-  );
+  ];
 }
 
 /**
@@ -80,18 +80,18 @@ function islandora_regenerate_object_derivatives_batch(AbstractObject $object) {
 function islandora_regenerate_datastream_derivative_batch(AbstractDatastream $datastream) {
   module_load_include('inc', 'islandora', 'includes/derivatives');
   islandora_remove_defer_derivatives_flag($datastream->parent);
-  return array(
-    'title' => t('Regenerating derivatives for the @dsid datastream', array('@dsid' => $datastream->id)),
-    'operations' => islandora_do_batch_derivatives($datastream->parent, array(
-        'force' => TRUE,
-        'destination_dsid' => $datastream->id,
-    )),
+  return [
+    'title' => t('Regenerating derivatives for the @dsid datastream', ['@dsid' => $datastream->id]),
+    'operations' => islandora_do_batch_derivatives($datastream->parent, [
+      'force' => TRUE,
+      'destination_dsid' => $datastream->id,
+    ]),
     'init_message' => t('Preparing to regenerate derivatives...'),
     'progress_message' => t('Time elapsed: @elapsed <br/>Estimated time remaining @estimate.'),
     'error_message' => t('An error has occurred.'),
     'file' => drupal_get_path('module', 'islandora') . '/includes/regenerate_derivatives.form.inc',
     'finished' => 'islandora_regenerate_derivative_batch_finished',
-  );
+  ];
 }
 
 /**
@@ -100,7 +100,7 @@ function islandora_regenerate_datastream_derivative_batch(AbstractDatastream $da
  * @param string $function
  *   The name of the function we are calling for derivatives.
  * @param bool|string $file
- *   FALSE if there is no file to load, the path to require otherwise
+ *   FALSE if there is no file to load, the path to require otherwise.
  * @param string $pid
  *   The pid of the object we are performing.
  * @param bool $force
@@ -110,7 +110,7 @@ function islandora_regenerate_datastream_derivative_batch(AbstractDatastream $da
  * @param array $context
  *   The context of the current batch operation.
  */
-function islandora_derivative_perform_batch_operation($function, $file, $pid, $force, $hook, &$context) {
+function islandora_derivative_perform_batch_operation($function, $file, $pid, $force, array $hook, array &$context) {
   if ($file) {
     require_once $file;
   }
@@ -121,7 +121,7 @@ function islandora_derivative_perform_batch_operation($function, $file, $pid, $f
     }
   }
   else {
-    \Drupal::logger('islandora')->error('Unable to call derivative function @function as it was not found!', array('@function' => $function));
+    \Drupal::logger('islandora')->error('Unable to call derivative function @function as it was not found!', ['@function' => $function]);
   }
 }
 
@@ -135,7 +135,7 @@ function islandora_derivative_perform_batch_operation($function, $file, $pid, $f
  * @param array $operations
  *   An array of operations passed from the batch.
  */
-function islandora_regenerate_derivative_batch_finished($success, $results, $operations) {
+function islandora_regenerate_derivative_batch_finished(array $success, array $results, array $operations) {
   module_load_include('inc', 'islandora', 'includes/derivatives');
   if (!empty($results['logging'])) {
     islandora_derivative_logging($results['logging']);

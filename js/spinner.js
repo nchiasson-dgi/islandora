@@ -2,6 +2,7 @@
  * @file
  * Triggers the display of a spinning icon when the form is submitted.
  */
+
 (function ($, Drupal) {
   'use strict';
   Drupal.behaviors.spinner = {

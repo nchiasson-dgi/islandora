@@ -5,7 +5,14 @@ namespace Drupal\islandora\ParamConverter;
 use Drupal\Core\ParamConverter\ParamConverterInterface;
 use Symfony\Component\Routing\Route;
 
+/**
+ * Datastream parameter converter.
+ */
 class IslandoraDatastreamParamConverter implements ParamConverterInterface {
+
+  /**
+   * Datastream parameter converter.
+   */
   public function convert($value, $definition, $name, array $defaults) {
     // XXX: This seems so very dumb but given how empty slugs don't play nice
     // in Drupal as defaults this needs to be the case. If it's possible to get

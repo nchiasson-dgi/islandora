@@ -698,7 +698,7 @@ function islandora_ingest_form_stash_info(FormStateInterface $form_state) {
  */
 function islandora_ingest_form_grab_info(FormStateInterface $form_state) {
   $storage = islandora_ingest_form_get_step_storage($form_state);
-  $form_state->setValues(isset($storage['values']) ? $storage['values'] : array());
+  $form_state->setValues(isset($storage['values']) ? $storage['values'] : []);
 }
 
 /**
@@ -717,21 +717,21 @@ function islandora_ingest_form_ingest_button(FormStateInterface $form_state) {
   $container = \Drupal::getContainer();
   $object = call_user_func_array([$step['form_class'], 'create'], [$container]);
   $validate_callback = [$object, 'validateForm'];
-  $validate = is_callable($validate_callback) ? array($validate_callback) : NULL;
+  $validate = is_callable($validate_callback) ? [$validate_callback] : NULL;
   $submit_callback = [$object, 'submitForm'];
-  $submit = is_callable($submit_callback) ? array(
+  $submit = is_callable($submit_callback) ? [
     $submit_callback,
     'islandora_ingest_form_pre_submit',
     'islandora_ingest_form_submit',
-  ) : array('islandora_ingest_form_pre_submit', 'islandora_ingest_form_submit');
-  return array(
+  ] : ['islandora_ingest_form_pre_submit', 'islandora_ingest_form_submit'];
+  return [
     '#type' => 'submit',
     '#name' => 'ingest',
     '#value' => t('Ingest'),
-    '#process' => array('islandora_ingest_form_ingest_button_process'),
+    '#process' => ['islandora_ingest_form_ingest_button_process'],
     '#validate' => $validate,
     '#submit' => $submit,
-  );
+  ];
 }
 
 /**
@@ -760,7 +760,6 @@ function islandora_ingest_form_ingest_button_process(array $element) {
     ],
   ];
 
-  $islandora_path = drupal_get_path('module', 'islandora');
   $element['#attached']['drupalSettings']['spinner'] = $settings;
   $element['#attached']['library'][] = 'islandora/islandora-spin-js';
   $element['#attributes']['class'][] = 'islandora-spinner-submit';
@@ -796,16 +795,16 @@ function islandora_ingest_form_submit(array $form, FormStateInterface $form_stat
         $set_redirect = FALSE;
       }
       drupal_set_message(
-      t('"@label" (ID: @pid) has been ingested.', array('@label' => $object->label, '@pid' => $object->id)),
+      t('"@label" (ID: @pid) has been ingested.', ['@label' => $object->label, '@pid' => $object->id]),
       'status');
     }
     catch (Exception $e) {
       // If post hooks throws it may already exist at this point but may be
       // invalid, so don't say failed.
-      \Drupal::logger('islandora')->error('Exception during ingest with Message: "@exception",  and Trace: @trace', array('@exception' => $e->getMessage(), '@trace' => $e->getTraceAsString()));
+      \Drupal::logger('islandora')->error('Exception during ingest with Message: "@exception",  and Trace: @trace', ['@exception' => $e->getMessage(), '@trace' => $e->getTraceAsString()]);
       drupal_set_message(
         t('A problem occured while ingesting "@label" (ID: @pid), please notify the administrator.',
-        array('@label' => $object->label, '@pid' => $object->id)),
+        ['@label' => $object->label, '@pid' => $object->id]),
         'error'
       );
     }
@@ -832,11 +831,11 @@ function &islandora_ingest_form_get_objects(FormStateInterface $form_state) {
 /**
  * Gets a single object from the stored NewFedoraObject's.
  *
- * @note In our current use case we are only dealing with a single object
- *   ingest, this makes it convenient to access it. Ideally the steps
- *   implementations will be abstracted to be indifferent to what object it's
- *   currently working on. This will act as a placeholder for such
- *   functionality.
+ * In our current use case we are only dealing with a single object
+ * ingest, this makes it convenient to access it. Ideally the steps
+ * implementations will be abstracted to be indifferent to what object it's
+ * currently working on. This will act as a placeholder for such
+ * functionality.
  *
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
@@ -855,8 +854,8 @@ function islandora_ingest_form_get_object(FormStateInterface $form_state) {
  *
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
- * @param array $step_id
- *   The ID of the step.
+ * @param mixed $step_id
+ *   The ID of the step or NULL.
  *
  * @return array
  *   The given/current step storage if found, NULL otherwise.
@@ -865,11 +864,11 @@ function &islandora_ingest_form_get_step_storage(FormStateInterface $form_state,
   $step_id = isset($step_id) ? $step_id : islandora_ingest_form_get_current_step_id($form_state);
   if (isset($step_id)) {
     if (!$form_state->get(['islandora', 'step_storage', $step_id])) {
-      $form_state->set(['islandora', 'step_storage', $step_id], array());
+      $form_state->set(['islandora', 'step_storage', $step_id], []);
     }
     return $form_state->get(['islandora', 'step_storage', $step_id]);
   }
-  $undefined_step_storage = array();
+  $undefined_step_storage = [];
   return $undefined_step_storage;
 }
 
@@ -897,9 +896,10 @@ function islandora_ingest_form_load_include(FormStateInterface $form_state) {
   $step = islandora_ingest_form_get_step($form_state);
   // Load include files.
   if (isset($step['file']) && isset($step['module'])) {
-    $matches = array();
+    $matches = [];
     preg_match('/^(.*)\.(.*)$/', $step['file'], $matches);
-    list($file, $name, $type) = $matches;
+    $name = $matches[1];
+    $type = $matches[2];
     $form_state->loadInclude($step['module'], $type, $name);
   }
 }
@@ -924,7 +924,7 @@ function islandora_ingest_form_get_steps(FormStateInterface $form_state) {
   if (isset($steps)) {
     return $steps;
   }
-  $steps = array();
+  $steps = [];
   $shared_storage = &islandora_ingest_form_get_shared_storage($form_state);
   foreach (islandora_build_hook_list(ISLANDORA_INGEST_STEP_HOOK, $shared_storage['models']) as $hook) {
     // Required for pass by reference.
@@ -944,14 +944,14 @@ function islandora_ingest_form_get_steps(FormStateInterface $form_state) {
   foreach ($steps as $key => &$step) {
     $step['id'] = $key;
   }
-  uasort($steps, array('Drupal\Component\Utility\SortArray', 'sortByWeightElement'));
+  uasort($steps, ['Drupal\Component\Utility\SortArray', 'sortByWeightElement']);
   return $steps;
 }
 
 /**
  * Filter the ingest steps to only steps of type 'form'.
  *
- * @param \Drupal\Core\Form\FormStateInterface  $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  *
  * @return array
@@ -960,7 +960,7 @@ function islandora_ingest_form_get_steps(FormStateInterface $form_state) {
  */
 function islandora_ingest_form_get_form_steps(FormStateInterface $form_state) {
   $steps = islandora_ingest_form_get_steps($form_state);
-  $form_step_filter = function($o) {
+  $form_step_filter = function ($o) {
     return $o['type'] == 'form';
   };
   return array_filter($steps, $form_step_filter);
@@ -978,7 +978,7 @@ function islandora_ingest_form_get_form_steps(FormStateInterface $form_state) {
  */
 function islandora_ingest_form_get_callback_steps(FormStateInterface $form_state) {
   $steps = islandora_ingest_form_get_steps($form_state);
-  $callback_step_filter = function($o) {
+  $callback_step_filter = function ($o) {
     return $o['type'] == 'callback';
   };
   return array_filter($steps, $callback_step_filter);
