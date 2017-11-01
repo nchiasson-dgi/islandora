@@ -7,7 +7,8 @@ require_once __DIR__ . '/Base.php';
 use SimpleCache;
 
 /**
- * Class IslandoraSimpleCache
+ * Class IslandoraSimpleCache.
+ *
  * @package Drupal\islandora\Tuque
  */
 class IslandoraSimpleCache extends SimpleCache {}

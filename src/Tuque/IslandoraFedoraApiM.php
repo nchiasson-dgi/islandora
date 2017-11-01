@@ -7,7 +7,8 @@ require_once __DIR__ . '/Base.php';
 use FedoraApiM;
 
 /**
- * Class IslandoraFedoraApiM
+ * Class IslandoraFedoraApiM.
+ *
  * @package Drupal\islandora\Tuque
  */
 class IslandoraFedoraApiM extends FedoraApiM {
@@ -22,14 +23,14 @@ class IslandoraFedoraApiM extends FedoraApiM {
    *
    * @see FedoraApiM::modifyDatastream
    */
-  public function modifyDatastream($pid, $dsid, $params = array()) {
+  public function modifyDatastream($pid, $dsid, $params = []) {
     $object = islandora_object_load($pid);
     $datastream = $object[$dsid];
-    $context = array(
+    $context = [
       'action' => 'modify',
       'block' => FALSE,
       'params' => $params,
-    );
+    ];
     islandora_alter_datastream($object, $datastream, $context);
     $params = $context['params'];
     // Anything may be altered during the alter_datastream hook invocation so
@@ -50,11 +51,11 @@ class IslandoraFedoraApiM extends FedoraApiM {
    */
   public function modifyObject($pid, $params = NULL) {
     $object = islandora_object_load($pid);
-    $context = array(
+    $context = [
       'action' => 'modify',
       'block' => FALSE,
       'params' => $params,
-    );
+    ];
     islandora_alter_object($object, $context);
     $params = $context['params'];
     if ($context['block']) {
@@ -70,12 +71,12 @@ class IslandoraFedoraApiM extends FedoraApiM {
    */
   public function purgeObject($pid, $log_message = NULL) {
     $object = islandora_object_load($pid);
-    $context = array(
+    $context = [
       'action' => 'purge',
       'purge' => TRUE,
       'delete' => FALSE,
       'block' => FALSE,
-    );
+    ];
     islandora_alter_object($object, $context);
     try {
       $action = $context['block'] ? 'block' : FALSE;
@@ -97,10 +98,10 @@ class IslandoraFedoraApiM extends FedoraApiM {
       }
     }
     catch (Exception $e) {
-      \Drupal::logger('islandora')->error('Failed to purge object @pid</br>code: @code<br/>message: @msg', array(
-          '@pid' => $pid,
-          '@code' => $e->getCode(),
-          '@msg' => $e->getMessage()));
+      \Drupal::logger('islandora')->error('Failed to purge object @pid</br>code: @code<br/>message: @msg', [
+        '@pid' => $pid,
+        '@code' => $e->getCode(),
+        '@msg' => $e->getMessage()]);
       throw $e;
     }
   }
@@ -110,7 +111,7 @@ class IslandoraFedoraApiM extends FedoraApiM {
    *
    * @see FedoraApiM::purgeDatastream
    */
-  public function purgeDatastream($pid, $dsid, $params = array()) {
+  public function purgeDatastream($pid, $dsid, $params = []) {
     return $this->callParentWithLocking('purgeDatastream', $pid, $pid, $dsid, $params);
   }
 
@@ -119,7 +120,7 @@ class IslandoraFedoraApiM extends FedoraApiM {
    *
    * @see FedoraApiM::ingest
    */
-  public function ingest($params = array()) {
+  public function ingest($params = []) {
     if (isset($params['pid'])) {
       return $this->callParentWithLocking('ingest', $params['pid'], $params);
     }
@@ -151,7 +152,7 @@ class IslandoraFedoraApiM extends FedoraApiM {
    *
    * All extra arguments are passed along to the callback.
    *
-   * @param callable $callback
+   * @param string $callback
    *   The method we are wrapping.
    * @param string $pid
    *   The PID to create a semaphore for.
@@ -172,7 +173,7 @@ class IslandoraFedoraApiM extends FedoraApiM {
 
     if ($locked) {
       try {
-        $to_return = call_user_func_array(array($this, "parent::$callback"), $args);
+        $to_return = call_user_func_array([$this, "parent::$callback"], $args);
       }
       catch (Exception $e) {
         // Release the lock in event of exception.
@@ -183,7 +184,7 @@ class IslandoraFedoraApiM extends FedoraApiM {
       return $to_return;
     }
     else {
-      return call_user_func_array(array($this, "parent::$callback"), $args);
+      return call_user_func_array([$this, "parent::$callback"], $args);
     }
   }
 

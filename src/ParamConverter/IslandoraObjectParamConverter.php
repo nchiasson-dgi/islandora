@@ -18,4 +18,5 @@ class IslandoraObjectParamConverter implements ParamConverterInterface {
   public function applies($definition, $name, Route $route) {
     return (!empty($definition['type']) && $definition['type'] == 'object');
   }
+
 }

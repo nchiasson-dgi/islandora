@@ -5,7 +5,6 @@ namespace Drupal\islandora\ParamConverter;
 use Drupal\Core\ParamConverter\ParamConverterInterface;
 use Symfony\Component\Routing\Route;
 
-
 class IslandoraDatastreamParamConverter implements ParamConverterInterface {
   public function convert($value, $definition, $name, array $defaults) {
     // XXX: This seems so very dumb but given how empty slugs don't play nice
@@ -18,4 +17,5 @@ class IslandoraDatastreamParamConverter implements ParamConverterInterface {
   public function applies($definition, $name, Route $route) {
     return (!empty($definition['type']) && $definition['type'] == 'datastream');
   }
+
 }

@@ -3,24 +3,6 @@
 /**
  * @file
  * Defines all the hooks this module implements.
- *
- * islandora.module: defines paths (drupal menu items) as entry points and acts
- *  as a hub for dispatching tasks to other modules.
- *
- * This file is part of Islandora.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with the program.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
 use Drupal\islandora\Authentication\Provider\IslandoraTokenAuth;
@@ -74,11 +56,6 @@ const ISLANDORA_BREADCRUMB_LEGACY_BACKEND = 'islandora_breadcrumbs_legacy_sparql
 
 /**
  * Implements hook_theme().
- *
- * The theme entries 'islandora_objects' and 'islandora_objects_subset'
- * utilize the same template file. When theming, be sure to utilize the theme
- * name, and not the template file names. Similar situation found here:
- * @link https://jira.duraspace.org/browse/ISLANDORA-934. @endlink
  */
 function islandora_theme() {
   return [
@@ -93,7 +70,7 @@ function islandora_theme() {
       'render element' => 'form',
     ],
     // Print used by the clipper.
-    'islandora_object_print' =>[
+    'islandora_object_print' => [
       'file' => 'theme/theme.inc',
       'variables' => ['object' => NULL, 'content' => []],
     ],
@@ -1191,7 +1168,7 @@ function islandora_islandora_datastream_access($op, AbstractDatastream $datastre
  * Access for submenu items.
  *
  * @param string $package_name
- *   Name of the package
+ *   Name of the package.
  *
  * @return bool
  *   Access granted
@@ -1305,18 +1282,7 @@ function islandora_conditionally_clear_cache() {
     $clear =& drupal_static(__FUNCTION__, FALSE);
   }
 
-  // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// if ($clear || !variable_get('cache', 0)) {
-//     // Already set, no need to do so again, or page caching is disabled... Let's
-//     // avoid a call to attempt to clear it.
-//     return;
-//   }
-
-
-  $functions = array(
+  $functions = [
     // Object changes in response to a form.
     'form_execute_handlers' => 'islandora_cache_clear_all',
     // Object changes in response to a batch. Note that this will not match on
@@ -1324,7 +1290,7 @@ function islandora_conditionally_clear_cache() {
     // batches. We intentionally do not clear batches in response to drush
     // batches, since they are not in response to GUI actions.
     '_batch_process' => 'islandora_schedule_cache_clear_for_batch',
-  );
+  ];
   $options = (version_compare(PHP_VERSION, '5.3.6', '>=') ? DEBUG_BACKTRACE_IGNORE_ARGS & ~DEBUG_BACKTRACE_PROVIDE_OBJECT : FALSE);
   foreach (debug_backtrace($options) as $frame) {
     $function_name = strtolower($frame['function']);
@@ -1377,11 +1343,11 @@ function islandora_schedule_cache_clear_for_batch() {
     return;
   }
 
-  $clear_batch = array(
-    'operations' => array(
-      array('islandora_cache_clear_all', array()),
-    ),
-  );
+  $clear_batch = [
+    'operations' => [
+      ['islandora_cache_clear_all', []],
+    ],
+  ];
   batch_set($clear_batch);
 
   // Set our flag, to avoid setting the batch multiple times during multiple
@@ -1393,22 +1359,22 @@ function islandora_schedule_cache_clear_for_batch() {
  * Implements hook_islandora_get_breadcrumb_query_predicates().
  */
 function islandora_islandora_get_breadcrumb_query_predicates(AbstractObject $object) {
-  return array(
+  return [
     'info:fedora/fedora-system:def/relations-external#isPartOf',
     'info:fedora/fedora-system:def/relations-external#isMemberOfCollection',
     'info:fedora/fedora-system:def/relations-external#isMemberOf',
-  );
+  ];
 }
 
 /**
  * Implements hook_islandora_breadcrumbs_backends().
  */
 function islandora_islandora_breadcrumbs_backends() {
-  return array(
-    ISLANDORA_BREADCRUMB_LEGACY_BACKEND => array(
+  return [
+    ISLANDORA_BREADCRUMB_LEGACY_BACKEND => [
       'title' => t('Resource Index - Default'),
       // Callback not needed as this is our legacy process and the
       // default incase anything goes wrong.
-    ),
-  );
+    ],
+  ];
 }

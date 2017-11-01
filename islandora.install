@@ -5,6 +5,8 @@
  * This file contains all install related hooks.
  */
 
+use Drupal\Core\Url;
+
 /**
  * Implements hook_requirements().
  */
@@ -17,7 +19,7 @@ function islandora_requirements($phase) {
   if (!class_exists('XSLTProcessor', FALSE)) {
     $requirements['islandora_xsltprocessor']['title'] = $t('Islandora XSLTProcessor Prerequisite');
     $requirements['islandora_xsltprocessor']['value'] = $t('Not installed');
-    $link = \Drupal::l($t('PHP XSL extension'), \Drupal\Core\Url::fromUri('http://us2.php.net/manual/en/book.xsl.php'));
+    $link = \Drupal::l($t('PHP XSL extension'), Url::fromUri('http://us2.php.net/manual/en/book.xsl.php'));
     $requirements['islandora_xsltprocessor']['description'] = $t('The @xsllink is required. Check your installed PHP extensions and php.ini file.', ['@xsllink' => $link]);
     $requirements['islandora_xsltprocessor']['severity'] = REQUIREMENT_ERROR;
   }
@@ -51,52 +53,52 @@ function islandora_uninstall() {
 function islandora_schema() {
   $schema['islandora_authtokens'] = [
     'description' => 'The hub for all islandora authentication tokens',
-    'fields' => array(
-      'id' => array(
+    'fields' => [
+      'id' => [
         'description' => 'key',
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
-      ),
-      'token' => array(
+      ],
+      'token' => [
         'description' => 'a unique identifier for this token',
         'type' => 'varchar',
         'length' => 64,
-      ),
-      'remaining_uses' => array(
+      ],
+      'remaining_uses' => [
         'description' => 'How many uses until this should be removed',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
-      ),
-      'uid' => array(
+      ],
+      'uid' => [
         'description' => 'the user id that requested this token',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
-      ),
-      'time' => array(
+      ],
+      'time' => [
         'description' => 'when this token was created',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
-      ),
-      'pid' => array(
+      ],
+      'pid' => [
         'description' => 'the pid of the object this token unlocks',
         'type' => 'varchar',
         'length' => 128,
         'not null' => TRUE,
-      ),
-      'dsid' => array(
+      ],
+      'dsid' => [
         'description' => 'the datasteram id of the object this token unlocks',
         'type' => 'varchar',
         'length' => 32,
         'not null' => TRUE,
-      ),
-    ),
-    'unique keys' => array(
-      'id' => array('id'),
-    ),
+      ],
+    ],
+    'unique keys' => [
+      'id' => ['id'],
+    ],
     'primary key' => ['id'],
   ];
   return $schema;

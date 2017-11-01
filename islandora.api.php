@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * This file documents all available hook functions to manipulate data.
@@ -8,7 +9,7 @@
  * Generate a repository objects view.
  *
  * @param AbstractObject $object
- *   The object to display
+ *   The object to display.
  * @param object $user
  *   The user accessing the object.
  * @param string $page_number
@@ -20,40 +21,7 @@
  *   An array whose values are markup.
  */
 function hook_islandora_view_object($object, $user, $page_number, $page_size) {
-  $output = array();
-  if (in_array('islandora:sp_basic_image', $object->models)) {
-    // @FIXME
-// url() expects a route name or an external URI.
-// $resource_url = url("islandora/object/{$object->id}/datastream/OBJ/view");
-
-    $params = array(
-      'title' => $object->label,
-      'path' => $resource_url,
-    );
-    // Theme the image seperatly.
-    // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $variables['islandora_img'] = theme('image', $params);
-
-    // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $output = theme('islandora_default_print', array(
-    'islandora_content' => $variables['islandora_img']));
-
-  }
-  return $output;
+  return "{$object->id}";
 }
 
 /**
@@ -73,13 +41,13 @@ function hook_islandora_view_print_object($object) {
  * create the hook name.
  *
  * @param AbstractObject $object
- *   A Tuque FedoraObject
+ *   A Tuque FedoraObject.
  *
  * @return array
  *   An array whose values are markup.
  */
 function hook_cmodel_pid_islandora_view_object($object) {
-
+  return [];
 }
 
 /**
@@ -97,15 +65,15 @@ function hook_islandora_view_object_alter(&$object, &$rendered) {
 /**
  * Alter display output if the object has the given model.
  *
- * @see hook_islandora_view_object_alter()
- *
  * @param AbstractObject $object
  *   A Tuque AbstractObject being operated on.
  * @param array $rendered
  *   The array of rendered views.
+ *
+ * @see hook_islandora_view_object_alter()
  */
 function hook_cmodel_pid_islandora_view_object_alter(&$object, &$rendered) {
-
+  return [];
 }
 
 /**

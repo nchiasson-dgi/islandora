@@ -8,7 +8,8 @@ use FedoraRepository;
 use NewFedoraObject;
 
 /**
- * Class IslandoraFedoraRepository
+ * Class IslandoraFedoraRepository.
+ *
  * @package Drupal\islandora\Tuque
  */
 class IslandoraFedoraRepository extends FedoraRepository {
