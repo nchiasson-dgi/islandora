@@ -139,6 +139,9 @@ class DefaultController extends ControllerBase {
     return $output;
   }
 
+  /**
+   * Access callback for printing an object.
+   */
   public function islandora_print_object_access($op, $object, AccountInterface $account) {
     $object = islandora_object_load($object);
     return AccessResult::allowedIf(islandora_print_object_access($op, $object, $account));
@@ -189,25 +192,24 @@ class DefaultController extends ControllerBase {
     return $cache[$op][$object->id][$user->id()];
   }
 
+  /**
+   * Renders the print page for the given object.
+   *
+   * Modules can either implement preprocess functions to append content onto the
+   * 'content' variable, or override the display by providing a theme suggestion.
+   *
+   * @param AbstractObject $object
+   *   The object.
+   *
+   * @return array
+   *   A renderable array.
+   */
   public function islandora_print_object(AbstractObject $object) {
-    // @FIXME
-// drupal_set_title() has been removed. There are now a few ways to set the title
-// dynamically, depending on the situation.
-//
-//
-// @see https://www.drupal.org/node/2067859
-// drupal_set_title($object->label);
-
-    // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// return theme('islandora_object_print', array('object' => $object));
-
+   return [
+     '#title' => $object->label,
+     '#theme' => 'islandora_object_print',
+     '#object' => $object,
+   ];
   }
 
   public function islandora_object_manage_access_callback($perms, $object = NULL, AccountInterface $account) {

@@ -153,42 +153,9 @@ function islandora_theme() {
 }
 
 /**
- * Renders the print page for the given object.
- *
- * Modules can either implement preprocess functions to append content onto the
- * 'content' variable, or override the display by providing a theme suggestion.
- *
- * @param AbstractObject $object
- *   The object.
- *
- * @return array
- *   A renderable array.
- */
-function islandora_print_object(AbstractObject $object) {
-  // @FIXME
-// drupal_set_title() has been removed. There are now a few ways to set the title
-// dynamically, depending on the situation.
-//
-//
-// @see https://www.drupal.org/node/2067859
-// drupal_set_title($object->label);
-
-  // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// return theme('islandora_object_print', array('object' => $object));
-
-}
-
-/**
  * View print tab access.
  *
- * Configurable option in islandora configuration.
+ * Configurable option in Islandora configuration.
  *
  * @param string $op
  *   String identifying an operation to check. Should correspond to a
