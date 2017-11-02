@@ -1170,9 +1170,12 @@ function islandora_ingest_form_pre_submit($form, &$form_state) {
 /**
  * Implements hook_menu_local_tasks_alter().
  *
- * Replaes the print link text with an icon.
+ * Replaces the print link text with an icon.
  */
 function islandora_menu_local_tasks_alter(&$data, $route_name) {
+  if (!isset($data['tabs'][0]) || !is_array($data['tabs'][0])) {
+    return;
+  }
   $tabs = &$data['tabs'][0];
   if ($route_name != 'islandora.printer_object' && in_array('islandora.printer_object', array_keys($tabs))) {
     $tab = &$tabs['islandora.printer_object'];
