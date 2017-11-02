@@ -30,7 +30,7 @@ class IslandoraIngestForm extends FormBase {
    *   The Drupal form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The Drupal form state.
-   * @param mixed $configuration
+   * @param null|array $configuration
    *   An associative array of configuration values that are used to build the
    *   list of steps to be executed, including:
    *   - id: The PID with which the object should be created.

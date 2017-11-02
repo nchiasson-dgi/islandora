@@ -309,7 +309,7 @@ function islandora_user_access_check($object_or_datastream, array $permissions, 
  *
  * @param string $perm
  *   User permission to test for.
- * @param mixed $object
+ * @param null|AbstractObject $object
  *   The object to test, if NULL given the object doesn't exist or is
  *   inaccessible.
  *
@@ -359,7 +359,7 @@ function islandora_object_datastream_tokened_access_callback($perm, $object = NU
  *
  * @param array $perms
  *   Array of user permission to test for.
- * @param mixed $object
+ * @param null|AbstractObject $object
  *   The object to test, if NULL given the object doesn't exist or is
  *   inaccessible.
  *
@@ -716,7 +716,7 @@ function islandora_datastream_load($datastream_id, $object_id) {
  * attribute, as in:
  *   <content_model name="Collection" version="2" ...
  *
- * @param mixed $object
+ * @param null|AbstractObject $object
  *   The Object the datastream belongs to.
  * @param string $dsid
  *   The ID of the datastream.
@@ -916,7 +916,7 @@ function islandora_file_mimetype_mapping_alter(&$mapping) {
  *   permission declared via hook_permission().
  * @param AbstractObject $object
  *   An object to check for permissions.
- * @param mixed $account
+ * @param null|\Drupal\Core\Session\AccountProxyInterface $account
  *   An optional loaded user object. Defaults to the current user.
  *
  * @return bool

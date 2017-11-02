@@ -21,7 +21,7 @@
  *   An array whose values are markup.
  */
 function hook_islandora_view_object(AbstractObject $object, $user, $page_number, $page_size) {
-  return "{$object->id}";
+  return ["{$object->id}"];
 }
 
 /**
@@ -782,7 +782,7 @@ function hook_islandora_update_related_objects_properties(AbstractObject $object
  *   Breadcrumbs array to be altered by reference. Each element is markup.
  * @param string $context
  *   Where the alter is originating from for distinguishing.
- * @param mixed $object
+ * @param null|AbstractObject $object
  *   (Optional) AbstractObject representing object providing breadcrumb path.
  */
 function hook_islandora_breadcrumbs_alter(array &$breadcrumbs, $context, $object = NULL) {
