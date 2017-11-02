@@ -595,18 +595,32 @@ function islandora_display_repository_inaccessible_message() {
 function islandora_executable_available_message($path, $version = NULL, $required_version = NULL) {
   $available = is_executable($path);
   if ($available) {
+    $image = [
+      '#theme' => 'image',
+      '#uri' =>'/core/misc/icons/73b355/check.svg' ,
+    ];
     $message = t('Executable found at @path', ['@path' => $path]);
     if ($version) {
       $message .= t('<br/>Version: @version', ['@version' => $version]);
     }
     if ($required_version) {
+      if (version_compare($version, $required_version) < 0) {
+        $image = [
+          '#theme' => 'image',
+          '#uri' =>'/core/misc/icons/e32700/error.svg' ,
+        ];
+      }
       $message .= t('<br/>Required Version: @version', ['@version' => $required_version]);
     }
   }
   else {
+    $image = [
+      '#theme' => 'image',
+      '#uri' =>'/core/misc/icons/e32700/error.svg' ,
+    ];
     $message = t('Unable to locate executable at @path', ['@path' => $path]);
   }
-  return $message;
+  return Drupal::service('renderer')->render($image) . $message;
 }
 
 /**
@@ -621,12 +635,20 @@ function islandora_executable_available_message($path, $version = NULL, $require
 function islandora_directory_exists_message($path) {
   $available = is_dir($path);
   if ($available) {
+    $image = [
+      '#theme' => 'image',
+      '#uri' =>'/core/misc/icons/73b355/check.svg' ,
+    ];
     $message = t('Directory found at @path', ['@path' => $path]);
   }
   else {
+    $image = [
+      '#theme' => 'image',
+      '#uri' =>'/core/misc/icons/e32700/error.svg' ,
+    ];
     $message = t('Unable to locate directory at @path', ['@path' => $path]);
   }
-  return $message;
+  return Drupal::service('renderer')->render($image) . $message;
 }
 
 /**
