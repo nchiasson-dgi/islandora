@@ -460,12 +460,9 @@ function islandora_get_datastreams_requirements_from_content_model(AbstractObjec
  */
 function islandora_display_repository_inaccessible_message() {
   $text = t('Islandora configuration');
-  // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $link = l($text, 'admin/islandora/configure', array('attributes' => array('title' => $text)));
-
-  $message = t('Could not connect to the repository. Please check the settings on the !link page.',
-  array('!link' => $link));
+  $link = Link::createFromRoute('islandora.admin_config', [], ['attributes' => ['title' => $text]])->toString();
+  $message = t('Could not connect to the repository. Please check the settings on the @link page.',
+  ['@link' => $link]);
   drupal_set_message(\Drupal\Component\Utility\Xss::filter($message), 'error', FALSE);
 
 }
