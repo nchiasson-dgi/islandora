@@ -274,7 +274,7 @@ function islandora_escape_pid_for_function($pid) {
  *   The namespace portion of the given string.
  */
 function islandora_get_namespace($id) {
-  $matches = array();
+  $matches = [];
   preg_match('/^([^:]*)/', $id, $matches);
   return $matches[0];
 }
@@ -329,9 +329,9 @@ function islandora_get_parents_from_rels_ext(AbstractObject $object) {
   }
   catch (RepositoryException $e) {
     // @todo some logging would be nice, not sure what this throws.
-    return array();
+    return [];
   }
-  $map = function($o) {
+  $map = function ($o) {
     return islandora_object_load($o['object']['value']);
   };
   $collections = array_map($map, $collections);
@@ -398,7 +398,7 @@ function islandora_get_datastreams_requirements(AbstractObject $object) {
  *   islandora_get_datastreams_requirements_from_content_model().
  */
 function islandora_get_datastreams_requirements_from_models(array $models) {
-  $dsids = array();
+  $dsids = [];
   foreach ($models as $model_pid) {
     $model = islandora_object_load($model_pid);
     if (isset($model) && $model) {
@@ -433,21 +433,21 @@ function islandora_get_datastreams_requirements_from_models(array $models) {
  */
 function islandora_get_datastreams_requirements_from_content_model(AbstractObject $object) {
   if (empty($object[ISLANDORA_DS_COMP_STREAM]) || !islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[ISLANDORA_DS_COMP_STREAM])) {
-    return array();
+    return [];
   }
   $xml = new SimpleXMLElement($object[ISLANDORA_DS_COMP_STREAM]->content);
   foreach ($xml->dsTypeModel as $ds) {
     $dsid = (string) $ds['ID'];
     $optional = strtolower((string) $ds['optional']);
-    $mime = array();
+    $mime = [];
     foreach ($ds->form as $form) {
       $mime[] = (string) $form['MIME'];
     }
-    $dsids[$dsid] = array(
+    $dsids[$dsid] = [
       'id' => $dsid,
       'mime' => $mime,
       'optional' => ($optional == 'true') ? TRUE : FALSE,
-    );
+    ];
   }
   return $dsids;
 }
@@ -482,7 +482,7 @@ function islandora_get_datastreams_requirements_from_content_model(AbstractObjec
  * @return NewFedoraObject
  *   An ingestable NewFedoraObject.
  */
-function islandora_prepare_new_object($name_source = NULL, $label = NULL, $datastreams = array(), $content_models = array(), $relationships = array()) {
+function islandora_prepare_new_object($name_source = NULL, $label = NULL, $datastreams = [], $content_models = [], $relationships = []) {
   $user = \Drupal::currentUser();
   $tuque = islandora_get_tuque_connection();
   $object = isset($name_source) ? $tuque->repository->constructObject($name_source) : new IslandoraNewFedoraObject(NULL, $tuque->repository);
@@ -498,9 +498,9 @@ function islandora_prepare_new_object($name_source = NULL, $label = NULL, $datas
     $dsid = $ds['dsid'];
     $label = isset($ds['label']) ? $ds['label'] : '';
     $mimetype = isset($ds['mimetype']) ? $ds['mimetype'] : 'text/xml';
-    // Default 'Managed'
+    // Default 'Managed'.
     $control_group = 'M';
-    $groups = array('X', 'M', 'R', 'E');
+    $groups = ['X', 'M', 'R', 'E'];
     if (isset($ds['control_group']) && in_array($ds['control_group'], $groups)) {
       $control_group = $ds['control_group'];
     }
@@ -530,7 +530,6 @@ function islandora_prepare_new_object($name_source = NULL, $label = NULL, $datas
         // @FIXME
 // url() expects a route name or an external URI.
 // $datastream_file = url($ds['datastream_file'], array('absolute' => TRUE));
-
         \Drupal::logger('islandora')->warning('Attempting to ingest %file in islandora_prepare_new_object(), but it does not appear to be readable. We will pass the path through url(), and pass along as such.', array('%file' => $datastream_file));
       }
     }

@@ -83,13 +83,12 @@ class DefaultController extends ControllerBase {
 
   public function islandora_view_default_object() {
     $pid = \Drupal::config('islandora.settings')->get('islandora_repository_pid');
-    return $this->redirect('islandora.view_object', array('object' => $pid));
+    return $this->redirect('islandora.view_object', ['object' => $pid]);
   }
 
   public function islandora_drupal_title(AbstractObject $object) {
     module_load_include('inc', 'islandora', 'includes/breadcrumb');
     //drupal_set_breadcrumb(islandora_get_breadcrumbs($object));
-
     return $object->label;
   }
 
@@ -110,7 +109,7 @@ class DefaultController extends ControllerBase {
     // around this by making the empty slug route in YAML or a custom Routing
     // object we can remove this.
     if (\Drupal::request()->getRequestUri() === '/islandora/object/') {
-      return $this->redirect('islandora.view_object', array('object' => \Drupal::config('islandora.settings')->get('islandora_repository_pid')));
+      return $this->redirect('islandora.view_object', ['object' => \Drupal::config('islandora.settings')->get('islandora_repository_pid')]);
     }
     // Warn if object is inactive or deleted.
     if ($object->state != 'A') {
@@ -123,7 +122,7 @@ class DefaultController extends ControllerBase {
     $hooks = islandora_build_hook_list(ISLANDORA_VIEW_HOOK, $object->models);
     foreach ($hooks as $hook) {
       // @todo Remove page number and size from this hook, implementers of the
-    // hook should use drupal page handling directly.
+      // hook should use drupal page handling directly.
       $temp = \Drupal::moduleHandler()->invokeAll($hook, [
         $object,
         $page_number,
@@ -199,8 +198,9 @@ class DefaultController extends ControllerBase {
   /**
    * Renders the print page for the given object.
    *
-   * Modules can either implement preprocess functions to append content onto the
-   * 'content' variable, or override the display by providing a theme suggestion.
+   * Modules can either implement preprocess functions to append content onto
+   * the 'content' variable, or override the display by providing a theme
+   * suggestion.
    *
    * @param AbstractObject $object
    *   The object.
