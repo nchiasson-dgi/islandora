@@ -38,7 +38,7 @@ function islandora_ingest_can_display_ingest_form(array $configuration) {
  */
 function islandora_ingest_form_init_form_state_storage(FormStateInterface $form_state, array $configuration) {
   if (empty($form_state->get('islandora'))) {
-    $configuration['models'] = isset($configuration['models']) ? $configuration['models'] : array();
+    $configuration['models'] = isset($configuration['models']) ? $configuration['models'] : [];
     // Make sure the models actually exist.
     foreach ($configuration['models'] as $key => $model) {
       if (!islandora_object_load($model)) {
@@ -46,12 +46,12 @@ function islandora_ingest_form_init_form_state_storage(FormStateInterface $form_
       }
     }
     // Required for step hooks.
-    $form_state->set('islandora', array(
+    $form_state->set('islandora', [
       'step_id' => NULL,
       'objects' => $configuration['objects'],
       'shared_storage' => $configuration,
-      'step_storage' => array(),
-    ));
+      'step_storage' => [],
+    ]);
     // No need to persist the 'objects' within the configuration.
     unset($configuration['objects']);
     // Must be called after $form_state['islandora'] is initialized, otherwise,
@@ -243,7 +243,7 @@ function islandora_ingest_form_increment_step(FormStateInterface $form_state) {
  *   The Drupal form state.
  */
 function islandora_ingest_form_decrement_step(FormStateInterface $form_state) {
-  $previous_step_id  = islandora_ingest_form_get_previous_step_id($form_state);
+  $previous_step_id = islandora_ingest_form_get_previous_step_id($form_state);
   // Don't decrement passed the first step.
   if (isset($previous_step_id)) {
     islandora_ingest_form_stash_info($form_state);
@@ -260,7 +260,7 @@ function islandora_ingest_form_decrement_step(FormStateInterface $form_state) {
  *
  * @param array $form
  *   The Drupal form.
- * @param \Drupal\Core\Form\FormStateInterface  $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  * @param string $step_id
  *   The ID of the step relative to the result, if not provided the current
@@ -287,7 +287,7 @@ function islandora_ingest_form_execute_step(array $form, FormStateInterface $for
       // @todo Implement if possible.
       break;
   }
-  return array();
+  return [];
 }
 
 /**
@@ -355,7 +355,7 @@ function islandora_ingest_form_execute_consecutive_callback_steps(array $form, F
  *   The step currently being executed.
  */
 function islandora_ingest_form_execute_callback_step(array $form, FormStateInterface $form_state, array $step) {
-  $args = array($form_state);
+  $args = [$form_state];
   $args = isset($step['do_function']['args']) ? array_merge($args, $step['do_function']['args']) : $args;
   if (isset($step['do_function']['file'])) {
     require_once drupal_get_path('module', $step['module']) . "/" . $step['do_function']['file'];
@@ -397,7 +397,7 @@ function islandora_ingest_form_undo_consecutive_callback_steps(array $form, Form
  */
 function islandora_ingest_form_undo_callback_step(array $form, FormStateInterface $form_state, array $step) {
   if (isset($step['undo_function'])) {
-    $args = array($form_state);
+    $args = [$form_state];
     $args = isset($step['undo_function']['args']) ? array_merge($args, $step['undo_function']['args']) : $args;
     if (isset($step['undo_function']['file'])) {
       require_once drupal_get_path('module', $step['module']) . "/" . $step['undo_function']['file'];
@@ -457,8 +457,8 @@ function islandora_ingest_form_stepify(array $form, FormStateInterface $form_sta
  *   The Drupal form state.
  */
 function islandora_ingest_form_add_step_context(array &$form, array $form_state) {
-  $items = array();
-  $get_label = function(AbstractObject $collection = NULL, AbstractObject $fedora_cmodel) {
+  $items = [];
+  $get_label = function (AbstractObject $collection = NULL, AbstractObject $fedora_cmodel) {
     if (isset($collection['COLLECTION_POLICY'])) {
       $policy = new CollectionPolicy($collection['COLLECTION_POLICY']->content);
       $policy_content_models = $policy->getContentModels();
@@ -475,7 +475,7 @@ function islandora_ingest_form_add_step_context(array &$form, array $form_state)
   if (!isset($shared_storage['collection'])) {
     $shared_storage['collection'] = NULL;
   }
-  foreach ($shared_storage['models'] as $key => $value) {
+  foreach ($shared_storage['models'] as $value) {
     $fedora_cmodel = islandora_object_load($value);
     if ($fedora_cmodel) {
       if (is_array($shared_storage['collection'])) {
@@ -497,19 +497,19 @@ function islandora_ingest_form_add_step_context(array &$form, array $form_state)
 
     case 1:
       $label = reset($items);
-      $form["islandora-ingest-form-step-context"] = array(
+      $form["islandora-ingest-form-step-context"] = [
         '#markup' => "<h3>$label</h3>",
         '#weight' => -1000,
-      );
+      ];
       break;
 
     default:
-      $form["islandora-ingest-form-step-context"] = array(
+      $form["islandora-ingest-form-step-context"] = [
         '#title' => t("Applicable Content Models"),
         '#theme' => 'item_list',
         '#items' => array_values($items),
         '#weight' => -1000,
-      );
+      ];
       break;
   }
 }
@@ -592,8 +592,8 @@ function islandora_ingest_form_previous_button(FormStateInterface $form_state) {
   $container = \Drupal::getContainer();
   $object = call_user_func_array([$step['form_class'], 'create'], [$container]);
   $submit_callback = [$object, 'undoSubmit'];
-  $submit = is_callable($submit_callback) ? array('islandora_ingest_form_previous_submit', $submit_callback) : array('islandora_ingest_form_previous_submit');
-  return array(
+  $submit = is_callable($submit_callback) ? ['islandora_ingest_form_previous_submit', $submit_callback] : ['islandora_ingest_form_previous_submit'];
+  return [
     '#type' => 'submit',
     '#value' => t('Previous'),
     '#name' => 'prev',
@@ -605,8 +605,8 @@ function islandora_ingest_form_previous_button(FormStateInterface $form_state) {
     // convert all required fields to use #element_validation functions, and
     // Remove the need for #limit_validation_errors. Or maybe there is some
     // other solution, regardless of what it is, it won't be standard.
-    '#limit_validation_errors' => array(),
-  );
+    '#limit_validation_errors' => [],
+  ];
 }
 
 /**
@@ -647,16 +647,16 @@ function islandora_ingest_form_next_button(FormStateInterface $form_state) {
   $container = \Drupal::getContainer();
   $object = call_user_func_array([$step['form_class'], 'create'], [$container]);
   $validate_callback = [$object, 'validateForm'];
-  $validate = is_callable($validate_callback) ? array($validate_callback) : NULL;
+  $validate = is_callable($validate_callback) ? [$validate_callback] : NULL;
   $submit_callback = [$object, 'submitForm'];
-  $submit = is_callable($submit_callback) ? array($submit_callback, 'islandora_ingest_form_next_submit') : array('islandora_ingest_form_next_submit');
-  return array(
+  $submit = is_callable($submit_callback) ? [$submit_callback, 'islandora_ingest_form_next_submit'] : ['islandora_ingest_form_next_submit'];
+  return [
     '#type' => 'submit',
     '#value' => t('Next'),
     '#name' => 'next',
     '#validate' => $validate,
     '#submit' => $submit,
-  );
+  ];
 }
 
 /**

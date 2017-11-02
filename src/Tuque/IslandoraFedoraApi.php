@@ -9,7 +9,8 @@ use FedoraApiA;
 use FedoraApiSerializer;
 
 /**
- * Class IslandoraFedoraApi
+ * Class IslandoraFedoraApi.
+ *
  * @package Drupal\islandora\Tuque
  */
 class IslandoraFedoraApi extends FedoraApi {

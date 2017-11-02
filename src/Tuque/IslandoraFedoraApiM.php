@@ -101,7 +101,8 @@ class IslandoraFedoraApiM extends FedoraApiM {
       \Drupal::logger('islandora')->error('Failed to purge object @pid</br>code: @code<br/>message: @msg', [
         '@pid' => $pid,
         '@code' => $e->getCode(),
-        '@msg' => $e->getMessage()]);
+        '@msg' => $e->getMessage(),
+      ]);
       throw $e;
     }
   }

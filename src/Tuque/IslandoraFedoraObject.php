@@ -7,7 +7,8 @@ require_once __DIR__ . '/Base.php';
 use FedoraObject;
 
 /**
- * Class IslandoraFedoraObject
+ * Class IslandoraFedoraObject.
+ *
  * @package Drupal\islandora\Tuque
  */
 class IslandoraFedoraObject extends FedoraObject {
@@ -62,10 +63,10 @@ class IslandoraFedoraObject extends FedoraObject {
    */
   public function ingestDatastream(&$datastream) {
     $object = $datastream->parent;
-    $context = array(
+    $context = [
       'action' => 'ingest',
       'block' => FALSE,
-    );
+    ];
     islandora_alter_datastream($object, $datastream, $context);
     try {
       if ($context['block']) {
@@ -76,12 +77,12 @@ class IslandoraFedoraObject extends FedoraObject {
       return $ret;
     }
     catch (Exception $e) {
-      \Drupal::logger('islandora')->error('Failed to ingest datastream @datastream on object: @pid</br>code: @code<br/>message: @msg', array(
+      \Drupal::logger('islandora')->error('Failed to ingest datastream @datastream on object: @pid</br>code: @code<br/>message: @msg', [
         '@pid' => $object->id,
         '@dsid' => $datastream->id,
         '@code' => $e->getCode(),
         '@msg' => $e->getMessage(),
-      ));
+      ]);
       throw $e;
     }
   }
@@ -102,10 +103,11 @@ class IslandoraFedoraObject extends FedoraObject {
       }
     }
     catch (Exception $e) {
-      \Drupal::logger('islandora')->error('Failed to modify object: @pid</br>code: @code<br/>message: @msg', array(
+      \Drupal::logger('islandora')->error('Failed to modify object: @pid</br>code: @code<br/>message: @msg', [
         '@pid' => $this->id,
         '@code' => $e->getCode(),
-        '@msg' => $e->getMessage()));
+        '@msg' => $e->getMessage(),
+      ]);
       throw $e;
     }
   }
@@ -123,12 +125,12 @@ class IslandoraFedoraObject extends FedoraObject {
     if (!array_key_exists($id, $this->datastreams)) {
       return FALSE;
     }
-    $context = array(
+    $context = [
       'action' => 'purge',
       'purge' => TRUE,
       'delete' => FALSE,
       'block' => FALSE,
-    );
+    ];
     try {
       islandora_alter_datastream($this, $this[$id], $context);
       $action = $context['block'] ? 'block' : FALSE;
@@ -140,7 +142,7 @@ class IslandoraFedoraObject extends FedoraObject {
 
         case 'delete':
           $this[$id]->state = 'D';
-          return array();
+          return [];
 
         default:
           $to_return = parent::purgeDatastream($id);
@@ -149,12 +151,14 @@ class IslandoraFedoraObject extends FedoraObject {
       }
     }
     catch (Exception $e) {
-      \Drupal::logger('islandora')->error('Failed to purge datastream @dsid from @pid</br>code: @code<br/>message: @msg', array(
+      \Drupal::logger('islandora')->error('Failed to purge datastream @dsid from @pid</br>code: @code<br/>message: @msg', [
         '@pid' => $this->id,
         '@dsid' => $id,
         '@code' => $e->getCode(),
-        '@msg' => $e->getMessage()));
+        '@msg' => $e->getMessage(),
+      ]);
       throw $e;
     }
   }
+
 }

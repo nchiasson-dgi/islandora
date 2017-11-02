@@ -6,12 +6,12 @@ use Drupal\Core\ParamConverter\ParamConverterInterface;
 use Symfony\Component\Routing\Route;
 
 /**
- * Datastream parameter converter.
+ * Datastream parameter converter class.
  */
 class IslandoraDatastreamParamConverter implements ParamConverterInterface {
 
   /**
-   * Datastream parameter converter.
+   * Datastream parameter converter method.
    */
   public function convert($value, $definition, $name, array $defaults) {
     // XXX: This seems so very dumb but given how empty slugs don't play nice
@@ -21,6 +21,9 @@ class IslandoraDatastreamParamConverter implements ParamConverterInterface {
     return islandora_datastream_load($value, $defaults['object']->id);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function applies($definition, $name, Route $route) {
     return (!empty($definition['type']) && $definition['type'] == 'datastream');
   }

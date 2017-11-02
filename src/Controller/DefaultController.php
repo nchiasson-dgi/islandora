@@ -21,36 +21,40 @@ use AbstractObject;
 use AbstractDatastream;
 
 /**
- * Class DefaultController
+ * Class DefaultController.
+ *
  * @package Drupal\islandora\Controller
  */
 class DefaultController extends ControllerBase {
 
   protected $formbuilder;
 
-  // XXX: Coder complains if you reference \Drupal core services
-  // directly without using dependency injection. Here is a working example
-  // injecting formbuilder into our controller.
+  /**
+   * Constructor for dependency injection.
+   */
   public function __construct(FormBuilderInterface $formbuilder) {
     $this->formbuilder = $formbuilder;
   }
 
   /**
-   * Dependency Injection!
+   * Dependency Injection.
+   *
    * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   *
    * @return static
    */
   public static function create(ContainerInterface $container) {
     return new static(
-    // Load the service(s) required to construct this class.
-    // Order should be the same as the order they are listed in the constructor.
       $container->get('form_builder')
     );
   }
 
   /**
    * Administer solutions packs.
+   *
    * @return array|string
+   *   Renderable for the solution pack administration page.
+   *
    * @throws \Exception
    */
   public function islandora_solution_packs_admin() {

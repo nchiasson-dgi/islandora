@@ -2,6 +2,8 @@
 
 namespace Drupal\islandora;
 
+use Drupal\Component\Utility\Unicode;
+
 /**
  * Class for determining MIME types and file extensions.
  *
@@ -23,46 +25,54 @@ namespace Drupal\islandora;
  */
 class MimeDetect {
 
-  protected $protectedMimeTypes = array(
-    /*
-     * This is a shortlist of mimetypes which should catch most
-     * mimetype<-->extension lookups in the context of Islandora collections.
-     *
-     * It has been cut from a much longer list.
-     *
-     * Two types of mimetypes should be put in this list:
-     *  1) Special emerging formats which may not yet be expressed in the system
-     *     mime.types file.
-     *  2) Heavily used mimetypes of particular importance to the Islandora
-     *     project, as lookups against this list will be quicker and less
-     *     resource intensive than other methods.
-     *
-     * Lookups are first checked against this short list.  If no results are
-     * found, then the lookup function may move on to check other sources,
-     * namely the system's mime.types file.
-     *
-     * In most cases though, this short list should suffice.
-     *
-     * If modifying this list, please note that for promiscuous mimetypes
-     * (those which map to multiple extensions, such as text/plain)
-     * The function get_extension will always return the *LAST* extension in
-     * this list, so you should put your preferred extension *LAST*.
-     *
-     * e.g...
-     * "jpeg"    => "image/jpeg",
-     * "jpe"     => "image/jpeg",
-     * "jpg"     => "image/jpeg",
-     *
-     * $this->get_extension('image/jpeg') will always return 'jpg'.
-     *
-     */
-  );
+  /**
+   * This is a shortlist of mimetypes.
+   *
+   * @var array
+   *
+   * It should catch most mimetype<-->extension lookups in the context of
+   * Islandora collections.
+   *
+   * It has been cut from a much longer list.
+   *
+   * Two types of mimetypes should be put in this list:
+   *  1) Special emerging formats which may not yet be expressed in the system
+   *     mime.types file.
+   *  2) Heavily used mimetypes of particular importance to the Islandora
+   *     project, as lookups against this list will be quicker and less
+   *     resource intensive than other methods.
+   *
+   * Lookups are first checked against this short list.  If no results are
+   * found, then the lookup function may move on to check other sources,
+   * namely the system's mime.types file.
+   *
+   * In most cases though, this short list should suffice.
+   *
+   * If modifying this list, please note that for promiscuous mimetypes
+   * (those which map to multiple extensions, such as text/plain)
+   * The function get_extension will always return the *LAST* extension in
+   * this list, so you should put your preferred extension *LAST*.
+   *
+   * e.g...
+   * "jpeg"    => "image/jpeg",
+   * "jpe"     => "image/jpeg",
+   * "jpg"     => "image/jpeg",
+   *
+   * $this->get_extension('image/jpeg') will always return 'jpg'.
+   */
+  protected $protectedMimeTypes = [];
   protected $protectedFileExtensions;
-  protected $extensionExceptions = array(
-    // XXX: Deprecated... Only here due to old 'tif' => 'image/tif' mapping...
-    // The correct MIMEtype is 'image/tiff'.
+  /**
+   * Deprecated.
+   *
+   * @var array
+   *
+   * Only here due to old 'tif' => 'image/tif' mapping.
+   * The correct MIMEtype is 'image/tiff'.
+   */
+  protected $extensionExceptions = [
     'image/tif' => 'tif',
-  );
+  ];
   protected $systemTypes;
   protected $systemExts;
   protected $etcMimeTypes = '/etc/mime.types';
@@ -87,7 +97,7 @@ class MimeDetect {
    * Gets MIME type associated with the give file's extension.
    *
    * @param string $filename
-   *   The filename
+   *   The filename.
    * @param bool $debug
    *   Returns a debug array.
    *
@@ -97,11 +107,11 @@ class MimeDetect {
   public function getMimetype($filename, $debug = FALSE) {
 
     $file_name_and_extension = explode('.', $filename);
-    $ext = \Drupal\Component\Utility\Unicode::strtolower(array_pop($file_name_and_extension));
+    $ext = Unicode::strtolower(array_pop($file_name_and_extension));
 
     if (!empty($this->protectedMimeTypes[$ext])) {
       if (TRUE === $debug) {
-        return array('mime_type' => $this->protectedMimeTypes[$ext], 'method' => 'from_array');
+        return ['mime_type' => $this->protectedMimeTypes[$ext], 'method' => 'from_array'];
       }
       return $this->protectedMimeTypes[$ext];
     }
@@ -110,7 +120,7 @@ class MimeDetect {
       $drupal_mimetype = file_get_mimetype($filename);
       if ('application/octet-stream' != $drupal_mimetype) {
         if (TRUE == $debug) {
-          return array('mime_type' => $drupal_mimetype, 'method' => 'file_get_mimetype');
+          return ['mime_type' => $drupal_mimetype, 'method' => 'file_get_mimetype'];
         }
         return $drupal_mimetype;
       }
@@ -121,13 +131,13 @@ class MimeDetect {
     }
     if (isset($this->systemTypes[$ext])) {
       if (TRUE == $debug) {
-        return array('mime_type' => $this->systemTypes[$ext], 'method' => 'mime.types');
+        return ['mime_type' => $this->systemTypes[$ext], 'method' => 'mime.types'];
       }
       return $this->systemTypes[$ext];
     }
 
     if (TRUE === $debug) {
-      return array('mime_type' => 'application/octet-stream', 'method' => 'last_resort');
+      return ['mime_type' => 'application/octet-stream', 'method' => 'last_resort'];
     }
     return 'application/octet-stream';
   }
@@ -147,7 +157,7 @@ class MimeDetect {
 
     if (!empty($this->protectedFileExtensions[$mime_type])) {
       if (TRUE == $debug) {
-        return array('extension' => $this->protectedFileExtensions[$mime_type], 'method' => 'from_array');
+        return ['extension' => $this->protectedFileExtensions[$mime_type], 'method' => 'from_array'];
       }
       return $this->protectedFileExtensions[$mime_type];
     }
@@ -157,13 +167,13 @@ class MimeDetect {
     }
     if (isset($this->systemExts[$mime_type])) {
       if (TRUE == $debug) {
-        return array('extension' => $this->systemExts[$mime_type], 'method' => 'mime.types');
+        return ['extension' => $this->systemExts[$mime_type], 'method' => 'mime.types'];
       }
       return $this->systemExts[$mime_type];
     }
 
     if (TRUE == $debug) {
-      return array('extension' => 'bin', 'method' => 'last_resort');
+      return ['extension' => 'bin', 'method' => 'last_resort'];
     }
     return 'bin';
   }
@@ -171,7 +181,8 @@ class MimeDetect {
   /**
    * Gets an associative array of MIME type and extension associations.
    *
-   * Users the system mime.types file, or a local mime.types if one is found
+   * Users the system mime.types file, or a local mime.types if one is found.
+   *
    * @see MIMEDetect::__constuctor()
    *
    * @return array
@@ -179,7 +190,7 @@ class MimeDetect {
    *   extensions.
    */
   protected function systemMimetypeExtensions() {
-    $out = array();
+    $out = [];
     if (file_exists($this->etcMimeTypes)) {
       $file = fopen($this->etcMimeTypes, 'r');
       while (($line = fgets($file)) !== FALSE) {
@@ -206,7 +217,8 @@ class MimeDetect {
   /**
    * Gets a associative array of extensions and MIME types.
    *
-   * Users the system mime.types file, or a local mime.types if one is found
+   * Users the system mime.types file, or a local mime.types if one is found.
+   *
    * @see MIMEDetect::__constuctor()
    *
    * @return array
@@ -214,7 +226,7 @@ class MimeDetect {
    *   MIME types.
    */
   protected function systemExtensionMimetypes() {
-    $out = array();
+    $out = [];
     if (file_exists($this->etcMimeTypes)) {
       $file = fopen($this->etcMimeTypes, 'r');
       while (($line = fgets($file)) !== FALSE) {
@@ -262,4 +274,5 @@ class MimeDetect {
     };
     return array_keys(array_filter($this->protectedMimeTypes, $filter));
   }
+
 }

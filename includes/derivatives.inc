@@ -5,6 +5,7 @@
  * Defines functions used when constructing derivatives.
  */
 
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Link;
 
@@ -133,14 +134,14 @@ function islandora_derivative_logging(array $logging_results) {
     foreach ($result['messages'] as $message) {
       if ($message['type'] === 'dsm') {
         if (isset($message['severity']) && $message['severity'] != 'status') {
-          drupal_set_message(\Drupal\Component\Utility\Xss::filter(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : [])), $message['severity']);
+          drupal_set_message(Xss::filter(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : [])), $message['severity']);
         }
         else {
           if (!isset($_SESSION['islandora_event_messages'])) {
             $_SESSION['islandora_event_messages'] = [];
           }
           $_SESSION['islandora_event_messages'][] = [
-            'message' => \Drupal\Component\Utility\Xss::filter(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : [])),
+            'message' => Xss::filter(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : [])),
             'severity' => 'status',
           ];
           drupal_set_message(
@@ -218,7 +219,7 @@ function islandora_do_batch_derivatives(AbstractObject $object, array $options) 
  * @return array
  *   Returns the filtered array of hooks to be ran.
  */
-function islandora_filter_derivatives(array $hooks,array $options, AbstractObject $object) {
+function islandora_filter_derivatives(array $hooks, array $options, AbstractObject $object) {
   if (array_key_exists('source_dsid', $options)) {
     $hooks = array_filter($hooks, function ($filter_hook) use ($options) {
       return array_key_exists('source_dsid', $filter_hook) &&
@@ -293,10 +294,10 @@ function islandora_remove_defer_derivatives_flag(AbstractObject $object) {
  *
  * @param AbstractObject $object
  *   The object to find derivatives for.
- * @param &array $options
+ * @param array $options
  *   Options for derivatives, will be updated to default force to FALSE.
  */
-function islandora_get_derivative_list(AbstractObject $object, &$options) {
+function islandora_get_derivative_list(AbstractObject $object, array &$options) {
   module_load_include('inc', 'islandora', 'includes/utilities');
 
   $ds_modified_params = isset($options['ds_modified_params']) ? $options['ds_modified_params'] : [];
@@ -307,7 +308,7 @@ function islandora_get_derivative_list(AbstractObject $object, &$options) {
   $derivatives = islandora_invoke_hook_list(
     ISLANDORA_DERIVATIVE_CREATION_HOOK,
     $object->models,
-    array($object),
+    [$object],
     $ds_modified_params
   );
 

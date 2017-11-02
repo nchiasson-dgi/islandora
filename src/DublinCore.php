@@ -2,33 +2,33 @@
 
 namespace Drupal\islandora;
 
-
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
 
 /**
- * Class DublinCore
+ * Class DublinCore.
+ *
  * @package Drupal\islandora
  */
 class DublinCore {
 
-  public $dc = array(
-    'dc:title' => array(),
-    'dc:creator' => array(),
-    'dc:subject' => array(),
-    'dc:description' => array(),
-    'dc:publisher' => array(),
-    'dc:contributor' => array(),
-    'dc:date' => array(),
-    'dc:type' => array(),
-    'dc:format' => array(),
-    'dc:identifier' => array(),
-    'dc:source' => array(),
-    'dc:language' => array(),
-    'dc:relation' => array(),
-    'dc:coverage' => array(),
-    'dc:rights' => array(),
-  );
+  public $dc = [
+    'dc:title' => [],
+    'dc:creator' => [],
+    'dc:subject' => [],
+    'dc:description' => [],
+    'dc:publisher' => [],
+    'dc:contributor' => [],
+    'dc:date' => [],
+    'dc:type' => [],
+    'dc:format' => [],
+    'dc:identifier' => [],
+    'dc:source' => [],
+    'dc:language' => [],
+    'dc:relation' => [],
+    'dc:coverage' => [],
+    'dc:rights' => [],
+  ];
   public $owner;
 
   /**
@@ -70,7 +70,7 @@ class DublinCore {
       $this->dc[$element_name] = $values;
     }
     elseif (is_string($values)) {
-      $this->dc[$element_name] = array($values);
+      $this->dc[$element_name] = [$values];
     }
   }
 
@@ -107,7 +107,7 @@ class DublinCore {
    *   The serialized object.
    */
   public function asArray() {
-    $dc_array = array();
+    $dc_array = [];
     foreach ($this as $element) {
       if (!empty($element)) {
         foreach ($element as $field => $values) {

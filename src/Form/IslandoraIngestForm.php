@@ -30,19 +30,19 @@ class IslandoraIngestForm extends FormBase {
    *   The Drupal form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The Drupal form state.
-   * @param array $configuration
+   * @param mixed $configuration
    *   An associative array of configuration values that are used to build the
    *   list of steps to be executed, including:
    *   - id: The PID with which the object should be created.
    *   - namespace: The PID namespace in which the object should be created.
    *     (id is used first, if it is given).
    *   - label: The initial label for the object. Defaults to "New Object".
-   *   - collections: An array of collection PIDs, to which the new object should
-   *     be related.
+   *   - collections: An array of collection PIDs, to which the new object
+   *     should be related.
    *   - models: An array of content model PIDs, to which the new object might
    *     subscribe
-   *   - parent: The parent of the child to be ingested. This is needed for XACML
-   *     to correctly apply the parent's POLICY to children.
+   *   - parent: The parent of the child to be ingested. This is needed for
+   *     XACML to correctly apply the parent's POLICY to children.
    *
    * @return array
    *   The form definition of the current step.
@@ -54,12 +54,12 @@ class IslandoraIngestForm extends FormBase {
       return islandora_ingest_form_execute_step($form, $form_state);
     }
     catch (Exception $e) {
-      $this->getLogger('islandora')->error('Exception during ingest form processing with Message: "@exception",  and Trace: @trace', array('@exception' => $e->getMessage(), '@trace' => $e->getTraceAsString()));
+      $this->getLogger('islandora')->error('Exception during ingest form processing with Message: "@exception",  and Trace: @trace', ['@exception' => $e->getMessage(), '@trace' => $e->getTraceAsString()]);
       drupal_set_message($e->getMessage(), 'error');
       return [
         [
-          '#markup' => \Drupal::l($this->t('Back'), Url::fromUri('javascript:window.history.back();'))
-        ]
+          '#markup' => \Drupal::l($this->t('Back'), Url::fromUri('javascript:window.history.back();')),
+        ],
       ];
     }
   }

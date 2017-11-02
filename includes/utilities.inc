@@ -10,6 +10,8 @@ use Drupal\Core\Form\FormState;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\Unicode;
 
+use Drupal\islandora\Event\IslandoraRepositoryEvent;
+
 /**
  * Convert bytes to human readable format.
  *
@@ -178,8 +180,6 @@ function islandora_describe_repository($url = NULL) {
  * as MODULE_REFINEMENT_HOOK. Any additional arguments passed to this function
  * will be passed as arguments to module_invoke_all().
  *
- * @see islandora_build_hook_list()
- *
  * @param string $hook
  *   A hook to call.
  * @param array $refinements
@@ -191,6 +191,8 @@ function islandora_describe_repository($url = NULL) {
  *
  * @return array
  *   The merged results from all the hooks.
+ *
+ * @see islandora_build_hook_list()
  */
 function islandora_invoke_hook_list($hook, array $refinements, array $args) {
   $return = [];
@@ -199,7 +201,7 @@ function islandora_invoke_hook_list($hook, array $refinements, array $args) {
     $return = array_merge_recursive($return, $result);
   }
 
-  $event = new Drupal\islandora\Event\IslandoraRepositoryEvent($hook, $args);
+  $event = new IslandoraRepositoryEvent($hook, $args);
   \Drupal::service('event_dispatcher')->dispatch($event->getEventName(), $event);
 
   return $return;
@@ -225,7 +227,7 @@ function islandora_invoke_hook_list($hook, array $refinements, array $args) {
  *   An array with each refinement escaped and concatenated with the base hook
  *   name, in addition to the base hook name.
  */
-function islandora_build_hook_list($hook, $refinements = []) {
+function islandora_build_hook_list($hook, array $refinements = []) {
   $refinements = array_unique($refinements);
   $hooks = [$hook];
   foreach ($refinements as $refinement) {
@@ -246,10 +248,10 @@ function islandora_escape_pid_for_function($pid) {
   // really worry about changing the case.
   return str_replace(
   // Any PID characters which are not valid in the name of a PHP function.
-      array(
+      [
         ':',
         '-',
-      ),
+      ],
       '_',
       $pid
   );
@@ -595,23 +597,18 @@ function islandora_display_repository_inaccessible_message() {
 function islandora_executable_available_message($path, $version = NULL, $required_version = NULL) {
   $available = is_executable($path);
   if ($available) {
-    $image = theme_image(array('path' => 'misc/watchdog-ok.png', 'attributes' => array()));
-    $message = t('Executable found at @path', array('@path' => $path));
+    $message = t('Executable found at @path', ['@path' => $path]);
     if ($version) {
-      $message .= t('<br/>Version: @version', array('@version' => $version));
+      $message .= t('<br/>Version: @version', ['@version' => $version]);
     }
     if ($required_version) {
-      $message .= t('<br/>Required Version: @version', array('@version' => $required_version));
-      if (version_compare($version, $required_version) < 0) {
-        $image = theme_image(array('path' => 'misc/watchdog-error.png', 'attributes' => array()));
-      }
+      $message .= t('<br/>Required Version: @version', ['@version' => $required_version]);
     }
   }
   else {
-    $image = theme_image(array('path' => 'misc/watchdog-error.png', 'attributes' => array()));
-    $message = t('Unable to locate executable at @path', array('@path' => $path));
+    $message = t('Unable to locate executable at @path', ['@path' => $path]);
   }
-  return $image . $message;
+  return $message;
 }
 
 /**
@@ -626,14 +623,12 @@ function islandora_executable_available_message($path, $version = NULL, $require
 function islandora_directory_exists_message($path) {
   $available = is_dir($path);
   if ($available) {
-    $image = theme_image(array('path' => 'misc/watchdog-ok.png', 'attributes' => array()));
-    $message = t('Directory found at @path', array('@path' => $path));
+    $message = t('Directory found at @path', ['@path' => $path]);
   }
   else {
-    $image = theme_image(array('path' => 'misc/watchdog-error.png', 'attributes' => array()));
-    $message = t('Unable to locate directory at @path', array('@path' => $path));
+    $message = t('Unable to locate directory at @path', ['@path' => $path]);
   }
-  return $image . $message;
+  return $message;
 }
 
 /**
@@ -648,7 +643,7 @@ function islandora_directory_exists_message($path) {
  *   The name of the system settings form element.
  * @param mixed $default_value
  *   The default value for the system settings form element.
- * @param FormState $form_state
+ * @param \Drupal\Core\Form\FormState $form_state
  *   The Drupal form state object.
  *
  * @return mixed
@@ -667,7 +662,7 @@ function islandora_system_settings_form_default_value($name, $default_value, For
  *   The list of namespaces striped of trailing ":" characters.
  */
 function islandora_get_allowed_namespaces() {
-  $matches = array();
+  $matches = [];
   $allowed_namespaces = \Drupal::config('islandora.settings')->get('islandora_pids_allowed');
   preg_match_all('/([A-Za-z0-9-\.]+):/', $allowed_namespaces, $matches);
   $accessible_namespaces = $matches[1];
@@ -713,7 +708,7 @@ function islandora_get_content_models($ignore_system_namespace = TRUE) {
                  ?object fm:label ?label
             }
            }";
-  $content_models = array();
+  $content_models = [];
   $results = $tuque->repository->ri->sparqlQuery($query, 'unlimited');
   foreach ($results as $result) {
     $content_model = $result['object']['value'];
@@ -722,7 +717,7 @@ function islandora_get_content_models($ignore_system_namespace = TRUE) {
     $ignore = $ignore_system_namespace && $namespace == 'fedora-system';
     $ignore |= !islandora_namespace_accessible($namespace);
     if (!$ignore) {
-      $content_models[$content_model] = array('pid' => $content_model, 'label' => $label);
+      $content_models[$content_model] = ['pid' => $content_model, 'label' => $label];
     }
   }
   return $content_models;
@@ -732,19 +727,19 @@ function islandora_get_content_models($ignore_system_namespace = TRUE) {
  * Returns Drupal tableselect element allowing selection of Content Models.
  *
  * @param string $drupal_variable
- *   the name of the Drupal variable holding selected content models
+ *   The name of the Drupal variable holding selected content models
  *   Content models held in this variable will appear at the top of
- *   the displayed list
+ *   the displayed list.
  * @param array $default_values_array
- *   default values to display if $drupal_variable is unset
+ *   Tefault values to display if $drupal_variable is unset.
  *
  * @return array
- *   Drupal form element allowing content model selection
+ *   Drupal form element allowing content model selection.
  */
-function islandora_content_model_select_table_form_element($drupal_variable, $default_values_array = array('')) {
-  $defaults = array();
-  $rows = array();
-  $content_models = array();
+function islandora_content_model_select_table_form_element($drupal_variable, array $default_values_array = ['']) {
+  $defaults = [];
+  $rows = [];
+  $content_models = [];
   $options = islandora_get_content_models(TRUE);
   foreach ($options as $option) {
     $content_models[$option['pid']] = $option['label'];
@@ -768,24 +763,24 @@ function islandora_content_model_select_table_form_element($drupal_variable, $de
   };
   uksort($content_models, $comparator);
   foreach ($content_models as $pid => $label) {
-    $rows[$pid] = array(
+    $rows[$pid] = [
       'pid' => $pid,
       'title' => $label,
-    );
+    ];
     $defaults[$pid] = in_array($pid, $selected);
   }
-  $header = array(
-    'pid' => array('data' => t('PID')),
-    'title' => array('data' => t('Content Model')),
-  );
+  $header = [
+    'pid' => ['data' => t('PID')],
+    'title' => ['data' => t('Content Model')],
+  ];
   // Build and return table element.
-  $element = array(
+  $element = [
     '#type' => 'tableselect',
     '#header' => $header,
     '#options' => $rows,
     '#default_value' => $defaults,
     '#empty' => t("There are no content models in this Fedora Repository."),
-  );
+  ];
 
   return $element;
 }
@@ -813,10 +808,10 @@ function islandora_deprecated($release, $solution = NULL) {
   $bt = debug_backtrace();
   assert($bt[0]['function'] == __FUNCTION__);
   $function = $bt[1]['function'];
-  $message = t('@function() has been deprecated. As of @release, please update your code before the next release.', array(
+  $message = t('@function() has been deprecated. As of @release, please update your code before the next release.', [
     '@function' => $function,
     '@release' => $release,
-  ));
+  ]);
   if (isset($solution)) {
     $message .= "<br/>\n" . $solution;
   }
@@ -862,7 +857,7 @@ function islandora_event_status() {
     unset($_SESSION['islandora_event_messages']);
   }
   $text = ($results) ? t('The status messages above will be deleted after viewing this page.') : t('No messages to display.');
-  return array('#markup' => $text);
+  return ['#markup' => $text];
 }
 
 /**
@@ -922,11 +917,11 @@ function islandora_deployed_on_windows() {
  */
 function islandora_build_datastream_edit_registry(AbstractDatastream $datastream) {
   $edit_registry = \Drupal::moduleHandler()->invokeAll(ISLANDORA_EDIT_DATASTREAM_REGISTRY_HOOK, [$datastream->parent, $datastream]);
-  $context = array(
+  $context = [
     'object' => $datastream->parent,
     'datastream' => $datastream,
     'original_edit_registry' => $edit_registry,
-  );
+  ];
   \Drupal::moduleHandler()->alter(ISLANDORA_EDIT_DATASTREAM_REGISTRY_HOOK, $edit_registry, $context);
   return $edit_registry;
 }

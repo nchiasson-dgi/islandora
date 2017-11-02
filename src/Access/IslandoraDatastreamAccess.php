@@ -18,18 +18,18 @@ class IslandoraDatastreamAccess implements AccessInterface {
    *
    * @param string|array $perms
    *   A singular permission or an array of permissions to be evalulated.
-   * @param AbstractObject $object
+   * @param \AbstractObject $object
    *   A loaded Fedora object.
-   * @param AbstractDatastream $datastream
+   * @param \AbstractDatastream $datastream
    *   The loaded datastream being accessed.
-   * @param AccountInterface $account
+   * @param \Drupal\Core\Session\AccountInterface $account
    *   User being validated against.
    * @param string $islandora_access_conjunction
    *   If an array of permissions is specified this will dictate how it's
    *   evaluated. To maintain 7's behavior these are ORed together by default
    *   but can be overridden on a per route basis.
    *
-   * @return AccessResult|\Drupal\Core\Access\AccessResultAllowed|\Drupal\Core\Access\AccessResultForbidden|\Drupal\Core\Access\AccessResultNeutral
+   * @return \Drupal\Core\Access\AccessResult|\Drupal\Core\Access\AccessResultAllowed|\Drupal\Core\Access\AccessResultForbidden|\Drupal\Core\Access\AccessResultNeutral
    *   Whether the user has access in AccessResult object form.
    */
   public function access($perms, AbstractObject $object, AbstractDatastream $datastream, AccountInterface $account, $islandora_access_conjunction = 'OR') {
