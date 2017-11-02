@@ -1169,46 +1169,18 @@ function islandora_ingest_form_pre_submit($form, &$form_state) {
 
 /**
  * Implements hook_menu_local_tasks_alter().
+ *
+ * Replaes the print link text with an icon.
  */
 function islandora_menu_local_tasks_alter(&$data, $route_name) {
-  if (strpos($route_name, 'islandora/object/%') === 0) {
-    if (isset($data['tabs'][0]['output'])) {
-      foreach ($data['tabs'][0]['output'] as $key => &$tab) {
-        if ($tab['#link']['path'] == 'islandora/object/%/print_object') {
-          if ($route_name == 'islandora.view_object') {
-            $islandora_path = drupal_get_path('module', 'islandora');
-            $tab['#prefix'] = '<li class="islandora-print">';
-            $tab['#suffix'] = '</li>';
-            $tab['#theme'] = 'link';
-            // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $tab['#text'] = theme('image', array(
-//               'path' => "$islandora_path/images/print-icon.png",
-//               'alt' => t('Print Object'),
-//               'attributes' => array(
-//                 'id' => 'print_btn',
-//               ),
-//             ));
-
-            $tab['#path'] = "{$router_item['href']}/print_object";
-            $tab['#options'] = [
-              'attributes' => [],
-              'html' => TRUE,
-            ];
-          }
-          else {
-            unset($data['tabs'][0]['output'][$key]);
-            break;
-          }
-        }
-      }
-    }
+  $tabs = &$data['tabs'][0];
+  if ($route_name != 'islandora.printer_object' && in_array('islandora.printer_object', array_keys($tabs))) {
+    $tab = &$tabs['islandora.printer_object'];
+    $tab['#link']['title'] = [
+      '#type' => 'image',
+      '#theme' => 'image',
+      '#uri' => drupal_get_path('module', 'islandora') . '/images/print-icon.png',
+    ];
   }
 }
 
