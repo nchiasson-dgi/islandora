@@ -9,6 +9,7 @@ use Drupal\file\Entity\File;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\Unicode;
+use Drupal\Component\Utility\Xss;
 
 use Drupal\islandora\Event\IslandoraRepositoryEvent;
 
@@ -463,7 +464,7 @@ function islandora_display_repository_inaccessible_message() {
   $link = Link::createFromRoute('islandora.admin_config', [], ['attributes' => ['title' => $text]])->toString();
   $message = t('Could not connect to the repository. Please check the settings on the @link page.',
   ['@link' => $link]);
-  drupal_set_message(\Drupal\Component\Utility\Xss::filter($message), 'error', FALSE);
+  drupal_set_message(Xss::filter($message), 'error', FALSE);
 
 }
 

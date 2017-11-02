@@ -38,10 +38,6 @@ class DefaultController extends ControllerBase {
 
   /**
    * Dependency Injection.
-   *
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-   *
-   * @return static
    */
   public static function create(ContainerInterface $container) {
     return new static(
