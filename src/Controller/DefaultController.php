@@ -21,36 +21,36 @@ use AbstractObject;
 use AbstractDatastream;
 
 /**
- * Class DefaultController
+ * Class DefaultController.
+ *
  * @package Drupal\islandora\Controller
  */
 class DefaultController extends ControllerBase {
 
   protected $formbuilder;
 
-  // XXX: Coder complains if you reference \Drupal core services
-  // directly without using dependency injection. Here is a working example
-  // injecting formbuilder into our controller.
+  /**
+   * Constructor for dependency injection.
+   */
   public function __construct(FormBuilderInterface $formbuilder) {
     $this->formbuilder = $formbuilder;
   }
 
   /**
-   * Dependency Injection!
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-   * @return static
+   * Dependency Injection.
    */
   public static function create(ContainerInterface $container) {
     return new static(
-    // Load the service(s) required to construct this class.
-    // Order should be the same as the order they are listed in the constructor.
       $container->get('form_builder')
     );
   }
 
   /**
    * Administer solutions packs.
+   *
    * @return array|string
+   *   Renderable for the solution pack administration page.
+   *
    * @throws \Exception
    */
   public function islandora_solution_packs_admin() {
@@ -79,13 +79,12 @@ class DefaultController extends ControllerBase {
 
   public function islandora_view_default_object() {
     $pid = \Drupal::config('islandora.settings')->get('islandora_repository_pid');
-    return $this->redirect('islandora.view_object', array('object' => $pid));
+    return $this->redirect('islandora.view_object', ['object' => $pid]);
   }
 
   public function islandora_drupal_title(AbstractObject $object) {
     module_load_include('inc', 'islandora', 'includes/breadcrumb');
     //drupal_set_breadcrumb(islandora_get_breadcrumbs($object));
-
     return $object->label;
   }
 
@@ -106,7 +105,7 @@ class DefaultController extends ControllerBase {
     // around this by making the empty slug route in YAML or a custom Routing
     // object we can remove this.
     if (\Drupal::request()->getRequestUri() === '/islandora/object/') {
-      return $this->redirect('islandora.view_object', array('object' => \Drupal::config('islandora.settings')->get('islandora_repository_pid')));
+      return $this->redirect('islandora.view_object', ['object' => \Drupal::config('islandora.settings')->get('islandora_repository_pid')]);
     }
     // Warn if object is inactive or deleted.
     if ($object->state != 'A') {
@@ -119,7 +118,7 @@ class DefaultController extends ControllerBase {
     $hooks = islandora_build_hook_list(ISLANDORA_VIEW_HOOK, $object->models);
     foreach ($hooks as $hook) {
       // @todo Remove page number and size from this hook, implementers of the
-    // hook should use drupal page handling directly.
+      // hook should use drupal page handling directly.
       $temp = \Drupal::moduleHandler()->invokeAll($hook, [
         $object,
         $page_number,
@@ -139,6 +138,9 @@ class DefaultController extends ControllerBase {
     return $output;
   }
 
+  /**
+   * Access callback for printing an object.
+   */
   public function islandora_print_object_access($op, $object, AccountInterface $account) {
     $object = islandora_object_load($object);
     return AccessResult::allowedIf(islandora_print_object_access($op, $object, $account));
@@ -189,25 +191,25 @@ class DefaultController extends ControllerBase {
     return $cache[$op][$object->id][$user->id()];
   }
 
+  /**
+   * Renders the print page for the given object.
+   *
+   * Modules can either implement preprocess functions to append content onto
+   * the 'content' variable, or override the display by providing a theme
+   * suggestion.
+   *
+   * @param AbstractObject $object
+   *   The object.
+   *
+   * @return array
+   *   A renderable array.
+   */
   public function islandora_print_object(AbstractObject $object) {
-    // @FIXME
-// drupal_set_title() has been removed. There are now a few ways to set the title
-// dynamically, depending on the situation.
-//
-//
-// @see https://www.drupal.org/node/2067859
-// drupal_set_title($object->label);
-
-    // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// return theme('islandora_object_print', array('object' => $object));
-
+   return [
+     '#title' => $object->label,
+     '#theme' => 'islandora_object_print',
+     '#object' => $object,
+   ];
   }
 
   public function islandora_object_manage_access_callback($perms, $object = NULL, AccountInterface $account) {

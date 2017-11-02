@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * This file documents all available hook functions to manipulate data.
@@ -8,7 +9,7 @@
  * Generate a repository objects view.
  *
  * @param AbstractObject $object
- *   The object to display
+ *   The object to display.
  * @param object $user
  *   The user accessing the object.
  * @param string $page_number
@@ -19,41 +20,8 @@
  * @return array
  *   An array whose values are markup.
  */
-function hook_islandora_view_object($object, $user, $page_number, $page_size) {
-  $output = array();
-  if (in_array('islandora:sp_basic_image', $object->models)) {
-    // @FIXME
-// url() expects a route name or an external URI.
-// $resource_url = url("islandora/object/{$object->id}/datastream/OBJ/view");
-
-    $params = array(
-      'title' => $object->label,
-      'path' => $resource_url,
-    );
-    // Theme the image seperatly.
-    // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $variables['islandora_img'] = theme('image', $params);
-
-    // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $output = theme('islandora_default_print', array(
-    'islandora_content' => $variables['islandora_img']));
-
-  }
-  return $output;
+function hook_islandora_view_object(AbstractObject $object, $user, $page_number, $page_size) {
+  return ["{$object->id}"];
 }
 
 /**
@@ -73,13 +41,13 @@ function hook_islandora_view_print_object($object) {
  * create the hook name.
  *
  * @param AbstractObject $object
- *   A Tuque FedoraObject
+ *   A Tuque FedoraObject.
  *
  * @return array
  *   An array whose values are markup.
  */
-function hook_cmodel_pid_islandora_view_object($object) {
-
+function hook_cmodel_pid_islandora_view_object(AbstractObject $object) {
+  return [];
 }
 
 /**
@@ -90,35 +58,35 @@ function hook_cmodel_pid_islandora_view_object($object) {
  * @param array $rendered
  *   The array of rendered views.
  */
-function hook_islandora_view_object_alter(&$object, &$rendered) {
+function hook_islandora_view_object_alter(AbstractObject $object, array &$rendered) {
 
 }
 
 /**
  * Alter display output if the object has the given model.
  *
- * @see hook_islandora_view_object_alter()
- *
  * @param AbstractObject $object
  *   A Tuque AbstractObject being operated on.
  * @param array $rendered
  *   The array of rendered views.
+ *
+ * @see hook_islandora_view_object_alter()
  */
-function hook_cmodel_pid_islandora_view_object_alter(&$object, &$rendered) {
-
+function hook_cmodel_pid_islandora_view_object_alter(AbstractObject &$object, array &$rendered) {
+  return [];
 }
 
 /**
  * Generate an object's datastreams management display.
  *
  * @param AbstractObject $object
- *   A Tuque FedoraObject
+ *   A Tuque FedoraObject.
  *
  * @return array
  *   An array whose values are markup.
  */
-function hook_islandora_edit_object($object) {
-
+function hook_islandora_edit_object(AbstractObject $object) {
+  return [];
 }
 
 /**
@@ -128,24 +96,24 @@ function hook_islandora_edit_object($object) {
  * create the hook name.
  *
  * @param AbstractObject $object
- *   A Tuque FedoraObject
+ *   A Tuque FedoraObject.
  *
  * @return array
  *   An array whose values are markup.
  */
-function hook_cmodel_pid_islandora_edit_object($object) {
-
+function hook_cmodel_pid_islandora_edit_object(AbstractObject $object) {
+  return [];
 }
 
 /**
  * Allow datastreams management display output to be altered.
  *
  * @param AbstractObject $object
- *   A Tuque FedoraObject
+ *   A Tuque FedoraObject.
  * @param array $rendered
- *   an arr of rendered views
+ *   An array of rendered views.
  */
-function hook_islandora_edit_object_alter(&$object, &$rendered) {
+function hook_islandora_edit_object_alter(AbstractObject $object, array &$rendered) {
 
 }
 
@@ -248,12 +216,12 @@ function hook_cmodel_pid_dsid_islandora_datastream_alter(AbstractObject $object,
  * This hook is called after an object has been successfully ingested via a
  * FedoraRepository object.
  *
+ * @param AbstractObject $object
+ *   The object that was ingested.
+ *
  * @note
  * If ingested directly via the FedoraApiM object this will not be called as we
  * don't have access to the ingested object at that time.
- *
- * @param AbstractObject $object
- *   The object that was ingested.
  */
 function hook_islandora_object_ingested(AbstractObject $object) {
 
@@ -322,14 +290,14 @@ function hook_cmodel_pid_islandora_object_purged($pid) {
  *
  * This hook is called after the datastream has been successfully ingested.
  *
- * @note
- * If ingested directly via the FedoraApiM object this will not be called as we
- * don't have access to the ingested datastream at that time.
- *
  * @param AbstractObject $object
  *   The object the datastream belongs to.
  * @param AbstractDatastream $datastream
  *   The ingested datastream.
+ *
+ * @note
+ * If ingested directly via the FedoraApiM object this will not be called as we
+ * don't have access to the ingested datastream at that time.
  */
 function hook_islandora_datastream_ingested(AbstractObject $object, AbstractDatastream $datastream) {
 
@@ -415,12 +383,12 @@ function hook_cmodel_pid_dsid_islandora_datastream_purged(AbstractObject $object
  *   - name: A string containg a human-readable name for the entry.
  *   - url: A string containing the URL to which to the user will be routed.
  */
-function hook_islandora_edit_datastream_registry($object, $dsid) {
-  $routes = array();
-  $routes[] = array(
+function hook_islandora_edit_datastream_registry(AbstractObject $object, $dsid) {
+  $routes = [];
+  $routes[] = [
     'name' => t('My Awesome Edit Route'),
     'url' => "go/edit/here/{$object->id}/{$dsid}",
-  );
+  ];
   return $routes;
 }
 
@@ -464,15 +432,15 @@ function hook_islandora_viewer_info() {
  *   An array of DSIDs that shouldn't be deleted.
  */
 function hook_islandora_undeletable_datastreams(array $models) {
-  return array('DC', 'MODS');
+  return ['DC', 'MODS'];
 }
 
 /**
  * Define steps used in the islandora_ingest_form() ingest process.
  *
- * @param array $form_state
- *   An array containing the form_state, on which infomation from step storage
- *   might be extracted.  Note that the
+ * @param Drupal\Core\Form\FormStateInterface $form_state
+ *   The form_state, on which infomation from step storage
+ *   might be extracted.
  *
  * @return array
  *   An associative array of associative arrays which define each step in the
@@ -504,27 +472,27 @@ function hook_islandora_undeletable_datastreams(array $models) {
  *   - 'file': A file to include (relative to the module's path, including the
  *     file's extension).
  */
-function hook_islandora_ingest_steps(array $form_state) {
-  return array(
-    'my_cool_step_definition' => array(
+function hook_islandora_ingest_steps(FormStateInterface $form_state) {
+  return [
+    'my_cool_step_definition' => [
       'type' => 'form',
       'weight' => 1,
       'form_class' => 'my_cool_form',
-      'args' => array('arg_one', 'numero deux'),
-    ),
-    'my_cool_step_callback' => array(
+      'args' => ['arg_one', 'numero deux'],
+    ],
+    'my_cool_step_callback' => [
       'type' => 'callback',
       'weight' => 2,
-      'do_function' => array(
+      'do_function' => [
         'function' => 'my_cool_execute_function',
-        'args' => array('arg_one', 'numero deux'),
-      ),
-      'undo_function' => array(
+        'args' => ['arg_one', 'numero deux'],
+      ],
+      'undo_function' => [
         'function' => 'my_cool_undo_function',
-        'args' => array('arg_one', 'numero deux'),
-      ),
-    ),
-  );
+        'args' => ['arg_one', 'numero deux'],
+      ],
+    ],
+  ];
 }
 
 /**
@@ -532,11 +500,10 @@ function hook_islandora_ingest_steps(array $form_state) {
  *
  * @param array $steps
  *   An array of steps as generated by hook_islandora_ingest_steps().
- *
- * @param array $form_state
- *   An array containing the Drupal form_state.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The Drupal form_state.
  */
-function hook_islandora_ingest_steps_alter(array &$steps, array &$form_state) {
+function hook_islandora_ingest_steps_alter(array &$steps, \Drupal\Core\Form\FormStateInterface $form_state) {
 
 }
 
@@ -550,7 +517,7 @@ function hook_islandora_ingest_steps_alter(array &$steps, array &$form_state) {
  *
  * @see hook_islandora_ingest_steps()
  */
-function hook_cmodel_pid_islandora_ingest_steps(array $form_state) {
+function hook_cmodel_pid_islandora_ingest_steps(\Drupal\Core\Form\FormStateInterface $form_state) {
 
 }
 
@@ -559,11 +526,10 @@ function hook_cmodel_pid_islandora_ingest_steps(array $form_state) {
  *
  * @param array $steps
  *   An array of steps as generated by hook_islandora_ingest_steps().
- *
- * @param array $form_state
- *   An array containing the Drupal form_state.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The Drupal form_state.
  */
-function hook_cmodel_pid_islandora_ingest_steps_alter(array &$steps, array &$form_state) {
+function hook_cmodel_pid_islandora_ingest_steps_alter(array &$steps, \Drupal\Core\Form\FormStateInterface $form_state) {
 
 }
 
@@ -578,13 +544,13 @@ function hook_cmodel_pid_islandora_ingest_steps_alter(array &$steps, array &$for
  * @param object $user
  *   A loaded user object.
  *
- * @return bool|NULL|array
+ * @return bool|null|array
  *   Either boolean TRUE or FALSE to explicitly allow or deny the operation on
  *   the given object, or NULL to indicate that we are making no assertion
  *   about the outcome. Can also be an array containing multiple
  *   TRUE/FALSE/NULLs, due to how hooks work.
  */
-function hook_islandora_object_access($op, $object, $user) {
+function hook_islandora_object_access($op, AbstractObject $object, $user) {
   switch ($op) {
     case 'create stuff':
       return TRUE;
@@ -617,13 +583,13 @@ function hook_cmodel_pid_islandora_object_access($op, $object, $user) {
  * @param object $user
  *   A loaded user object.
  *
- * @return bool|NULL|array
+ * @return bool|null|array
  *   Either boolean TRUE or FALSE to explicitly allow or deny the operation on
  *   the given object, or NULL to indicate that we are making no assertion
  *   about the outcome. Can also be an array containing multiple
  *   TRUE/FALSE/NULLs, due to how hooks work.
  */
-function hook_islandora_datastream_access($op, $object, $user) {
+function hook_islandora_datastream_access($op, AbstractDatastream $object, $user) {
   switch ($op) {
     case 'create stuff':
       return TRUE;
@@ -684,8 +650,8 @@ function hook_cmodel_pid_islandora_overview_object_alter(AbstractObject &$object
  * modified. It may also be called to discover the datastream derivative
  * hierarchy.
  *
- * @param AbstractObject $object
- *   Optional object to which derivatives will be added
+ * @param mixed $object
+ *   Optional object to which derivatives will be added.
  * @param array $ds_modified_params
  *   An array that will contain the properties changed on the datastream if
  *   derivatives were triggered from a datastream_modified hook, as well as a
@@ -724,34 +690,34 @@ function hook_cmodel_pid_islandora_overview_object_alter(AbstractObject &$object
  *   - file: A string denoting the path to the file where the function
  *     is being called from.
  */
-function hook_islandora_derivative(AbstractObject $object = NULL, $ds_modified_params = array()) {
-  $derivatives[] = array(
+function hook_islandora_derivative($object = NULL, array $ds_modified_params = []) {
+  $derivatives[] = [
     'source_dsid' => 'OBJ',
     'destination_dsid' => 'DERIV',
     'weight' => '0',
-    'function' => array(
+    'function' => [
       'islandora_derivatives_test_create_deriv_datastream',
-    ),
-  );
+    ],
+  ];
   // Test object before adding this derivative.
   if ($object['SOMEWEIRDDATASTREAM']->mimetype == "SOMETHING/ODD") {
-    $derivatives[] = array(
+    $derivatives[] = [
       'source_dsid' => 'SOMEWEIRDDATASTREAM',
       'destination_dsid' => 'STANLEY',
       'weight' => '-1',
-      'function' => array(
+      'function' => [
         'islandora_derivatives_test_create_some_weird_datastream',
-      ),
-    );
+      ],
+    ];
   }
-  $derivatives[] = array(
+  $derivatives[] = [
     'source_dsid' => NULL,
     'destination_dsid' => 'NOSOURCE',
     'weight' => '-3',
-    'function' => array(
+    'function' => [
       'islandora_derivatives_test_create_nosource_datastream',
-    ),
-  );
+    ],
+  ];
   return $derivatives;
 }
 
@@ -767,7 +733,7 @@ function hook_cmodel_pid_islandora_derivative() {
 /**
  * Allows for the altering of defined derivative functions.
  */
-function hook_islandora_derivative_alter(&$derivatives, AbstractObject $object = NULL, $ds_modified_params = array()) {
+function hook_islandora_derivative_alter(&$derivatives, AbstractObject $object = NULL, $ds_modified_params = []) {
   foreach ($derivatives as $key => $derivative) {
     if ($derivative['destination_dsid'] == 'TN') {
       unset($derivatives[$key]);
@@ -775,14 +741,14 @@ function hook_islandora_derivative_alter(&$derivatives, AbstractObject $object =
   }
   // Example of altering out derivative generation if only a specified set of
   // datastream parameters have been modified.
-  $mask = array(
+  $mask = [
     'label' => NULL,
     'dateLastModified' => NULL,
     'dsid' => NULL,
-  );
+  ];
   $param_diff = array_diff_key($ds_modified_params, $mask);
   if (empty($param_diff)) {
-    $derivatives = array();
+    $derivatives = [];
   }
 }
 
@@ -798,11 +764,11 @@ function hook_cmodel_pid_islandora_derivative_alter() {
  * Retrieves PIDS of related objects for property updating.
  *
  * @param AbstractObject $object
- *   AbstractObject representing deleted object
+ *   AbstractObject representing deleted object.
  */
 function hook_islandora_update_related_objects_properties(AbstractObject $object) {
   $related_objects = get_all_children_siblings_and_friends($object);
-  $pids_to_return = array();
+  $pids_to_return = [];
   foreach ($related_objects as $related_object) {
     $pids_to_return[] = $related_object->id;
   }
@@ -816,10 +782,10 @@ function hook_islandora_update_related_objects_properties(AbstractObject $object
  *   Breadcrumbs array to be altered by reference. Each element is markup.
  * @param string $context
  *   Where the alter is originating from for distinguishing.
- * @param AbstractObject $object
- *   (Optional) AbstractObject representing object providing breadcrumb path
+ * @param null|AbstractObject $object
+ *   (Optional) AbstractObject representing object providing breadcrumb path.
  */
-function hook_islandora_breadcrumbs_alter(&$breadcrumbs, $context, $object = NULL) {
+function hook_islandora_breadcrumbs_alter(array &$breadcrumbs, $context, $object = NULL) {
 
 }
 
@@ -845,15 +811,15 @@ function hook_islandora_breadcrumbs_alter(&$breadcrumbs, $context, $object = NUL
  * @see islandora_retrieve_metadata_markup()
  */
 function hook_islandora_metadata_display_info() {
-  return array(
-    'hookable_displays_yay' => array(
+  return [
+    'hookable_displays_yay' => [
       'label' => t('Hookable display yay!'),
       'description' => t('This is purely an example of how to implement this.'),
       'metadata callback' => 'hookable_displays_some_function_that_returns_metadata_markup',
       'description callback' => 'hookable_displays_some_function_that_returns_description_markup',
       'configuration' => 'islandora.sample_route',
-    ),
-  );
+    ],
+  ];
 }
 
 /**
@@ -886,10 +852,10 @@ function hook_islandora_metadata_object_description_alter(AbstractObject &$objec
  *   matched on in SPARQL.
  */
 function hook_islandora_get_breadcrumb_query_predicates() {
-  return array(
+  return [
     'somepredicate',
     'someotherpredicate',
-  );
+  ];
 }
 
 /**
@@ -904,16 +870,16 @@ function hook_islandora_get_breadcrumb_query_predicates() {
  *   - original_edit_registry: The original edit_registry prior to any
  *     modifications.
  */
-function hook_islandora_edit_datastream_registry_alter(&$edit_registry, $context) {
+function hook_islandora_edit_datastream_registry_alter(array &$edit_registry, array $context) {
   // Example: Remove xml form builder edit registry.
   if (isset($edit_registry['xml_form_builder_edit_form_registry'])) {
     unset($edit_registry['xml_form_builder_edit_form_registry']);
   }
   // Add custom form to replace the removed form builder edit_form.
-  $edit_registry['somemodule_custom_form'] = array(
+  $edit_registry['somemodule_custom_form'] = [
     'name' => t('Somemodule Custom Form'),
     'url' => "islandora/custom_form/{$context['object']->id}/{$context['datastream']->id}",
-  );
+  ];
 }
 
 /**
@@ -943,12 +909,12 @@ function hook_islandora_repository_connection_construction_alter(RepositoryConne
  *   - file: An optional file to load before attempting to call the callable.
  */
 function hook_islandora_breadcrumbs_backends() {
-  return array(
-    'awesome_backend' => array(
+  return [
+    'awesome_backend' => [
       'title' => t('Awesome Backend'),
       'callable' => 'callback_islandora_breadcrumbs_backends',
-    ),
-  );
+    ],
+  ];
 }
 
 /**
@@ -964,5 +930,5 @@ function hook_islandora_breadcrumbs_backends() {
  */
 function callback_islandora_breadcrumbs_backends(AbstractObject $object) {
   // Do something to get an array of breadcrumb links for $object, root first.
-  return array($root_link, $collection_link, $object_link);
+  return ['$root_link', '$collection_link', '$object_link'];
 }

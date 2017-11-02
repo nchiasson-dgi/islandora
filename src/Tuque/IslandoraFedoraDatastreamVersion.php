@@ -7,10 +7,12 @@ require_once __DIR__ . '/Base.php';
 use FedoraDatastreamVersion;
 
 /**
- * Class IslandoraFedoraDatastreamVersion
+ * Class IslandoraFedoraDatastreamVersion.
+ *
  * @package Drupal\islandora\Tuque
  */
 class IslandoraFedoraDatastreamVersion extends FedoraDatastreamVersion {
   protected $fedoraRelsIntClass = IslandoraFedoraRelsInt::class;
   protected $fedoraDatastreamVersionClass = IslandoraFedoraDatastreamVersion::class;
+
 }

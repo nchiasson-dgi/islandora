@@ -7,7 +7,8 @@ require_once __DIR__ . '/Base.php';
 use NewFedoraObject;
 
 /**
- * Class IslandoraNewFedoraObject
+ * Class IslandoraNewFedoraObject.
+ *
  * @package Drupal\islandora\Tuque
  */
 class IslandoraNewFedoraObject extends NewFedoraObject {

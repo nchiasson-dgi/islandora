@@ -7,10 +7,12 @@ require_once __DIR__ . '/Base.php';
 use RepositoryConnection;
 
 /**
- * Class IslandoraRepositoryConnection
+ * Class IslandoraRepositoryConnection.
+ *
  * @package Drupal\islandora\Tuque
  */
 class IslandoraRepositoryConnection extends RepositoryConnection {
+
   /**
    * Constructor.
    *

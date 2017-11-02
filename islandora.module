@@ -3,26 +3,9 @@
 /**
  * @file
  * Defines all the hooks this module implements.
- *
- * islandora.module: defines paths (drupal menu items) as entry points and acts
- *  as a hub for dispatching tasks to other modules.
- *
- * This file is part of Islandora.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with the program.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
+use Drupal\islandora\DublinCore;
 use Drupal\islandora\Authentication\Provider\IslandoraTokenAuth;
 
 // Common datastreams.
@@ -74,11 +57,6 @@ const ISLANDORA_BREADCRUMB_LEGACY_BACKEND = 'islandora_breadcrumbs_legacy_sparql
 
 /**
  * Implements hook_theme().
- *
- * The theme entries 'islandora_objects' and 'islandora_objects_subset'
- * utilize the same template file. When theming, be sure to utilize the theme
- * name, and not the template file names. Similar situation found here:
- * @link https://jira.duraspace.org/browse/ISLANDORA-934. @endlink
  */
 function islandora_theme() {
   return [
@@ -93,7 +71,7 @@ function islandora_theme() {
       'render element' => 'form',
     ],
     // Print used by the clipper.
-    'islandora_object_print' =>[
+    'islandora_object_print' => [
       'file' => 'theme/theme.inc',
       'variables' => ['object' => NULL, 'content' => []],
     ],
@@ -176,42 +154,9 @@ function islandora_theme() {
 }
 
 /**
- * Renders the print page for the given object.
- *
- * Modules can either implement preprocess functions to append content onto the
- * 'content' variable, or override the display by providing a theme suggestion.
- *
- * @param AbstractObject $object
- *   The object.
- *
- * @return array
- *   A renderable array.
- */
-function islandora_print_object(AbstractObject $object) {
-  // @FIXME
-// drupal_set_title() has been removed. There are now a few ways to set the title
-// dynamically, depending on the situation.
-//
-//
-// @see https://www.drupal.org/node/2067859
-// drupal_set_title($object->label);
-
-  // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// return theme('islandora_object_print', array('object' => $object));
-
-}
-
-/**
  * View print tab access.
  *
- * Configurable option in islandora configuration.
+ * Configurable option in Islandora configuration.
  *
  * @param string $op
  *   String identifying an operation to check. Should correspond to a
@@ -225,7 +170,7 @@ function islandora_print_object(AbstractObject $object) {
  *   FALSE if 'islandora_show_print_option' is not selected in islandora
  *   configuraton.
  */
-function islandora_print_object_access($op, $object) {
+function islandora_print_object_access($op, AbstractObject $object) {
   if (!\Drupal::config('islandora.settings')->get('islandora_show_print_option')) {
     return FALSE;
   }
@@ -273,7 +218,7 @@ function islandora_forms($form_id) {
  *   TRUE if the user is allowed to access this object/datastream, FALSE
  *   otherwise.
  */
-function islandora_user_access_check($object_or_datastream, array $permissions, $content_models = array(), $access_any = TRUE, $user = NULL) {
+function islandora_user_access_check($object_or_datastream, array $permissions, array $content_models = [], $access_any = TRUE, $user = NULL) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   $is_repository_accessible = &drupal_static(__FUNCTION__);
 
@@ -360,11 +305,11 @@ function islandora_user_access_check($object_or_datastream, array $permissions, 
  * Checks whether the user can access the given object.
  *
  * Checks for object existance, accessiblitly, namespace permissions,
- * and user permissions
+ * and user permissions.
  *
  * @param string $perm
  *   User permission to test for.
- * @param AbstractObject $object
+ * @param null|AbstractObject $object
  *   The object to test, if NULL given the object doesn't exist or is
  *   inaccessible.
  *
@@ -410,18 +355,18 @@ function islandora_object_datastream_tokened_access_callback($perm, $object = NU
  * Checks whether the user can access the given object's manage tab.
  *
  * Checks for object existance, accessiblitly, namespace permissions,
- * and user permissions
+ * and user permissions.
  *
  * @param array $perms
  *   Array of user permission to test for.
- * @param AbstractObject $object
+ * @param null|AbstractObject $object
  *   The object to test, if NULL given the object doesn't exist or is
  *   inaccessible.
  *
  * @return bool
  *   TRUE if the user is allowed to access this object, FALSE otherwise.
  */
-function islandora_object_manage_access_callback($perms, $object = NULL) {
+function islandora_object_manage_access_callback(array $perms, $object = NULL) {
   module_load_include('inc', 'islandora', 'includes/utilities');
 
   if (!$object && !islandora_describe_repository()) {
@@ -479,7 +424,9 @@ function islandora_view_object(AbstractObject $object) {
   foreach ($hooks as $hook) {
     // @todo Remove page number and size from this hook, implementers of the
     // hook should use drupal page handling directly.
-    $temp = \Drupal::moduleHandler()->invokeAll($hook, [$object, $page_number, $page_size]);
+    $temp = \Drupal::moduleHandler()->invokeAll(
+      $hook, [$object, $page_number, $page_size]
+    );
     islandora_as_renderable_array($temp);
     if (!empty($temp)) {
       $output = array_merge_recursive($output, $temp);
@@ -557,7 +504,7 @@ function islandora_drupal_title(AbstractObject $object) {
  * @return array
  *   The default rendering of the object view page, indexed at 'Default output'.
  */
-function islandora_default_islandora_view_object($object) {
+function islandora_default_islandora_view_object(AbstractObject $object) {
   return [
     'Default output' => [
       '#theme' => 'islandora_default',
@@ -575,21 +522,18 @@ function islandora_default_islandora_view_object($object) {
  *   The string representation of the themed viewable object.
  *
  * @return array
- *   A renderable array
+ *   A renderable array.
  */
-function islandora_default_islandora_printer_object($object, $alter) {
+function islandora_default_islandora_printer_object(AbstractObject $object, $alter) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   module_load_include('inc', 'islandora', 'includes/datastream');
   module_load_include('inc', 'islandora', 'includes/metadata');
 
-  $path = drupal_get_path('module', 'islandora');
-
   $islandora_object = islandora_object_load($object->id);
-  $repository = $islandora_object->repository;
 
   try {
     $dc = $islandora_object['DC']->content;
-    $dc_object = \Drupal\islandora\DublinCore::importFromXMLString($dc);
+    $dc_object = DublinCore::importFromXMLString($dc);
   }
   catch (Exception $e) {
     drupal_set_message(t('Error retrieving object %s %t', ['%s' => $islandora_object->id, '%t' => $e->getMessage()]), 'error', FALSE);
@@ -695,7 +639,7 @@ function islandora_object_load($object_id) {
  * @return FedoraObject
  *   A token authenticated object. @see islandora_object_load
  */
-function islandora_tokened_object_load($object_id, $map) {
+function islandora_tokened_object_load($object_id, array $map) {
   if (array_key_exists('token', $_GET)) {
     $token = filter_input(INPUT_GET, IslandoraTokenAuth::TOKEN_NAME, FILTER_SANITIZE_STRING);
     if ($token) {
@@ -722,7 +666,7 @@ function islandora_tokened_object_load($object_id, $map) {
  * islandora_tokened_datastream_load(DSID, DSID, PID)
  *
  * @param mixed $datastream_id
- *   %islandora_tokened_datastream @see islandora_datastream_load
+ *   Param islandora_tokened_datastream @see islandora_datastream_load.
  * @param array $map
  *   Used to extract the Fedora object's PID at $map[2].
  *
@@ -731,7 +675,7 @@ function islandora_tokened_object_load($object_id, $map) {
  *
  * @see islandora_datastream_load
  */
-function islandora_tokened_datastream_load($datastream_id, $map) {
+function islandora_tokened_datastream_load($datastream_id, array $map) {
   return islandora_datastream_load($datastream_id, $map[2]);
 }
 
@@ -747,7 +691,6 @@ function islandora_tokened_datastream_load($datastream_id, $map) {
  * @param string $datastream_id
  *   The DSID of the datastream specified as '%islandora_datastream' to fetch
  *   from the given object in the menu path identified by '%islandora_object'.
- *
  * @param mixed $object_id
  *   The object to load the datastream from.  This can be a Fedora PID or
  *   an instantiated IslandoraAbstractObject as it implements __toString()
@@ -773,7 +716,7 @@ function islandora_datastream_load($datastream_id, $object_id) {
  * attribute, as in:
  *   <content_model name="Collection" version="2" ...
  *
- * @param AbstractObject $object
+ * @param null|AbstractObject $object
  *   The Object the datastream belongs to.
  * @param string $dsid
  *   The ID of the datastream.
@@ -846,7 +789,7 @@ function islandora_islandora_undeletable_datastreams(array $models) {
  * @return FedoraObject
  *   The ingested FedoraObject.
  */
-function islandora_add_object(\AbstractObject &$object) {
+function islandora_add_object(AbstractObject &$object) {
   return $object->repository->ingestObject($object);
 }
 
@@ -918,15 +861,15 @@ function islandora_delete_object(AbstractObject &$object) {
 /**
  * Delete's or purges the given datastream.
  *
- * @throws Exception
- *  Which types are undefined, but more than likely because of the hooks
- *  there will be several kinds.
- *
  * @param AbstractDatastream $datastream
  *   The datastream to delete.
  *
  * @return bool
  *   TRUE if successful, FALSE otherwise.
+ *
+ * @throws Exception
+ *   Which types are undefined, but more than likely because of the hooks
+ *   there will be several kinds.
  */
 function islandora_delete_datastream(AbstractDatastream &$datastream) {
   $object = $datastream->parent;
@@ -944,7 +887,7 @@ function islandora_cron() {
  * Implements hook_file_mimetype_mapping_alter().
  *
  * Grab custom Islandora mime type list
- * and add any missing ext/mimes to the Drupal mapping
+ * and add any missing ext/mimes to the Drupal mapping.
  */
 function islandora_file_mimetype_mapping_alter(&$mapping) {
   module_load_include('inc', 'islandora', 'includes/mimetype.utils');
@@ -973,14 +916,14 @@ function islandora_file_mimetype_mapping_alter(&$mapping) {
  *   permission declared via hook_permission().
  * @param AbstractObject $object
  *   An object to check for permissions.
- * @param object $account
+ * @param null|\Drupal\Core\Session\AccountProxyInterface $account
  *   An optional loaded user object. Defaults to the current user.
  *
  * @return bool
  *   TRUE if at least one implementation of hook_islandora_object_access()
  *   returned TRUE, and no implementation return FALSE; FALSE otherwise.
  */
-function islandora_object_access($op, $object, $account = NULL) {
+function islandora_object_access($op, AbstractObject $object, $account = NULL) {
   $cache = &drupal_static(__FUNCTION__);
   if (!is_object($object)) {
     // The object could not be loaded... Presumably, we don't have
@@ -1171,8 +1114,8 @@ function islandora_islandora_datastream_access($op, AbstractDatastream $datastre
     module_load_include('inc', 'islandora', 'includes/derivatives');
     $applicable_hook = FALSE;
     $object = $datastream->parent;
-    $hooks = islandora_invoke_hook_list(ISLANDORA_DERIVATIVE_CREATION_HOOK, $object->models, array($object));
-    $hooks = islandora_filter_derivatives($hooks, array('force' => TRUE), $object);
+    $hooks = islandora_invoke_hook_list(ISLANDORA_DERIVATIVE_CREATION_HOOK, $object->models, [$object]);
+    $hooks = islandora_filter_derivatives($hooks, ['force' => TRUE], $object);
     foreach ($hooks as $hook) {
       if (isset($hook['destination_dsid']) && $hook['destination_dsid'] == $datastream->id &&
         (is_null($hook['source_dsid']) || islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$hook['source_dsid']], $user))) {
@@ -1191,7 +1134,7 @@ function islandora_islandora_datastream_access($op, AbstractDatastream $datastre
  * Access for submenu items.
  *
  * @param string $package_name
- *   Name of the package
+ *   Name of the package.
  *
  * @return bool
  *   Access granted
@@ -1199,7 +1142,7 @@ function islandora_islandora_datastream_access($op, AbstractDatastream $datastre
 function islandora_find_package($package_name) {
   $results = system_get_info('module');
   $found = FALSE;
-  foreach ($results as $name => $values) {
+  foreach ($results as $values) {
     if ($values['package'] == $package_name) {
       $found = TRUE;
       break;
@@ -1226,46 +1169,21 @@ function islandora_ingest_form_pre_submit($form, &$form_state) {
 
 /**
  * Implements hook_menu_local_tasks_alter().
+ *
+ * Replaces the print link text with an icon.
  */
 function islandora_menu_local_tasks_alter(&$data, $route_name) {
-  if (strpos($route_name, 'islandora/object/%') === 0) {
-    if (isset($data['tabs'][0]['output'])) {
-      foreach ($data['tabs'][0]['output'] as $key => &$tab) {
-        if ($tab['#link']['path'] == 'islandora/object/%/print_object') {
-          if ($root_path == 'islandora/object/%') {
-            $islandora_path = drupal_get_path('module', 'islandora');
-            $tab['#prefix'] = '<li class="islandora-print">';
-            $tab['#suffix'] = '</li>';
-            $tab['#theme'] = 'link';
-            // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $tab['#text'] = theme('image', array(
-//               'path' => "$islandora_path/images/print-icon.png",
-//               'alt' => t('Print Object'),
-//               'attributes' => array(
-//                 'id' => 'print_btn',
-//               ),
-//             ));
-
-            $tab['#path'] = "{$router_item['href']}/print_object";
-            $tab['#options'] = array(
-              'attributes' => array(),
-              'html' => TRUE,
-            );
-          }
-          else {
-            unset($data['tabs'][0]['output'][$key]);
-            break;
-          }
-        }
-      }
-    }
+  if (!isset($data['tabs'][0]) || !is_array($data['tabs'][0])) {
+    return;
+  }
+  $tabs = &$data['tabs'][0];
+  if ($route_name != 'islandora.printer_object' && in_array('islandora.printer_object', array_keys($tabs))) {
+    $tab = &$tabs['islandora.printer_object'];
+    $tab['#link']['title'] = [
+      '#type' => 'image',
+      '#theme' => 'image',
+      '#uri' => drupal_get_path('module', 'islandora') . '/images/print-icon.png',
+    ];
   }
 }
 
@@ -1305,18 +1223,7 @@ function islandora_conditionally_clear_cache() {
     $clear =& drupal_static(__FUNCTION__, FALSE);
   }
 
-  // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// if ($clear || !variable_get('cache', 0)) {
-//     // Already set, no need to do so again, or page caching is disabled... Let's
-//     // avoid a call to attempt to clear it.
-//     return;
-//   }
-
-
-  $functions = array(
+  $functions = [
     // Object changes in response to a form.
     'form_execute_handlers' => 'islandora_cache_clear_all',
     // Object changes in response to a batch. Note that this will not match on
@@ -1324,7 +1231,7 @@ function islandora_conditionally_clear_cache() {
     // batches. We intentionally do not clear batches in response to drush
     // batches, since they are not in response to GUI actions.
     '_batch_process' => 'islandora_schedule_cache_clear_for_batch',
-  );
+  ];
   $options = (version_compare(PHP_VERSION, '5.3.6', '>=') ? DEBUG_BACKTRACE_IGNORE_ARGS & ~DEBUG_BACKTRACE_PROVIDE_OBJECT : FALSE);
   foreach (debug_backtrace($options) as $frame) {
     $function_name = strtolower($frame['function']);
@@ -1377,11 +1284,11 @@ function islandora_schedule_cache_clear_for_batch() {
     return;
   }
 
-  $clear_batch = array(
-    'operations' => array(
-      array('islandora_cache_clear_all', array()),
-    ),
-  );
+  $clear_batch = [
+    'operations' => [
+      ['islandora_cache_clear_all', []],
+    ],
+  ];
   batch_set($clear_batch);
 
   // Set our flag, to avoid setting the batch multiple times during multiple
@@ -1393,22 +1300,22 @@ function islandora_schedule_cache_clear_for_batch() {
  * Implements hook_islandora_get_breadcrumb_query_predicates().
  */
 function islandora_islandora_get_breadcrumb_query_predicates(AbstractObject $object) {
-  return array(
+  return [
     'info:fedora/fedora-system:def/relations-external#isPartOf',
     'info:fedora/fedora-system:def/relations-external#isMemberOfCollection',
     'info:fedora/fedora-system:def/relations-external#isMemberOf',
-  );
+  ];
 }
 
 /**
  * Implements hook_islandora_breadcrumbs_backends().
  */
 function islandora_islandora_breadcrumbs_backends() {
-  return array(
-    ISLANDORA_BREADCRUMB_LEGACY_BACKEND => array(
+  return [
+    ISLANDORA_BREADCRUMB_LEGACY_BACKEND => [
       'title' => t('Resource Index - Default'),
       // Callback not needed as this is our legacy process and the
       // default incase anything goes wrong.
-    ),
-  );
+    ],
+  ];
 }

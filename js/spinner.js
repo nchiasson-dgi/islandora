@@ -1,19 +1,18 @@
-/*jshint browser: true, devel:true*/
-/*global jQuery, Drupal, Spinner*/
 /**
  * @file
  * Triggers the display of a spinning icon when the form is submitted.
  */
+
 (function ($, Drupal) {
   'use strict';
   Drupal.behaviors.spinner = {
-    attach: function(context, settings) {
+    attach: function (context, settings) {
       // Store what triggered the submit.
-      $('form').once('submit-resolver').each(function() {
-        $(this).click(function(event) {
+      $('form').once('submit-resolver').each(function () {
+        $(this).click(function (event) {
           $(this).data('clicked', $(event.target));
         });
-        $(this).keypress(function(event) {
+        $(this).keypress(function (event) {
           // On enter the first submit button is assumed as is most often the
           // case and this is part of the HTML 5 specification, although some
           // Browsers may choose the button with the lowest tab-index.

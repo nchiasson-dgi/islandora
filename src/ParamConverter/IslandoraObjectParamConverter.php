@@ -5,7 +5,14 @@ namespace Drupal\islandora\ParamConverter;
 use Drupal\Core\ParamConverter\ParamConverterInterface;
 use Symfony\Component\Routing\Route;
 
+/**
+ * Object parameter converter class.
+ */
 class IslandoraObjectParamConverter implements ParamConverterInterface {
+
+  /**
+   * Object parameter converter method.
+   */
   public function convert($value, $definition, $name, array $defaults) {
     // XXX: This seems so very dumb but given how empty slugs don't play nice
     // in Drupal as defaults this needs to be the case. If it's possible to get
@@ -15,7 +22,11 @@ class IslandoraObjectParamConverter implements ParamConverterInterface {
     return islandora_object_load($value);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function applies($definition, $name, Route $route) {
     return (!empty($definition['type']) && $definition['type'] == 'object');
   }
+
 }

@@ -40,7 +40,7 @@ function islandora_get_extensions_for_mimetype($mimetype) {
   // Drupal's MIME type guesser returns nothing for text/xml so force return
   // our extension before anything else.
   if ($mimetype == 'text/xml') {
-    return array('xml');
+    return ['xml'];
   }
   $mapper = new IslandoraMimeTypeMapper(\Drupal::service('file.mime_type.guesser'));
   $extensions = $mapper->getExtensionsForMimeType($mimetype);

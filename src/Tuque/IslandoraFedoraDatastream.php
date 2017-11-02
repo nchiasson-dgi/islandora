@@ -7,7 +7,8 @@ require_once __DIR__ . '/Base.php';
 use FedoraDatastream;
 
 /**
- * Class IslandoraFedoraDatastream
+ * Class IslandoraFedoraDatastream.
+ *
  * @package Drupal\islandora\Tuque
  */
 class IslandoraFedoraDatastream extends FedoraDatastream {
@@ -70,12 +71,14 @@ class IslandoraFedoraDatastream extends FedoraDatastream {
       }
     }
     catch (Exception $e) {
-      \Drupal::logger('islandora')->error('Failed to modify datastream @dsid from @pid</br>code: @code<br/>message: @msg', array(
+      \Drupal::logger('islandora')->error('Failed to modify datastream @dsid from @pid</br>code: @code<br/>message: @msg', [
         '@pid' => $this->parent->id,
         '@dsid' => $this->id,
         '@code' => $e->getCode(),
-        '@msg' => $e->getMessage()));
+        '@msg' => $e->getMessage(),
+      ]);
       throw $e;
     }
   }
+
 }

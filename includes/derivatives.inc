@@ -5,6 +5,7 @@
  * Defines functions used when constructing derivatives.
  */
 
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Link;
 
@@ -37,17 +38,17 @@ function islandora_run_derivatives(AbstractObject $object, $dsid) {
     if ($operations) {
       batch_set(
         // Title won't show for batch in a batch.
-        array(
-          'init_message' => t('Preparing derivatives for @label', array('@label' => $object->label)),
+        [
+          'init_message' => t('Preparing derivatives for @label', ['@label' => $object->label]),
           'error_message' => t('An error occured creating derivatives.'),
           'progress_message' => t(
             'Creating derivatives for @label <br/>Time elapsed: @elapsed <br/>
               Estimated time remaining @estimate.',
-            array('@label' => $object->label)
+            ['@label' => $object->label]
           ),
           'file' => drupal_get_path('module', 'islandora') . '/includes/regenerate_derivatives.form.inc',
           'operations' => $operations,
-        )
+        ]
       );
     }
   }
@@ -86,7 +87,7 @@ function islandora_run_derivatives(AbstractObject $object, $dsid) {
  *       the logger if not defined.
  */
 function islandora_do_derivatives(AbstractObject $object, array $options) {
-  $results = array();
+  $results = [];
   $derivatives = islandora_get_derivative_list($object, $options);
   foreach ($derivatives as $derivative) {
     if (isset($derivative['file'])) {
@@ -102,7 +103,7 @@ function islandora_do_derivatives(AbstractObject $object, array $options) {
       else {
         \Drupal::logger('islandora')->error(
           'Unable to call derivative function @function as it was not found!',
-          array('@function' => $function)
+          ['@function' => $function]
         );
       }
     }
@@ -133,16 +134,16 @@ function islandora_derivative_logging(array $logging_results) {
     foreach ($result['messages'] as $message) {
       if ($message['type'] === 'dsm') {
         if (isset($message['severity']) && $message['severity'] != 'status') {
-          drupal_set_message(\Drupal\Component\Utility\Xss::filter(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : array())), $message['severity']);
+          drupal_set_message(Xss::filter(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : [])), $message['severity']);
         }
         else {
           if (!isset($_SESSION['islandora_event_messages'])) {
-            $_SESSION['islandora_event_messages'] = array();
+            $_SESSION['islandora_event_messages'] = [];
           }
-          $_SESSION['islandora_event_messages'][] = array(
-            'message' => \Drupal\Component\Utility\Xss::filter(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : array())),
+          $_SESSION['islandora_event_messages'][] = [
+            'message' => Xss::filter(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : [])),
             'severity' => 'status',
-          );
+          ];
           drupal_set_message(
             Link::createFromRoute(
               t('Derivatives successfully created.'),
@@ -182,7 +183,7 @@ function islandora_derivative_logging(array $logging_results) {
  *   An array of operations to be called from within a batch.
  */
 function islandora_do_batch_derivatives(AbstractObject $object, array $options) {
-  $operations = array();
+  $operations = [];
   $derivatives = islandora_get_derivative_list($object, $options);
   foreach ($derivatives as $derivative) {
     $file = FALSE;
@@ -190,16 +191,16 @@ function islandora_do_batch_derivatives(AbstractObject $object, array $options) 
       $file = $derivative['file'];
     }
     foreach ($derivative['function'] as $function) {
-      $operations[] = array(
+      $operations[] = [
         'islandora_derivative_perform_batch_operation',
-        array(
+        [
           $function,
           $file,
           $object->id,
           $options['force'],
           $derivative,
-        ),
-      );
+        ],
+      ];
     }
   }
   return $operations;
@@ -218,7 +219,7 @@ function islandora_do_batch_derivatives(AbstractObject $object, array $options) 
  * @return array
  *   Returns the filtered array of hooks to be ran.
  */
-function islandora_filter_derivatives($hooks, $options, AbstractObject $object) {
+function islandora_filter_derivatives(array $hooks, array $options, AbstractObject $object) {
   if (array_key_exists('source_dsid', $options)) {
     $hooks = array_filter($hooks, function ($filter_hook) use ($options) {
       return array_key_exists('source_dsid', $filter_hook) &&
@@ -293,21 +294,21 @@ function islandora_remove_defer_derivatives_flag(AbstractObject $object) {
  *
  * @param AbstractObject $object
  *   The object to find derivatives for.
- * @param &array $options
+ * @param array $options
  *   Options for derivatives, will be updated to default force to FALSE.
  */
-function islandora_get_derivative_list(AbstractObject $object, &$options) {
+function islandora_get_derivative_list(AbstractObject $object, array &$options) {
   module_load_include('inc', 'islandora', 'includes/utilities');
 
-  $ds_modified_params = isset($options['ds_modified_params']) ? $options['ds_modified_params'] : array();
-  $options += array(
+  $ds_modified_params = isset($options['ds_modified_params']) ? $options['ds_modified_params'] : [];
+  $options += [
     'force' => FALSE,
-  );
+  ];
 
   $derivatives = islandora_invoke_hook_list(
     ISLANDORA_DERIVATIVE_CREATION_HOOK,
     $object->models,
-    array($object),
+    [$object],
     $ds_modified_params
   );
 
@@ -315,6 +316,6 @@ function islandora_get_derivative_list(AbstractObject $object, &$options) {
     \Drupal::moduleHandler()->alter($hook, $derivatives, $object, $ds_modified_params);
   }
 
-  uasort($derivatives, array('Drupal\Component\Utility\SortArray', 'sortByWeightElement'));
+  uasort($derivatives, ['Drupal\Component\Utility\SortArray', 'sortByWeightElement']);
   return islandora_filter_derivatives($derivatives, $options, $object);
 }

@@ -8,7 +8,8 @@ use FedoraRepository;
 use NewFedoraObject;
 
 /**
- * Class IslandoraFedoraRepository
+ * Class IslandoraFedoraRepository.
+ *
  * @package Drupal\islandora\Tuque
  */
 class IslandoraFedoraRepository extends FedoraRepository {
@@ -30,9 +31,9 @@ class IslandoraFedoraRepository extends FedoraRepository {
         ];
         islandora_alter_datastream($object, $datastream, $datastream_context);
         if ($datastream_context['block']) {
-          throw new Exception(t('Object ingest blocked due to ingest of @dsid being blocked.', array(
+          throw new Exception(t('Object ingest blocked due to ingest of @dsid being blocked.', [
             '@dsid' => $dsid,
-          )));
+          ]));
         }
       }
 
@@ -56,9 +57,10 @@ class IslandoraFedoraRepository extends FedoraRepository {
     catch (Exception $e) {
       \Drupal::logger('islandora')->error(
         'Failed to ingest object: @pid</br>code: @code<br/>message: @msg', [
-        '@pid' => $object->id,
-        '@code' => $e->getCode(),
-        '@msg' => $e->getMessage()]
+          '@pid' => $object->id,
+          '@code' => $e->getCode(),
+          '@msg' => $e->getMessage(),
+        ]
       );
       throw $e;
     }

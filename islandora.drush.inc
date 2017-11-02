@@ -9,84 +9,84 @@
  * Implements hook_drush_command().
  */
 function islandora_drush_command() {
-  $commands = array();
+  $commands = [];
 
-  $commands['islandora-solution-pack-install-required-objects'] = array(
+  $commands['islandora-solution-pack-install-required-objects'] = [
     'description' => dt('Install Solution Pack objects.'),
-    'options' => array(
-      'module' => array(
+    'options' => [
+      'module' => [
         'description' => dt('The module for which to install the required objects.'),
         'required' => TRUE,
-      ),
-      'force' => array(
+      ],
+      'force' => [
         'description' => dt('Force reinstallation of the objects.'),
-      ),
-    ),
-    'aliases' => array('ispiro'),
-    'drupal dependencies' => array(
+      ],
+    ],
+    'aliases' => ['ispiro'],
+    'drupal dependencies' => [
       'islandora',
-    ),
-    'examples' => array(
+    ],
+    'examples' => [
       'drush -u 1 ispiro --module=islandora' => dt('Install missing solution pack objects for the "islandora" module.'),
       'drush -u 1 ispiro --module=islandora --force' => dt('Install all solution pack objects for the "islandora" module, purging any which currently exist.'),
-    ),
+    ],
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_LOGIN,
-  );
-  $commands['islandora-solution-pack-uninstall-required-objects'] = array(
+  ];
+  $commands['islandora-solution-pack-uninstall-required-objects'] = [
     'description' => dt('Uninstall Solution Pack objects.'),
-    'options' => array(
-      'module' => array(
+    'options' => [
+      'module' => [
         'description' => dt('The module for which to uninstall the required objects.'),
         'required' => TRUE,
-      ),
-      'force' => array(
+      ],
+      'force' => [
         'description' => dt('Force uninstallation of the objects.'),
-      ),
-    ),
-    'aliases' => array('ispuro'),
-    'drupal dependencies' => array(
+      ],
+    ],
+    'aliases' => ['ispuro'],
+    'drupal dependencies' => [
       'islandora',
-    ),
-    'examples' => array(
+    ],
+    'examples' => [
       'drush -u 1 ispuro --module=islandora' => dt('Uninstall solution pack objects for the "islandora" module.'),
       'drush -u 1 ispuro --module=islandora --force' => dt('Force uninstallation of all solution pack objects for the "islandora" module.'),
-    ),
+    ],
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_LOGIN,
-  );
-  $commands['islandora-solution-pack-required-objects-status'] = array(
+  ];
+  $commands['islandora-solution-pack-required-objects-status'] = [
     'description' => dt('Get Solution Pack object status.'),
-    'options' => array(
-      'module' => array(
+    'options' => [
+      'module' => [
         'description' => dt('The module for which to get the status of the required objects.'),
-      ),
-    ),
-    'aliases' => array('ispros'),
-    'drupal dependencies' => array(
+      ],
+    ],
+    'aliases' => ['ispros'],
+    'drupal dependencies' => [
       'islandora',
-    ),
-    'examples' => array(
+    ],
+    'examples' => [
       'drush -u 1 ispros' => dt('Get the status of all solution pack objects.'),
       'drush -u 1 ispros --module=islandora' => dt('Get the status of solution pack objects for the "islandora" module.'),
-    ),
+    ],
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_LOGIN,
-  );
-  $commands['islandora-solution-pack-install-content_models'] = array(
+  ];
+  $commands['islandora-solution-pack-install-content_models'] = [
     'description' => dt('Install Solution Pack content models.'),
-    'options' => array(
-      'module' => array(
+    'options' => [
+      'module' => [
         'description' => dt('The module for which to install the content models.'),
         'required' => TRUE,
-      ),
-    ),
-    'aliases' => array('ispicm'),
-    'drupal dependencies' => array(
+      ],
+    ],
+    'aliases' => ['ispicm'],
+    'drupal dependencies' => [
       'islandora',
-    ),
-    'examples' => array(
+    ],
+    'examples' => [
       'drush -u 1 ispicm --module=islandora' => dt('Install missing solution pack objects for the "islandora" module.'),
-    ),
+    ],
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_LOGIN,
-  );
+  ];
   return $commands;
 }
 
@@ -103,9 +103,9 @@ function drush_islandora_solution_pack_install_required_objects() {
     );
   }
   else {
-    drush_log(dt('"@module" is not installed/enabled?...', array(
+    drush_log(dt('"@module" is not installed/enabled?...', [
       '@module' => $module,
-    )));
+    ]));
   }
 }
 
@@ -122,9 +122,9 @@ function drush_islandora_solution_pack_uninstall_required_objects() {
     );
   }
   else {
-    drush_log(dt('"@module" is not installed/enabled?...', array(
+    drush_log(dt('"@module" is not installed/enabled?...', [
       '@module' => $module,
-    )));
+    ]));
   }
 }
 
@@ -135,7 +135,7 @@ function drush_islandora_solution_pack_required_objects_status() {
   module_load_include('inc', 'islandora', 'includes/solution_packs');
 
   $module = drush_get_option('module', FALSE);
-  $required_objects = array();
+  $required_objects = [];
   if ($module && \Drupal::moduleHandler()->moduleExists($module)) {
     $required_objects[$module] = islandora_solution_packs_get_required_objects($module);
   }
@@ -143,24 +143,24 @@ function drush_islandora_solution_pack_required_objects_status() {
     $required_objects = islandora_solution_packs_get_required_objects();
   }
   else {
-    drush_log(dt('"@module" is not installed/enabled?...', array(
+    drush_log(dt('"@module" is not installed/enabled?...', [
       '@module' => $module,
-    )));
+    ]));
     return;
   }
 
-  $header = array('PID', 'Machine Status', 'Readable Status');
-  $widths = array(30, 20, 20);
+  $header = ['PID', 'Machine Status', 'Readable Status'];
+  $widths = [30, 20, 20];
   foreach ($required_objects as $module => $info) {
-    $rows = array();
+    $rows = [];
     drush_print($info['title']);
     foreach ($info['objects'] as $object) {
       $status = islandora_check_object_status($object);
-      $rows[] = array(
+      $rows[] = [
         $object->id,
         $status['status'],
         $status['status_friendly'],
-      );
+      ];
     }
     drush_print_table($rows, $header, $widths);
   }
@@ -174,8 +174,8 @@ function drush_islandora_solution_pack_install_content_models() {
   $module = drush_get_option('module');
   if (\Drupal::moduleHandler()->moduleExists($module)) {
     $info = islandora_solution_packs_get_required_objects($module);
-    $objects_to_add = array();
-    foreach ($info['objects'] as $key => $candidate) {
+    $objects_to_add = [];
+    foreach ($info['objects'] as $candidate) {
       if (in_array('fedora-system:ContentModel-3.0', $candidate->models)) {
         $objects_to_add[] = $candidate;
       }
@@ -186,7 +186,7 @@ function drush_islandora_solution_pack_install_content_models() {
         if ($old_object) {
           $deleted = islandora_delete_object($old_object);
           if (!$deleted) {
-            drush_log(dt('@object did not delete.', array('@object' => $old_object->id), 'error'));
+            drush_log(dt('@object did not delete.', ['@object' => $old_object->id], 'error'));
             continue;
           }
         }

@@ -15,15 +15,15 @@ use Drupal\islandora\TypedData\Proxy;
  */
 class IslandoraDOMXPath extends Proxy {
 
- /**
-  * {@inheritdoc}
-  */
- public function get($property_name) {
-   if ($property_name === 'content') {
-     return $this->getTypedDataManager()->getPropertyInstance($this, $property_name, $this->getValue()->document->saveXML());
-   }
+  /**
+   * {@inheritdoc}
+   */
+  public function get($property_name) {
+    if ($property_name === 'content') {
+      return $this->getTypedDataManager()->getPropertyInstance($this, $property_name, $this->getValue()->document->saveXML());
+    }
 
-   return parent::get($property_name);
+    return parent::get($property_name);
   }
 
 }
