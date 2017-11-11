@@ -77,16 +77,26 @@ class DefaultController extends ControllerBase {
     return $output;
   }
 
+  /**
+   * Page callback for the path "islandora".
+   *
+   * Redirects to the view of the object indicated by the Drupal variable
+   * 'islandora_repository_pid'.
+   */
   public function islandora_view_default_object() {
     $pid = \Drupal::config('islandora.settings')->get('islandora_repository_pid');
     return $this->redirect('islandora.view_object', ['object' => $pid]);
   }
 
+  /**
+   * Title callback for Drupal title to be the object label.
+   */
   public function islandora_drupal_title(AbstractObject $object) {
     module_load_include('inc', 'islandora', 'includes/breadcrumb');
     //drupal_set_breadcrumb(islandora_get_breadcrumbs($object));
     return $object->label;
   }
+
 
   public function islandora_object_access_callback($perm, $object, AccountInterface $account) {
     module_load_include('inc', 'islandora', 'includes/utilities');
@@ -252,13 +262,17 @@ class DefaultController extends ControllerBase {
     return new JsonResponse($ouput);
   }
 
+  /**
+   * Datastream title callback.
+   */
   public function islandoraViewDatastreamTitle(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
     return $datastream->id;
   }
+
   /**
    * Callback function to view or download a datastream.
    *
-   * @param AbstractDatastream $datastream
+   * @param \AbstractDatastream $datastream
    *   The datastream to view/download.
    * @param bool $download
    *   If TRUE the file is download to the user computer for viewing otherwise
@@ -342,10 +356,10 @@ class DefaultController extends ControllerBase {
   /**
    * Callback to download the given datastream to the users computer.
    *
-   * @param AbstractDatastream $datastream
+   * @param \AbstractDatastream $datastream
    *   The datastream to download.
    *
-   * @@return Symfony\Component\HttpFoundation\BinaryFileResponse|Symfony\Component\HttpFoundation\StreamedResponse
+   * @return Symfony\Component\HttpFoundation\BinaryFileResponse|Symfony\Component\HttpFoundation\StreamedResponse
    *   A BinaryFileResponse if it's a ranged request, a StreamedResponse
    *   otherwise.
    */
@@ -353,6 +367,9 @@ class DefaultController extends ControllerBase {
     return $this->islandoraViewDatastream($datastream, TRUE);
   }
 
+  /**
+   * Page callback for editing a datastream.
+   */
   public function islandora_edit_datastream(AbstractDatastream $datastream) {
     module_load_include('inc', 'islandora', 'includes/utilities');
 
@@ -389,11 +406,17 @@ class DefaultController extends ControllerBase {
     }
   }
 
+  /**
+   * Page callback for the datastream version table.
+   */
   public function islandora_datastream_version_table(AbstractDatastream $datastream) {
     module_load_include('inc', 'islandora', 'includes/datastream.version');
     return islandora_datastream_version_table($datastream);
   }
 
+  /**
+   * Page callback for session status messages.
+   */
   public function islandora_event_status() {
     $results = FALSE;
     if (isset($_SESSION['islandora_event_messages'])) {
