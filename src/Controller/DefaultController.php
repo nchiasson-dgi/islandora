@@ -403,7 +403,7 @@ class DefaultController extends ControllerBase {
       }
       unset($_SESSION['islandora_event_messages']);
     }
-    $text = ($results) ? t('The status messages above will be deleted after viewing this page.') : t('No messages to display.');
+    $text = ($results) ? $this->t('The status messages above will be deleted after viewing this page.') : $this->t('No messages to display.');
     return ['#markup' => $text];
   }
 
