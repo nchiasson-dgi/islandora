@@ -97,7 +97,6 @@ class DefaultController extends ControllerBase {
     return $object->label;
   }
 
-
   public function islandora_object_access_callback($perm, $object, AccountInterface $account) {
     module_load_include('inc', 'islandora', 'includes/utilities');
     if (!$object && !islandora_describe_repository()) {
