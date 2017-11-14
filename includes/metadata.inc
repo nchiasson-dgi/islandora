@@ -57,7 +57,7 @@ function islandora_retrieve_description_markup(AbstractObject $object) {
       $markup = call_user_func($viewers['dublin_core']['description callback'], $object);
     }
   }
-  return $markup;
+  return \Drupal::service('renderer')->render($markup);
 }
 
 /**
