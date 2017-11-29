@@ -14,13 +14,13 @@ use Symfony\Component\Routing\Route;
  */
 class IslandoraObjectParamConverter implements ParamConverterInterface, ContainerInjectionInterface {
 
-  private $config;
+  private $configFactory;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface $config) {
-    $this->config = $config;
+  public function __construct(ConfigFactoryInterface configFactory) {
+    $this->configFactory = configFactory;
   }
 
   /**
@@ -40,7 +40,7 @@ class IslandoraObjectParamConverter implements ParamConverterInterface, Containe
     // in Drupal as defaults this needs to be the case. If it's possible to get
     // around this by making the empty slug route in YAML or a custom Routing
     // object we can remove this.
-    $value = $value === 'root' ? $this->config('islandora.settings')->get('islandora_repository_pid') : $value;
+    $value = $value === 'root' ? $this->configFactory('islandora.settings')->get('islandora_repository_pid') : $value;
     return islandora_object_load($value);
   }
 
