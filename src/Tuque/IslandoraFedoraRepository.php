@@ -74,7 +74,7 @@ class IslandoraFedoraRepository extends FedoraRepository {
   public function constructObject($id = NULL, $create_uuid = NULL) {
     // Enforces UUID when set, but allows to override if called
     // with $create_uuid set to bool.
-    return parent::constructObject($id, static::useUuids($create_uuid));
+    return parent::constructObject($id, static::useUUIDs($create_uuid));
   }
 
   /**
@@ -85,7 +85,7 @@ class IslandoraFedoraRepository extends FedoraRepository {
   public function getNextIdentifier($namespace = NULL, $create_uuid = NULL, $count = 1) {
     // Enforces UUID when set, but allows to override if called
     // with $create_uuid set to bool.
-    return parent::getNextIdentifier($namespace, static::useUuids($create_uuid), $count);
+    return parent::getNextIdentifier($namespace, static::useUUIDs($create_uuid), $count);
   }
 
   /**
@@ -99,7 +99,7 @@ class IslandoraFedoraRepository extends FedoraRepository {
    *   'islandora_basic_collection_generate_uuid' Drupal variable; otherwise,
    *   the value of $to_create itself.
    */
-  protected static function useUuids($to_create) {
+  protected static function useUUIDs($to_create) {
     return is_null($to_create) ?
       \Drupal::config('islandora.settings')->get('islandora_basic_collection_generate_uuid') :
       $to_create;

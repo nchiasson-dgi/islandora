@@ -33,8 +33,6 @@ class DefaultController extends ControllerBase {
 
   protected $formbuilder;
 
-  protected $config;
-
   protected $currentRequest;
 
   protected $moduleHandler;
@@ -48,9 +46,8 @@ class DefaultController extends ControllerBase {
   /**
    * Constructor for dependency injection.
    */
-  public function __construct(FormBuilderInterface $formbuilder, ConfigFactoryInterface $config, Request $currentRequest, ModuleHandlerInterface $moduleHandler, Renderer $renderer, $appRoot, AccountProxyInterface $currentUser) {
+  public function __construct(FormBuilderInterface $formbuilder, Request $currentRequest, ModuleHandlerInterface $moduleHandler, Renderer $renderer, $appRoot, AccountProxyInterface $currentUser) {
     $this->formbuilder = $formbuilder;
-    $this->config = $config;
     $this->currentRequest = $currentRequest;
     $this->moduleHandler = $moduleHandler;
     $this->renderer = $renderer;
@@ -64,7 +61,6 @@ class DefaultController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('form_builder'),
-      $container->get('config.factory'),
       $container->get('request_stack')->getCurrentRequest(),
       $container->get('module_handler'),
       $container->get('renderer'),
@@ -112,7 +108,7 @@ class DefaultController extends ControllerBase {
    * 'islandora_repository_pid'.
    */
   public function islandoraViewDefaultObject() {
-    $pid = $this->config->get('islandora.settings')->get('islandora_repository_pid');
+    $pid = $this->config('islandora.settings')->get('islandora_repository_pid');
     return $this->redirect('islandora.view_object', ['object' => $pid]);
   }
 
@@ -148,7 +144,7 @@ class DefaultController extends ControllerBase {
     // around this by making the empty slug route in YAML or a custom Routing
     // object we can remove this.
     if ($this->currentRequest->getRequestUri() === '/islandora/object/') {
-      return $this->redirect('islandora.view_object', ['object' => $this->config->get('islandora.settings')->get('islandora_repository_pid')]);
+      return $this->redirect('islandora.view_object', ['object' => $this->config('islandora.settings')->get('islandora_repository_pid')]);
     }
     // Warn if object is inactive or deleted.
     if ($object->state != 'A') {
