@@ -19,8 +19,8 @@ class IslandoraObjectParamConverter implements ParamConverterInterface, Containe
   /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface configFactory) {
-    $this->configFactory = configFactory;
+  public function __construct(ConfigFactoryInterface $configFactory) {
+    $this->configFactory = $configFactory;
   }
 
   /**
