@@ -80,7 +80,9 @@ class DublinCore {
    * @return string
    *   The serialized XML.
    */
+  // @codingStandardsIgnoreStart
   public function asXML() {
+  // @codingStandardsIgnoreEnd
     $dc_xml = new DomDocument();
     $oai_dc = $dc_xml->createElementNS('http://www.openarchives.org/OAI/2.0/oai_dc/', 'oai_dc:dc');
     $oai_dc->setAttribute('xmlns:dc', 'http://purl.org/dc/elements/1.1/');

@@ -5,36 +5,13 @@ namespace Drupal\islandora\Form;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Utility\LinkGeneratorInterface;
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Object ingest form.
  *
  * @package \Drupal\islandora\Form
  */
-class IslandoraIngestForm extends FormBase implements ContainerInjectionInterface {
-
-  protected $linkGenerator;
-
-  /**
-   * Constructor for dependency injection.
-   */
-  public function __construct(LinkGeneratorInterface $linkGenerator) {
-    $this->linkGenerator = $linkGenerator;
-
-  }
-
-  /**
-   * Dependency Injection.
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('link_generator')
-    );
-  }
+class IslandoraIngestForm extends FormBase {
 
   /**
    * {@inheritdoc}
@@ -81,7 +58,7 @@ class IslandoraIngestForm extends FormBase implements ContainerInjectionInterfac
       drupal_set_message($e->getMessage(), 'error');
       return [
         [
-          '#markup' => $this->linkGenerator->generate($this->t('Back'), Url::fromUri('javascript:window.history.back();')),
+          '#markup' => $this->getLinkGenerator()->generate($this->t('Back'), Url::fromUri('javascript:window.history.back();')),
         ],
       ];
     }

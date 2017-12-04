@@ -5,12 +5,8 @@ namespace Drupal\islandora\Controller;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Url;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Render\Renderer;
-use Drupal\Core\Session\AccountProxyInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 
 use Drupal\islandora\Form\IslandoraSolutionPackForm;
 
@@ -31,28 +27,19 @@ use AbstractDatastream;
  */
 class DefaultController extends ControllerBase {
 
-  protected $formbuilder;
-
   protected $currentRequest;
-
-  protected $moduleHandler;
 
   protected $renderer;
 
   protected $appRoot;
 
-  protected $currentUser;
-
   /**
    * Constructor for dependency injection.
    */
-  public function __construct(FormBuilderInterface $formbuilder, Request $currentRequest, ModuleHandlerInterface $moduleHandler, Renderer $renderer, $appRoot, AccountProxyInterface $currentUser) {
-    $this->formbuilder = $formbuilder;
+  public function __construct(Request $currentRequest, Renderer $renderer, $appRoot) {
     $this->currentRequest = $currentRequest;
-    $this->moduleHandler = $moduleHandler;
     $this->renderer = $renderer;
     $this->appRoot = $appRoot;
-    $this->currentUser = $currentUser;
   }
 
   /**
@@ -60,12 +47,9 @@ class DefaultController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('form_builder'),
       $container->get('request_stack')->getCurrentRequest(),
-      $container->get('module_handler'),
       $container->get('renderer'),
       $container->get('app.root'),
-      $container->get('current_user')
     );
   }
 
@@ -95,7 +79,7 @@ class DefaultController extends ControllerBase {
       $objects = array_filter($solution_pack_info['objects']);
       $class_name = IslandoraSolutionPackForm::class;
 
-      $output[$solution_pack_module] = $this->formbuilder->getForm($class_name, $solution_pack_module, $solution_pack_name, $objects);
+      $output[$solution_pack_module] = $this->formBuilder()->getForm($class_name, $solution_pack_module, $solution_pack_name, $objects);
 
     }
     return $output;
@@ -158,7 +142,7 @@ class DefaultController extends ControllerBase {
     foreach ($hooks as $hook) {
       // @todo Remove page number and size from this hook, implementers of the
       // hook should use drupal page handling directly.
-      $temp = $this->moduleHandler->invokeAll($hook, [
+      $temp = $this->moduleHandler()->invokeAll($hook, [
         $object,
         $page_number,
         $page_size,
@@ -173,7 +157,7 @@ class DefaultController extends ControllerBase {
     }
 
     arsort($output);
-    $this->moduleHandler->alter($hooks, $object, $output);
+    $this->moduleHandler()->alter($hooks, $object, $output);
     return $output;
   }
 
@@ -194,7 +178,7 @@ class DefaultController extends ControllerBase {
 
     // Dispatch print hook.
     foreach (islandora_build_hook_list(ISLANDORA_PRINT_HOOK, $object->models) as $hook) {
-      $temp = $this->moduleHandler->invokeAll($hook, [$object]);
+      $temp = $this->moduleHandler()->invokeAll($hook, [$object]);
       if (!empty($temp)) {
         $temp_arr = array_merge_recursive($temp_arr, $temp);
       }
@@ -221,7 +205,7 @@ class DefaultController extends ControllerBase {
       return FALSE;
     }
     if ($user === NULL) {
-      $user = $this->currentUser;
+      $user = $this->currentUser();
     }
 
     // Populate the cache on a miss.

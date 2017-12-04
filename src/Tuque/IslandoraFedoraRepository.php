@@ -99,7 +99,9 @@ class IslandoraFedoraRepository extends FedoraRepository {
    *   'islandora_basic_collection_generate_uuid' Drupal variable; otherwise,
    *   the value of $to_create itself.
    */
+  // @codingStandardsIgnoreStart
   protected static function useUUIDs($to_create) {
+  // @codingStandardsIgnoreEnd
     return is_null($to_create) ?
       \Drupal::config('islandora.settings')->get('islandora_basic_collection_generate_uuid') :
       $to_create;
