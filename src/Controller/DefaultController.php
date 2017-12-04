@@ -27,8 +27,6 @@ use AbstractDatastream;
  */
 class DefaultController extends ControllerBase {
 
-  protected $currentRequest;
-
   protected $renderer;
 
   protected $appRoot;
@@ -36,8 +34,7 @@ class DefaultController extends ControllerBase {
   /**
    * Constructor for dependency injection.
    */
-  public function __construct(Request $currentRequest, Renderer $renderer, $appRoot) {
-    $this->currentRequest = $currentRequest;
+  public function __construct(Renderer $renderer, $appRoot) {
     $this->renderer = $renderer;
     $this->appRoot = $appRoot;
   }
@@ -47,7 +44,6 @@ class DefaultController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('request_stack')->getCurrentRequest(),
       $container->get('renderer'),
       $container->get('app.root'),
     );
@@ -120,14 +116,14 @@ class DefaultController extends ControllerBase {
   /**
    * View islandora object.
    */
-  public function islandoraViewObject(AbstractObject $object) {
+  public function islandoraViewObject(AbstractObject $object, Request $currentRequest) {
     module_load_include('inc', 'islandora', 'includes/breadcrumb');
     module_load_include('inc', 'islandora', 'includes/utilities');
     // XXX: This seems so very dumb but given how empty slugs don't play nice
     // in Drupal as defaults this needs to be the case. If it's possible to get
     // around this by making the empty slug route in YAML or a custom Routing
     // object we can remove this.
-    if ($this->currentRequest->getRequestUri() === '/islandora/object/') {
+    if ($currentRequest->getRequestUri() === '/islandora/object/') {
       return $this->redirect('islandora.view_object', ['object' => $this->config('islandora.settings')->get('islandora_repository_pid')]);
     }
     // Warn if object is inactive or deleted.
