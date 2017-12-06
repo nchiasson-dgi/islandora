@@ -101,6 +101,7 @@ class IslandoraFedoraRepository extends FedoraRepository {
    */
   // @codingStandardsIgnoreStart
   protected static function useUUIDs($to_create) {
+  // Rename would break older functionality.   
   // @codingStandardsIgnoreEnd
     return is_null($to_create) ?
       \Drupal::config('islandora.settings')->get('islandora_basic_collection_generate_uuid') :

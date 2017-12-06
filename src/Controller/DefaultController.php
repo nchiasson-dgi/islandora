@@ -7,6 +7,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Renderer;
+use Drupal/Core/File/MimeType/ExtensionMimeTypeGuesser;
 
 use Drupal\islandora\Form\IslandoraSolutionPackForm;
 
@@ -31,12 +32,15 @@ class DefaultController extends ControllerBase {
 
   protected $appRoot;
 
+  protected $mimeTypeMapper;
+
   /**
    * Constructor for dependency injection.
    */
-  public function __construct(Renderer $renderer, $appRoot) {
+  public function __construct(Renderer $renderer, $appRoot, MimeTypeMapperInterface $mimeTypeMapper) {
     $this->renderer = $renderer;
     $this->appRoot = $appRoot;
+    $this->mimeTypeMapper = $mimeTypeMapper;
   }
 
   /**
@@ -46,6 +50,7 @@ class DefaultController extends ControllerBase {
     return new static(
       $container->get('renderer'),
       $container->get('app.root'),
+      $container->get('file.mime_type.mapper')
     );
   }
 
@@ -190,10 +195,7 @@ class DefaultController extends ControllerBase {
   /**
    * Islandora object access.
    */
-  // @codingStandardsIgnoreStart
-  // XXX:params with defaults should be at the end. Risky to move atm.
-  public function islandoraObjectAccess($op, $object, $user = NULL, AccountInterface $account) {
-  // @codingStandardsIgnoreEnd
+  public function islandoraObjectAccess($op, $object, AccountInterface $user = NULL) {
     $cache = &drupal_static(__FUNCTION__);
     if (!is_object($object)) {
       // The object could not be loaded... Presumably, we don't have
@@ -243,10 +245,7 @@ class DefaultController extends ControllerBase {
   /**
    * Object management access callback.
    */
-  // @codingStandardsIgnoreStart
-  // XXX:params with defaults should be at the end. Risky to move atm.
-  public function islandoraObjectManageAccessCallback($perms, $object = NULL, AccountInterface $account) {
-  // @codingStandardsIgnoreEnd
+  public function islandoraObjectManageAccessCallback($perms, $object = NULL, AccountInterface $account = NULL) {
     module_load_include('inc', 'islandora', 'includes/utilities');
 
     if (!$object && !islandora_describe_repository()) {
@@ -256,7 +255,7 @@ class DefaultController extends ControllerBase {
 
     $has_access = FALSE;
     for ($i = 0; $i < count($perms) && !$has_access; $i++) {
-      $has_access = $has_access || islandora_object_access($perms[$i], $object);
+      $has_access = $has_access || islandora_object_access($perms[$i], $object, $account);
     }
 
     return $has_access;
@@ -474,9 +473,8 @@ class DefaultController extends ControllerBase {
    * Autocomplete the MIME type name.
    */
   public function islandoraMimeTypeAutocomplete(Request $request) {
-    require_once $this->appRoot . "/includes/file.mimetypes.inc";
     $string = $request->query->get('q');
-    $mime_types = file_mimetype_mapping();
+    $mime_types = $this->mimeTypeMapper->getMapping();
     $output = [];
     foreach ($mime_types as $mime_type) {
       if (preg_match("/{$string}/i", $mime_type) !== 0) {
