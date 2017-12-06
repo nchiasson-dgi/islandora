@@ -7,7 +7,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Renderer;
-use Drupal/Core/File/MimeType/ExtensionMimeTypeGuesser;
+use Drupal\Core\File\MimeType\ExtensionMimeTypeGuesser;
 
 use Drupal\islandora\Form\IslandoraSolutionPackForm;
 
@@ -37,10 +37,10 @@ class DefaultController extends ControllerBase {
   /**
    * Constructor for dependency injection.
    */
-  public function __construct(Renderer $renderer, $appRoot, MimeTypeMapperInterface $mimeTypeMapper) {
+  public function __construct(Renderer $renderer, $appRoot, ExtensionMimeTypeGuesser $mimeTypeGuesser) {
     $this->renderer = $renderer;
     $this->appRoot = $appRoot;
-    $this->mimeTypeMapper = $mimeTypeMapper;
+    $this->mimeTypeMapper = $mimeTypeGuesser;
   }
 
   /**
