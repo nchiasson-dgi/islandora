@@ -529,7 +529,8 @@ function theme_islandora_viewers_table($variables) {
  * Gather information and return a rendered viewer.
  *
  * @param mixed $params
- *   Array or string with data the module needs in order to render a full viewer.
+ *   Array or string with data the module needs in order to render a full
+ *   viewer.
  * @param string $variable_id
  *   The id of the Drupal variable the viewer settings are saved in.
  * @param AbstractObject $fedora_object
