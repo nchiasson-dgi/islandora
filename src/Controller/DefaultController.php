@@ -7,7 +7,6 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Renderer;
-use Drupal\Core\File\MimeType\ExtensionMimeTypeGuesser;
 
 use Drupal\islandora\Form\IslandoraSolutionPackForm;
 
@@ -32,15 +31,12 @@ class DefaultController extends ControllerBase {
 
   protected $appRoot;
 
-  protected $mimeTypeMapper;
-
   /**
    * Constructor for dependency injection.
    */
-  public function __construct(Renderer $renderer, $appRoot, ExtensionMimeTypeGuesser $mimeTypeGuesser) {
+  public function __construct(Renderer $renderer, $appRoot) {
     $this->renderer = $renderer;
     $this->appRoot = $appRoot;
-    $this->mimeTypeMapper = $mimeTypeGuesser;
   }
 
   /**
@@ -49,8 +45,7 @@ class DefaultController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('renderer'),
-      $container->get('app.root'),
-      $container->get('file.mime_type.mapper')
+      $container->get('app.root')
     );
   }
 
@@ -473,15 +468,7 @@ class DefaultController extends ControllerBase {
    * Autocomplete the MIME type name.
    */
   public function islandoraMimeTypeAutocomplete(Request $request) {
-    $string = $request->query->get('q');
-    $mime_types = $this->mimeTypeMapper->getMapping();
-    $output = [];
-    foreach ($mime_types as $mime_type) {
-      if (preg_match("/{$string}/i", $mime_type) !== 0) {
-        $output[] = ['value' => $mime_type, 'label' => $mime_type];
-      }
-    }
-    return new JsonResponse($output);
+    throw new Exception('Not implemented.');
   }
 
 }
