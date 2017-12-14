@@ -2,17 +2,15 @@
 
 namespace Drupal\islandora\ParamConverter;
 
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\ParamConverter\ParamConverterInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Route;
 
 /**
  * Object parameter converter class.
  */
-class IslandoraObjectParamConverter implements ParamConverterInterface, ContainerInjectionInterface {
+class IslandoraObjectParamConverter implements ParamConverterInterface {
 
   private $config;
 
