@@ -529,12 +529,7 @@ function islandora_prepare_new_object($name_source = NULL, $label = NULL, array 
         // Schema does not match available php stream wrapper. Attempt to
         // set datastream_file by url for the given scheme. Https (SSL) can
         // cause this to fail, and trigger an output log in watchdog.
-        // @FIXME
-        // url() expects a route name or an external URI.
-        // @codingStandardsIgnoreStart
-        // $datastream_file = url($ds['datastream_file'], array('absolute' => TRUE));
-        // @codingStandardsIgnoreEnd
-        \Drupal::logger('islandora')->warning('Attempting to ingest %file in islandora_prepare_new_object(), but it does not appear to be readable. We will pass the path through url(), and pass along as such.', ['%file' => $datastream_file]);
+        throw new Exception('Unsupported operation: Attempted to ingest non-readable file as datastream.');
       }
     }
 
