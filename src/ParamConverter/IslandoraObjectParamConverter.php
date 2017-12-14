@@ -24,15 +24,6 @@ class IslandoraObjectParamConverter implements ParamConverterInterface, Containe
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory')
-    );
-  }
-
-  /**
    * Object parameter converter method.
    */
   public function convert($value, $definition, $name, array $defaults) {
