@@ -18,8 +18,16 @@ use Drupal\user\Entity\User;
 
 /**
  * A class to include the Tuque library.
+ *
+ * @codingStandardsIgnoreStart
+ * XXX: Poorly implemented sniff indicates class should begin with
+ * "Islandora.info" instead of just "Islandora"... ideally, this should move
+ * somewhere under the Drupal\islandora\Tuque namespace at somepoint...
+ * Possibly as a service such that Dependency Injection can happen as
+ * necessary.
  */
 class IslandoraTuque {
+// @codingStandardsIgnoreEnd
 
   /**
    * Connection to the repository.
