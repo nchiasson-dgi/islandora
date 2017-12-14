@@ -599,7 +599,7 @@ function islandora_executable_available_message($path, $version = NULL, $require
   if ($available) {
     $image = [
       '#theme' => 'image',
-      '#uri' => '/core/misc/icons/73b355/check.svg' ,
+      '#uri' => '/core/misc/icons/73b355/check.svg',
     ];
     $message = t('Executable found at @path', ['@path' => $path]);
     if ($version) {
@@ -609,7 +609,7 @@ function islandora_executable_available_message($path, $version = NULL, $require
       if (version_compare($version, $required_version) < 0) {
         $image = [
           '#theme' => 'image',
-          '#uri' => '/core/misc/icons/e32700/error.svg' ,
+          '#uri' => '/core/misc/icons/e32700/error.svg',
         ];
       }
       $message .= t('<br/>Required Version: @version', ['@version' => $required_version]);
@@ -618,7 +618,7 @@ function islandora_executable_available_message($path, $version = NULL, $require
   else {
     $image = [
       '#theme' => 'image',
-      '#uri' => '/core/misc/icons/e32700/error.svg' ,
+      '#uri' => '/core/misc/icons/e32700/error.svg',
     ];
     $message = t('Unable to locate executable at @path', ['@path' => $path]);
   }
@@ -639,14 +639,14 @@ function islandora_directory_exists_message($path) {
   if ($available) {
     $image = [
       '#theme' => 'image',
-      '#uri' => '/core/misc/icons/73b355/check.svg' ,
+      '#uri' => '/core/misc/icons/73b355/check.svg',
     ];
     $message = t('Directory found at @path', ['@path' => $path]);
   }
   else {
     $image = [
       '#theme' => 'image',
-      '#uri' => '/core/misc/icons/e32700/error.svg' ,
+      '#uri' => '/core/misc/icons/e32700/error.svg',
     ];
     $message = t('Unable to locate directory at @path', ['@path' => $path]);
   }
