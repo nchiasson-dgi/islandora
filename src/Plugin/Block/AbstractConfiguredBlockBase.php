@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
- * Abstract base block.
+ * Abstract base block, receiving the configuration factory.
  */
 abstract class AbstractConfiguredBlockBase extends BlockBase implements ContainerFactoryPluginInterface {
 

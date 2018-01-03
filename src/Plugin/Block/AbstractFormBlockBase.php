@@ -9,7 +9,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Abstract form block base.
+ * Abstract base block, receiving the form builder.
  */
 abstract class AbstractFormBlockBase extends BlockBase implements ContainerFactoryPluginInterface {
 
