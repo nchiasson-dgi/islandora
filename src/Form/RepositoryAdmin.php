@@ -8,7 +8,7 @@ use RepositoryException;
 /**
  * Configuration for the Islandora module.
  */
-class RepositoryAdmin extends IslandoraModuleHandlerAdminForm {
+class RepositoryAdmin extends ModuleHandlerAdminForm {
 
   /**
    * {@inheritdoc}

@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Configuration for the Islandora module.
  */
-abstract class IslandoraModuleHandlerAdminForm extends ConfigFormBase {
+abstract class ModuleHandlerAdminForm extends ConfigFormBase {
 
   protected $moduleHandler;
 

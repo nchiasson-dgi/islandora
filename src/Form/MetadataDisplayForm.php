@@ -7,7 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Base class for configuration forms in Islandora that require invoking hooks.
  */
-class MetadataDisplayForm extends IslandoraModuleHandlerAdminForm {
+class MetadataDisplayForm extends ModuleHandlerAdminForm {
 
   /**
    * {@inheritdoc}
