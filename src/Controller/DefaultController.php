@@ -464,11 +464,4 @@ class DefaultController extends ControllerBase {
     return new JsonResponse($output);
   }
 
-  /**
-   * Autocomplete the MIME type name.
-   */
-  public function islandoraMimeTypeAutocomplete(Request $request) {
-    throw new Exception('Not implemented.');
-  }
-
 }
