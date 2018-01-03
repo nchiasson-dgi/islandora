@@ -362,13 +362,6 @@ islandora.content_model_autocomplete:
     _controller: '\Drupal\islandora\Controller\DefaultController::islandoraContentModelAutocomplete'
   requirements:
     _permission: 'administer site configuration'
-islandora.mime_type_autocomplete:
-  path: '/islandora/autocomplete/mime-types'
-  defaults:
-    _title: 'Autocomplete callback'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraMimeTypeAutocomplete'
-  requirements:
-    _permission: 'administer site configuration'
 islandora.deleted_objects_manage_form:
   path: '/admin/config/islandora/restore'
   defaults:
