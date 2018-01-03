@@ -1,6 +1,7 @@
 services:
   object:
     class: Drupal\islandora\ParamConverter\IslandoraObjectParamConverter
+    arguments: ['@config.factory']
     tags:
       - { name: paramconverter }
   access_check.object:

@@ -45,7 +45,7 @@ function template_preprocess_islandora_default(&$variables) {
   $variables['datastreams'] = $datastreams;
   // Objects in fcrepo4 don't always contain a DC datastream.
   if (isset($islandora_object['DC']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $islandora_object['DC'])) {
-    $dc_object = DublinCore::importFromXMLString($islandora_object['DC']->content);
+    $dc_object = DublinCore::importFromXmlString($islandora_object['DC']->content);
     $dc_array = $dc_object->asArray();
   }
   // We should eventually remove the DC object and dc_array code as it only
@@ -149,7 +149,7 @@ function islandora_objects_object_mapper($object_id) {
   if ($object) {
     $description = NULL;
     if (isset($object['DC']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['DC'])) {
-      $dc = DublinCore::importFromXMLString($object['DC']->content);
+      $dc = DublinCore::importFromXmlString($object['DC']->content);
       if ($dc) {
         $dc = $dc->asArray();
         $description = $dc['dc:description']['value'];
@@ -256,7 +256,7 @@ function template_preprocess_islandora_dublin_core_display(array &$variables) {
   if (islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $islandora_object['DC'])) {
     try {
       $dc = $islandora_object['DC']->content;
-      $dc_object = DublinCore::importFromXMLString($dc);
+      $dc_object = DublinCore::importFromXmlString($dc);
     }
     catch (Exception $e) {
       drupal_set_message(t('Error retrieving object %s %t', ['%s' => $islandora_object->id, '%t' => $e->getMessage()]), 'error', FALSE);
@@ -273,7 +273,7 @@ function template_preprocess_islandora_dublin_core_description(array &$variables
   if (islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $islandora_object['DC'])) {
     try {
       $dc = $islandora_object['DC']->content;
-      $dc_object = DublinCore::importFromXMLString($dc);
+      $dc_object = DublinCore::importFromXmlString($dc);
     }
     catch (Exception $e) {
       drupal_set_message(t('Error retrieving object %s %t', ['%s' => $islandora_object->id, '%t' => $e->getMessage()]), 'error', FALSE);
