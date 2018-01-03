@@ -57,7 +57,7 @@ class DefaultController extends ControllerBase {
    *
    * @throws \Exception
    */
-  public function islandoraSolutionPacksAdmin() {
+  public function solutionPacksAdmin() {
     module_load_include('inc', 'islandora', 'includes/utilities');
     module_load_include('inc', 'islandora', 'includes/solution_packs');
 
@@ -87,7 +87,7 @@ class DefaultController extends ControllerBase {
    * Redirects to the view of the object indicated by the Drupal variable
    * 'islandora_repository_pid'.
    */
-  public function islandoraViewDefaultObject() {
+  public function viewDefaultObject() {
     $pid = $this->config('islandora.settings')->get('islandora_repository_pid');
     return $this->redirect('islandora.view_object', ['object' => $pid]);
   }
@@ -95,7 +95,7 @@ class DefaultController extends ControllerBase {
   /**
    * Title callback for Drupal title to be the object label.
    */
-  public function islandoraDrupalTitle(AbstractObject $object) {
+  public function drupalTitle(AbstractObject $object) {
     module_load_include('inc', 'islandora', 'includes/breadcrumb');
     // drupal_set_breadcrumb(islandora_get_breadcrumbs($object));
     return $object->label;
@@ -116,7 +116,7 @@ class DefaultController extends ControllerBase {
   /**
    * View islandora object.
    */
-  public function islandoraViewObject(AbstractObject $object, Request $currentRequest) {
+  public function viewObject(AbstractObject $object, Request $currentRequest) {
     module_load_include('inc', 'islandora', 'includes/breadcrumb');
     module_load_include('inc', 'islandora', 'includes/utilities');
     // XXX: This seems so very dumb but given how empty slugs don't play nice
@@ -160,7 +160,7 @@ class DefaultController extends ControllerBase {
   /**
    * Access callback for printing an object.
    */
-  public function islandoraPrintObjectAccess($op, $object, AccountInterface $account) {
+  public function printObjectAccess($op, $object, AccountInterface $account) {
     $object = islandora_object_load($object);
     return AccessResult::allowedIf(islandora_print_object_access($op, $object, $account));
   }
@@ -229,7 +229,7 @@ class DefaultController extends ControllerBase {
    * @return array
    *   A renderable array.
    */
-  public function islandoraPrintObject(AbstractObject $object) {
+  public function printObject(AbstractObject $object) {
     return [
       '#title' => $object->label,
       '#theme' => 'islandora_object_print',

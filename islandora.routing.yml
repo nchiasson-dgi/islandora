@@ -9,14 +9,14 @@ islandora.repository_admin:
   path: '/admin/config/islandora/core'
   defaults:
     _title: 'Configuration'
-    _form: '\Drupal\islandora\Form\IslandoraRepositoryAdmin'
+    _form: '\Drupal\islandora\Form\RepositoryAdmin'
   requirements:
     _permission: 'administer site configuration'
 islandora.metadata_display_form:
   path: '/admin/config/islandora/metadata'
   defaults:
     _title: 'Metadata Display'
-    _form: '\Drupal\islandora\Form\IslandoraMetadataDisplayForm'
+    _form: '\Drupal\islandora\Form\MetadataDisplayForm'
   requirements:
     _permission: 'administer site configuration'
 islandora.solution_packs_admin:
@@ -30,7 +30,7 @@ islandora.solution_packs_admin_form:
   path: '/admin/config/islandora/solution_pack_config/solution_packs'
   defaults:
     _title: 'Solution packs required objects'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraSolutionPacksAdmin'
+    _controller: '\Drupal\islandora\Controller\DefaultController::solutionPacksAdmin'
   requirements:
     _permission: 'add fedora datastreams'
 islandora.tools_admin:
@@ -44,22 +44,22 @@ islandora.view_default_object:
   path: '/islandora'
   defaults:
     _title: 'Islandora Repository'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraViewDefaultObject'
+    _controller: '\Drupal\islandora\Controller\DefaultController::viewDefaultObject'
   requirements:
     _permission: 'view fedora repository objects'
 islandora.view_default_object_0:
   path: '/islandora/object'
   defaults:
     _title: 'Object Browsing'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraViewDefaultObject'
+    _controller: '\Drupal\islandora\Controller\DefaultController::viewDefaultObject'
   requirements:
     _permission: 'view fedora repository objects'
 islandora.view_object:
   path: '/islandora/object/{object}'
   defaults:
     perms: 'view fedora repository objects'
-    _title_callback: '\Drupal\islandora\Controller\DefaultController::islandoraDrupalTitle'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraViewObject'
+    _title_callback: '\Drupal\islandora\Controller\DefaultController::drupalTitle'
+    _controller: '\Drupal\islandora\Controller\DefaultController::viewObject'
   requirements:
     _islandora_object_access: 'TRUE'
   options:
@@ -71,9 +71,9 @@ islandora.printer_object:
   defaults:
     op: 'view fedora repository objects'
     _title: 'Print Object'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraPrintObject'
+    _controller: '\Drupal\islandora\Controller\DefaultController::printObject'
   requirements:
-    _custom_access: '\Drupal\islandora\Controller\DefaultController::islandoraPrintObjectAccess'
+    _custom_access: '\Drupal\islandora\Controller\DefaultController::printObjectAccess'
   options:
     parameters:
       object:
@@ -83,9 +83,9 @@ islandora.print_object:
   defaults:
     op: 'view fedora repository objects'
     _title: 'Print Object'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraPrintObject'
+    _controller: '\Drupal\islandora\Controller\DefaultController::printObject'
   requirements:
-    _custom_access: '\Drupal\islandora\Controller\DefaultController::islandoraPrintObjectAccess'
+    _custom_access: '\Drupal\islandora\Controller\DefaultController::printObjectAccess'
   options:
     parameters:
       object:
