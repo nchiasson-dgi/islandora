@@ -13,7 +13,7 @@ use AbstractObject;
  *
  * @package \Drupal\islandora\Form
  */
-class IslandoraRegenerateObjectDerivativesForm extends ConfirmFormBase {
+class RegenerateObjectDerivativesForm extends ConfirmFormBase {
 
   /**
    * The object on which we are operating.

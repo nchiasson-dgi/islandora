@@ -155,7 +155,7 @@ islandora.regenerate_object_derivatives_form:
   defaults:
     perms: 'regenerate derivatives for an object'
     _title: 'Regenerate all derivatives on an object'
-    _form: '\Drupal\islandora\Form\IslandoraRegenerateObjectDerivativesForm'
+    _form: '\Drupal\islandora\Form\RegenerateObjectDerivativesForm'
   requirements:
     _islandora_object_access: 'true'
   options:
