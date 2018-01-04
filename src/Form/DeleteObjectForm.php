@@ -13,7 +13,7 @@ use AbstractObject;
  *
  * @package \Drupal\islandora\Form
  */
-class IslandoraDeleteObjectForm extends ConfirmFormBase {
+class DeleteObjectForm extends ConfirmFormBase {
   /**
    * The object on which is being operated.
    *

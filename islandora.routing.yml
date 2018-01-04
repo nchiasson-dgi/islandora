@@ -142,7 +142,7 @@ islandora.delete_object_form:
   defaults:
     perms: 'delete fedora objects and datastreams'
     _title: 'Delete object'
-    _form: '\Drupal\islandora\Form\IslandoraDeleteObjectForm'
+    _form: '\Drupal\islandora\Form\DeleteObjectForm'
   requirements:
     _islandora_object_access: 'true'
   options:
