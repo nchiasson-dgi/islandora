@@ -167,7 +167,7 @@ islandora.add_datastream_form:
   defaults:
     perms: 'add fedora datastreams'
     _title: 'Add a datastream'
-    _form: '\Drupal\islandora\Form\IslandoraAddDatastreamForm'
+    _form: '\Drupal\islandora\Form\AddDatastreamForm'
   requirements:
     _islandora_object_access: 'true'
   options:
