@@ -85,7 +85,8 @@ class AddDatastreamForm extends FormBase {
             '::dsidStartsWithLetter',
             '::dsidIsValid',
           ],
-          '#autocomplete_path' => "islandora/object/{$object->id}/manage/datastreams/add/autocomplete",
+          '#autocomplete_route_name' => 'islandora.add_datastream_form_autocomplete_callback',
+          '#autocomplete_route_parameters' => ['object' => $object->id],
         ],
         'label' => [
           '#title' => 'Datastream Label',

@@ -178,12 +178,15 @@ islandora.add_datastream_form:
 islandora.add_datastream_form_autocomplete_callback:
   path: '/islandora/object/{object}/manage/datastreams/add/autocomplete'
   defaults:
-    perm: 'add fedora datastreams'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraAddDatastreamFormAutocompleteCallback'
+    perms: 'add fedora datastreams'
+    _controller: '\Drupal\islandora\Controller\DefaultController::addDatastreamFormAutocompleteCallback'
   options:
     _admin_route: TRUE
+    parameters:
+      object:
+        type: object
   requirements:
-    _custom_access: '\Drupal\islandora\Controller\DefaultController::islandoraObjectAccessCallback'
+    _islandora_object_access: 'true'
 islandora.view_datastream:
   path: '/islandora/object/{object}/datastream/{datastream}'
   defaults:

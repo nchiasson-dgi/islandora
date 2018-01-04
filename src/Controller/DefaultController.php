@@ -102,18 +102,6 @@ class DefaultController extends ControllerBase {
   }
 
   /**
-   * Access callback for Drupal object.
-   */
-  public function islandoraObjectAccessCallback($perm, $object, AccountInterface $account) {
-    module_load_include('inc', 'islandora', 'includes/utilities');
-    if (!$object && !islandora_describe_repository()) {
-      islandora_display_repository_inaccessible_message();
-      return FALSE;
-    }
-    return AccessResult::allowedIf(islandora_object_access($perm, $object, $account));
-  }
-
-  /**
    * View islandora object.
    */
   public function viewObject(AbstractObject $object, Request $currentRequest) {
@@ -261,7 +249,7 @@ class DefaultController extends ControllerBase {
    *
    * It lists the missing required (may be optional) datastreams.
    */
-  public function islandoraAddDatastreamFormAutocompleteCallback(AbstractObject $object, Request $request) {
+  public function addDatastreamFormAutocompleteCallback(AbstractObject $object, Request $request) {
     module_load_include('inc', 'islandora', 'includes/content_model');
     module_load_include('inc', 'islandora', 'includes/utilities');
     $query = $request->query->get('q');
