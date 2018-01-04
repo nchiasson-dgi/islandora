@@ -129,7 +129,7 @@ islandora.object_properties_form:
   defaults:
     perms: 'manage object properties'
     _title: 'Properties'
-    _form: '\Drupal\islandora\Form\IslandoraObjectPropertiesForm'
+    _form: '\Drupal\islandora\Form\ObjectPropertiesForm'
   requirements:
     _islandora_object_access: 'TRUE'
   options:

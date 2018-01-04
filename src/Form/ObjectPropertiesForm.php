@@ -15,7 +15,7 @@ use AbstractObject;
  *
  * @package \Drupal\islandora\Form
  */
-class IslandoraObjectPropertiesForm extends FormBase {
+class ObjectPropertiesForm extends FormBase {
 
   /**
    * {@inheritdoc}
