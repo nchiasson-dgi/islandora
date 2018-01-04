@@ -13,7 +13,7 @@ use AbstractDatastream;
  *
  * @package \Drupal\islandora\Form
  */
-class IslandoraRegenerateDatastreamDerivativeForm extends ConfirmFormBase {
+class RegenerateDatastreamDerivativeForm extends ConfirmFormBase {
 
   /**
    * The object in which we are operating.

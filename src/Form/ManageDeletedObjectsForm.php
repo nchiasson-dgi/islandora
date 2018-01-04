@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Builds the manage deleted object form.
  */
-class IslandoraManageDeletedObjectsForm extends FormBase {
+class ManageDeletedObjectsForm extends FormBase {
 
   protected $moduleHandler;
 

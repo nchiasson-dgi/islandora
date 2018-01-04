@@ -271,7 +271,7 @@ class DefaultController extends ControllerBase {
   /**
    * Datastream title callback.
    */
-  public function islandoraViewDatastreamTitle(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
+  public function viewDatastreamTitle(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
     return $datastream->id;
   }
 
@@ -290,7 +290,7 @@ class DefaultController extends ControllerBase {
    *   A BinaryFileResponse if it's a ranged request, a StreamedResponse
    *   otherwise.
    */
-  public function islandoraViewDatastream(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
+  public function viewDatastream(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
     module_load_include('inc', 'islandora', 'includes/mimetype.utils');
     module_load_include('inc', 'islandora', 'includes/datastream');
 
@@ -370,7 +370,7 @@ class DefaultController extends ControllerBase {
    *   otherwise.
    */
   public function islandoraDownloadDatastream(AbstractDatastream $datastream) {
-    return $this->islandoraViewDatastream($datastream, TRUE);
+    return $this->viewDatastream($datastream, TRUE);
   }
 
   /**
@@ -423,7 +423,7 @@ class DefaultController extends ControllerBase {
   /**
    * Page callback for session status messages.
    */
-  public function islandoraEventStatus() {
+  public function eventStatus() {
     $results = FALSE;
     if (isset($_SESSION['islandora_event_messages'])) {
       foreach ($_SESSION['islandora_event_messages'] as $message) {
@@ -439,7 +439,7 @@ class DefaultController extends ControllerBase {
   /**
    * Autocomplete the content model name.
    */
-  public function islandoraContentModelAutocomplete(Request $request) {
+  public function contentModelAutocomplete(Request $request) {
     module_load_include('inc', 'islandora', 'includes/content_model.autocomplete');
     $string = $request->query->get('q');
     $content_models = islandora_get_content_model_names();

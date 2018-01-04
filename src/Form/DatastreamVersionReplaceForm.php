@@ -15,7 +15,7 @@ use AbstractDatastream;
  *
  * @package \Drupal\islandora\Form
  */
-class IslandoraDatastreamVersionReplaceForm extends FormBase {
+class DatastreamVersionReplaceForm extends FormBase {
   /**
    * File entity storage.
    *

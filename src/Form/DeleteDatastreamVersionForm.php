@@ -13,7 +13,7 @@ use AbstractDatastream;
  *
  * @package \Drupal\islandora\Form
  */
-class IslandoraDeleteDatastreamVersionForm extends ConfirmFormBase {
+class DeleteDatastreamVersionForm extends ConfirmFormBase {
   protected $datastream;
 
   /**

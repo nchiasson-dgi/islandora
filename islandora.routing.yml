@@ -192,8 +192,8 @@ islandora.view_datastream:
   defaults:
     perms: 'view fedora repository objects'
     download: false
-    _title_callback: '\Drupal\islandora\Controller\DefaultController::islandoraViewDatastreamTitle'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraViewDatastream'
+    _title_callback: '\Drupal\islandora\Controller\DefaultController::viewDatastreamTitle'
+    _controller: '\Drupal\islandora\Controller\DefaultController::viewDatastream'
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
@@ -207,7 +207,7 @@ islandora.view_datastream_view:
   defaults:
     perms: 'view fedora repository objects'
     _title: 'View'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraViewDatastream'
+    _controller: '\Drupal\islandora\Controller\DefaultController::viewDatastream'
   requirements:
     _islandora_datastream_access: '{datastream}'
   options:
@@ -282,7 +282,7 @@ islandora.view_datastream_version:
     perms: 'view old datastream versions'
     _title: 'View Datastream Version'
     download: false
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraViewDatastream'
+    _controller: '\Drupal\islandora\Controller\DefaultController::viewDatastream'
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
@@ -297,7 +297,7 @@ islandora.datastream_version_replace_form:
   defaults:
     perms: 'replace a datastream with new content, preserving version history'
     _title: 'Replace Datastream'
-    _form: '\Drupal\islandora\Form\IslandoraDatastreamVersionReplaceForm'
+    _form: '\Drupal\islandora\Form\DatastreamVersionReplaceForm'
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
@@ -311,7 +311,7 @@ islandora.delete_datastream_version_form:
   defaults:
     perms: 'delete fedora objects and datastreams'
     _title: 'Delete datastream version'
-    _form: '\Drupal\islandora\Form\IslandoraDeleteDatastreamVersionForm'
+    _form: '\Drupal\islandora\Form\DeleteDatastreamVersionForm'
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
@@ -326,7 +326,7 @@ islandora.revert_datastream_version_form:
   defaults:
     perms: 'revert to old datastream'
     _title: 'Revert to datastream version'
-    _form: '\Drupal\islandora\Form\IslandoraRevertDatastreamVersionForm'
+    _form: '\Drupal\islandora\Form\RevertDatastreamVersionForm'
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
@@ -341,7 +341,7 @@ islandora.regenerate_datastream_derivative_form:
   defaults:
     perms: 'regenerate derivatives for an object'
     _title: 'Regenrate datastream derivative'
-    _form: '\Drupal\islandora\Form\IslandoraRegenerateDatastreamDerivativeForm'
+    _form: '\Drupal\islandora\Form\RegenerateDatastreamDerivativeForm'
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
@@ -354,7 +354,7 @@ islandora.event_status:
   path: '/islandora/event-status'
   defaults:
     _title: 'Event Status'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraEventStatus'
+    _controller: '\Drupal\islandora\Controller\DefaultController::eventStatus'
   requirements:
     # No access restriction due to D7 legacy.
     _access: 'TRUE'
@@ -362,13 +362,13 @@ islandora.content_model_autocomplete:
   path: '/islandora/autocomplete/content-models'
   defaults:
     _title: 'Autocomplete callback'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraContentModelAutocomplete'
+    _controller: '\Drupal\islandora\Controller\DefaultController::contentModelAutocomplete'
   requirements:
     _permission: 'administer site configuration'
 islandora.deleted_objects_manage_form:
   path: '/admin/config/islandora/restore'
   defaults:
     _title: 'Manage Deleted Objects'
-    _form: '\Drupal\islandora\Form\IslandoraManageDeletedObjectsForm'
+    _form: '\Drupal\islandora\Form\ManageDeletedObjectsForm'
   requirements:
     _permission: 'manage deleted objects'
