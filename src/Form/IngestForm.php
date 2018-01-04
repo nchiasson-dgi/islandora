@@ -11,7 +11,7 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @package \Drupal\islandora\Form
  */
-class IslandoraIngestForm extends FormBase {
+class IngestForm extends FormBase {
 
   /**
    * {@inheritdoc}

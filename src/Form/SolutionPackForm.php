@@ -17,11 +17,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use AbstractObject;
 
 /**
- * Class IslandoraSolutionPackForm.
+ * Class SolutionPackForm.
  *
  * @package Drupal\islandora\Form
  */
-class IslandoraSolutionPackForm extends FormBase {
+class SolutionPackForm extends FormBase {
 
   protected $moduleHandler;
   protected $renderer;

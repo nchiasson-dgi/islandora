@@ -251,7 +251,7 @@ islandora.delete_datastream_form:
   defaults:
     perms: 'delete fedora objects and datastreams'
     _title: 'Delete data stream'
-    _form: '\Drupal\islandora\Form\IslandoraDeleteDatastreamForm'
+    _form: '\Drupal\islandora\Form\DeleteDatastreamForm'
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:

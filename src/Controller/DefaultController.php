@@ -8,7 +8,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Renderer;
 
-use Drupal\islandora\Form\IslandoraSolutionPackForm;
+use Drupal\islandora\Form\SolutionPackForm;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -73,7 +73,7 @@ class DefaultController extends ControllerBase {
       // systems table for consistency in the interface.
       $solution_pack_name = $solution_pack_info['title'];
       $objects = array_filter($solution_pack_info['objects']);
-      $class_name = IslandoraSolutionPackForm::class;
+      $class_name = SolutionPackForm::class;
 
       $output[$solution_pack_module] = $this->formBuilder()->getForm($class_name, $solution_pack_module, $solution_pack_name, $objects);
 

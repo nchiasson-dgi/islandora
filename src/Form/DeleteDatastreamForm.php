@@ -14,7 +14,7 @@ use AbstractObject;
  *
  * @package \Drupal\islandora\Form
  */
-class IslandoraDeleteDatastreamForm extends ConfirmFormBase {
+class DeleteDatastreamForm extends ConfirmFormBase {
 
   /**
    * {@inheritdoc}
