@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Route;
 /**
  * Datastream parameter converter class.
  */
-class IslandoraDatastreamParamConverter implements ParamConverterInterface {
+class DatastreamParamConverter implements ParamConverterInterface {
 
   /**
    * Datastream parameter converter method.

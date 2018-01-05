@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
  * These are to be used when dealing with applications such as Djatoka that do
  * not pass through credentials.
  */
-class IslandoraTokenAuth implements AuthenticationProviderFilterInterface, AuthenticationProviderInterface {
+class TokenAuth implements AuthenticationProviderFilterInterface, AuthenticationProviderInterface {
 
   // Token lifespan(seconds): after this duration the token expires.
   // 5 minutes.

@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Route;
 /**
  * Object parameter converter class.
  */
-class IslandoraObjectParamConverter implements ParamConverterInterface {
+class ObjectParamConverter implements ParamConverterInterface {
 
   private $config;
 
