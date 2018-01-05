@@ -222,7 +222,7 @@ islandora.download_datastream:
   defaults:
     perms: 'view fedora repository objects'
     _title: 'Download datastream'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraDownloadDatastream'
+    _controller: '\Drupal\islandora\Controller\DefaultController::downloadDatastream'
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
@@ -236,7 +236,7 @@ islandora.edit_datastream:
   defaults:
     perms: 'edit fedora metadata'
     _title: 'Edit datastream'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraEditDatastream'
+    _controller: '\Drupal\islandora\Controller\DefaultController::editDatastream'
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
@@ -266,7 +266,7 @@ islandora.datastream_version_table:
   defaults:
     perms: 'view old datastream versions'
     _title: 'Datastream Versions'
-    _controller: '\Drupal\islandora\Controller\DefaultController::islandoraDatastreamVersionTable'
+    _controller: '\Drupal\islandora\Controller\DefaultController::datastreamVersionTable'
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:

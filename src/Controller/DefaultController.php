@@ -156,7 +156,7 @@ class DefaultController extends ControllerBase {
   /**
    * Islandora printer object.
    */
-  public static function islandoraPrinterObject(AbstractObject $object) {
+  public static function printerObject(AbstractObject $object) {
     $output = [];
     $temp_arr = [];
 
@@ -173,35 +173,6 @@ class DefaultController extends ControllerBase {
     // Prompt to print.
     $output['#attached']['library'][] = 'islandora/islandora-print-js';
     return $output;
-  }
-
-  /**
-   * Islandora object access.
-   */
-  public function islandoraObjectAccess($op, $object, AccountInterface $user = NULL) {
-    $cache = &drupal_static(__FUNCTION__);
-    if (!is_object($object)) {
-      // The object could not be loaded... Presumably, we don't have
-      // permission.
-      return FALSE;
-    }
-    if ($user === NULL) {
-      $user = $this->currentUser();
-    }
-
-    // Populate the cache on a miss.
-    if (!isset($cache[$op][$object->id][$user->id()])) {
-      module_load_include('inc', 'islandora', 'includes/utilities');
-
-      $results = islandora_invoke_hook_list('islandora_object_access', $object->models, [
-        $op,
-        $object,
-        $user,
-      ]);
-      // Nothing returned FALSE, and something returned TRUE.
-      $cache[$op][$object->id][$user->id()] = (!in_array(FALSE, $results, TRUE) && in_array(TRUE, $results, TRUE));
-    }
-    return $cache[$op][$object->id][$user->id()];
   }
 
   /**
@@ -223,25 +194,6 @@ class DefaultController extends ControllerBase {
       '#theme' => 'islandora_object_print',
       '#object' => $object,
     ];
-  }
-
-  /**
-   * Object management access callback.
-   */
-  public function islandoraObjectManageAccessCallback($perms, $object = NULL, AccountInterface $account = NULL) {
-    module_load_include('inc', 'islandora', 'includes/utilities');
-
-    if (!$object && !islandora_describe_repository()) {
-      islandora_display_repository_inaccessible_message();
-      return FALSE;
-    }
-
-    $has_access = FALSE;
-    for ($i = 0; $i < count($perms) && !$has_access; $i++) {
-      $has_access = $has_access || islandora_object_access($perms[$i], $object, $account);
-    }
-
-    return $has_access;
   }
 
   /**
@@ -369,14 +321,14 @@ class DefaultController extends ControllerBase {
    *   A BinaryFileResponse if it's a ranged request, a StreamedResponse
    *   otherwise.
    */
-  public function islandoraDownloadDatastream(AbstractDatastream $datastream) {
+  public function downloadDatastream(AbstractDatastream $datastream) {
     return $this->viewDatastream($datastream, TRUE);
   }
 
   /**
    * Page callback for editing a datastream.
    */
-  public function islandoraEditDatastream(AbstractDatastream $datastream) {
+  public function editDatastream(AbstractDatastream $datastream) {
     module_load_include('inc', 'islandora', 'includes/utilities');
 
     $edit_registry = islandora_build_datastream_edit_registry($datastream);
@@ -415,7 +367,7 @@ class DefaultController extends ControllerBase {
   /**
    * Page callback for the datastream version table.
    */
-  public function islandoraDatastreamVersionTable(AbstractDatastream $datastream) {
+  public function datastreamVersionTable(AbstractDatastream $datastream) {
     module_load_include('inc', 'islandora', 'includes/datastream.version');
     return islandora_datastream_version_table($datastream);
   }

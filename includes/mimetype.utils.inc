@@ -5,7 +5,7 @@
  * Mimetype specific utility functions.
  */
 
-use Drupal\islandora\IslandoraMimeTypeMapper;
+use Drupal\islandora\MimeTypeMapper;
 
 /**
  * Retrieve the correct file extension for a give mimetype.
@@ -22,7 +22,7 @@ function islandora_get_extension_for_mimetype($mimetype) {
   if ($mimetype == 'text/xml') {
     return 'xml';
   }
-  $mapper = new IslandoraMimeTypeMapper(\Drupal::service('file.mime_type.guesser'));
+  $mapper = new MimeTypeMapper(\Drupal::service('file.mime_type.guesser'));
   $extensions = $mapper->getExtensionsForMimeType($mimetype);
   return !empty($extensions) ? reset($extensions) : 'bin';
 }
@@ -42,7 +42,7 @@ function islandora_get_extensions_for_mimetype($mimetype) {
   if ($mimetype == 'text/xml') {
     return ['xml'];
   }
-  $mapper = new IslandoraMimeTypeMapper(\Drupal::service('file.mime_type.guesser'));
+  $mapper = new MimeTypeMapper(\Drupal::service('file.mime_type.guesser'));
   $extensions = $mapper->getExtensionsForMimeType($mimetype);
   return $extensions;
 }

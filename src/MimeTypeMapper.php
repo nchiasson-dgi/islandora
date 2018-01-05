@@ -13,7 +13,7 @@ use Drupal\Core\File\MimeType\ExtensionMimeTypeGuesser;
  *
  * @see https://www.drupal.org/node/2311679
  */
-class IslandoraMimeTypeMapper {
+class MimeTypeMapper {
 
   /**
    * The extension MIME type guesser.
