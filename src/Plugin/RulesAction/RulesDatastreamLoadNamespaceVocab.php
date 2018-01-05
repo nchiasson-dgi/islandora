@@ -3,7 +3,7 @@
 namespace Drupal\islandora\Plugin\RulesAction;
 
 use Drupal\rules\Core\RulesActionBase;
-use Drupal\islandora\TypedData\IslandoraXPathTrait;
+use Drupal\islandora\TypedData\XPathTrait;
 use Drupal\taxonomy\VocabularyInterface;
 
 /**
@@ -23,8 +23,8 @@ use Drupal\taxonomy\VocabularyInterface;
  *   },
  * )
  */
-class IslandoraRulesDatastreamLoadNamespaceVocab extends RulesActionBase {
-  use IslandoraXPathTrait;
+class RulesDatastreamLoadNamespaceVocab extends RulesActionBase {
+  use XPathTrait;
 
   /**
    * {@inheritdoc}

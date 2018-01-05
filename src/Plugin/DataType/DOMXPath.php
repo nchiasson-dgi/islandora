@@ -10,10 +10,10 @@ use Drupal\islandora\TypedData\Proxy;
  * @DataType(
  *   id = "islandora_domxpath",
  *   label = @Translation("DOMXPath Instance"),
- *   definition_class = "\Drupal\islandora\TypedData\IslandoraDOMXPathDataDefinition"
+ *   definition_class = "\Drupal\islandora\TypedData\DOMXPathDataDefinition"
  * )
  */
-class IslandoraDOMXPath extends Proxy {
+class DOMXPath extends Proxy {
 
   /**
    * {@inheritdoc}

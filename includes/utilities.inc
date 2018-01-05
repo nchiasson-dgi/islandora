@@ -12,7 +12,7 @@ use Drupal\Core\Link;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
 
-use Drupal\islandora\Event\IslandoraRepositoryEvent;
+use Drupal\islandora\Event\RepositoryEvent;
 
 /**
  * Convert bytes to human readable format.
@@ -203,7 +203,7 @@ function islandora_invoke_hook_list($hook, array $refinements, array $args) {
     $return = array_merge_recursive($return, $result);
   }
 
-  $event = new IslandoraRepositoryEvent($hook, $args);
+  $event = new RepositoryEvent($hook, $args);
   \Drupal::service('event_dispatcher')->dispatch($event->getEventName(), $event);
 
   return $return;

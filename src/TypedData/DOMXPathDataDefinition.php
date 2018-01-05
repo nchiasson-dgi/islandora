@@ -7,7 +7,7 @@ use Drupal\Core\TypedData\ComplexDataDefinitionBase;
 /**
  * DOMXPath TypedData wrapper definition.
  */
-class IslandoraDOMXPathDataDefinition extends ComplexDataDefinitionBase {
+class DOMXPathDataDefinition extends ComplexDataDefinitionBase {
 
   /**
    * {@inheritdoc}

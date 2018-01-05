@@ -11,7 +11,7 @@ use Drupal\taxonomy\VocabularyInterface;
 /**
  * DOMXPath helper methods.
  */
-trait IslandoraXPathTrait {
+trait XPathTrait {
 
   /**
    * Load XML into a DOMXPath and optionally register namespaces.

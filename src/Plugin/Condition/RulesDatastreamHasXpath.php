@@ -3,7 +3,7 @@
 namespace Drupal\islandora\Plugin\Condition;
 
 use Drupal\rules\Core\RulesConditionBase;
-use Drupal\islandora\TypedData\IslandoraXPathTrait;
+use Drupal\islandora\TypedData\XPathTrait;
 use Drupal\taxonomy\VocabularyInterface;
 use AbstractObject;
 
@@ -31,8 +31,8 @@ use AbstractObject;
  *   }
  * )
  */
-class IslandoraRulesDatastreamHasXpath extends RulesConditionBase {
-  use IslandoraXPathTrait;
+class RulesDatastreamHasXpath extends RulesConditionBase {
+  use XPathTrait;
 
   /**
    * {@inheritdoc}

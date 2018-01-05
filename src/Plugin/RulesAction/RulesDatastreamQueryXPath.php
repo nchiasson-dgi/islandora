@@ -35,7 +35,7 @@ use DOMXPath;
  *   }
  * )
  */
-class IslandoraRulesDatastreamQueryXPath extends RulesActionBase {
+class RulesDatastreamQueryXPath extends RulesActionBase {
 
   /**
    * {@inheritdoc}

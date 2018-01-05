@@ -7,7 +7,7 @@ use Drupal\Core\TypedData\ComplexDataDefinitionBase;
 /**
  * Tuque Object TypedData wrapper definition.
  */
-class IslandoraObjectDataDefinition extends ComplexDataDefinitionBase {
+class ObjectDataDefinition extends ComplexDataDefinitionBase {
 
   /**
    * {@inheritdoc}

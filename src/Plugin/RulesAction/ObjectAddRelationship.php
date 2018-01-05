@@ -2,15 +2,15 @@
 
 namespace Drupal\islandora\Plugin\RulesAction;
 
-use Drupal\rules\Engine\RulesActionBase;
+use Drupal\rules\Core\RulesActionBase;
 use AbstractObject;
 
 /**
- * Rules action; remove a relationship from an object.
+ * Rules action; add a relationship to an object.
  *
  * @RulesAction(
- *   id = "islandora_object_remove_relationship",
- *   label = @Translation("Remove a relationship from an object"),
+ *   id = "islandora_object_add_relationship",
+ *   label = @Translation("Add a relationship to an object"),
  *   category = @Translation("Islandora"),
  *   context = {
  *     "subject" = @ContextDefinition("islandora_object",
@@ -23,13 +23,13 @@ use AbstractObject;
  *   }
  * )
  */
-class IslandoraObjectRemoveRelationship extends RulesActionBase {
+class ObjectAddRelationship extends RulesActionBase {
 
   /**
    * {@inheritdoc}
    */
   protected function doExecute(AbstractObject $subject, $pred_uri, $pred, $object, $type) {
-    $subject->relationships->remove($pred_uri, $pred, $object, $type);
+    $subject->relationships->add($pred_uri, $pred, $object, $type);
   }
 
 }

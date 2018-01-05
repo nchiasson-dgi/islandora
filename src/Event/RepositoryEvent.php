@@ -8,7 +8,7 @@ use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 /**
  * Represent our hooks/events, as used by Rules.
  */
-class IslandoraRepositoryEvent extends Event {
+class RepositoryEvent extends Event {
   /**
    * The name of the event being triggered.
    *

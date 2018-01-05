@@ -10,9 +10,9 @@ use Drupal\islandora\TypedData\Proxy;
  * @DataType(
  *   id = "islandora_datastream",
  *   label = @Translation("Islandora Datastream"),
- *   definition_class = "\Drupal\islandora\TypedData\IslandoraDatastreamDataDefinition"
+ *   definition_class = "\Drupal\islandora\TypedData\DatastreamDataDefinition"
  * )
  */
-class IslandoraDatastreamData extends Proxy {
+class DatastreamData extends Proxy {
   // Nothing new...
 }

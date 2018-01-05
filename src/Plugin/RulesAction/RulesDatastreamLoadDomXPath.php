@@ -3,7 +3,7 @@
 namespace Drupal\islandora\Plugin\RulesAction;
 
 use Drupal\rules\Core\RulesActionBase;
-use Drupal\islandora\TypedData\IslandoraXPathTrait;
+use Drupal\islandora\TypedData\XPathTrait;
 
 /**
  * Rules action; Load a DOMXPath instance from some XML.
@@ -23,8 +23,8 @@ use Drupal\islandora\TypedData\IslandoraXPathTrait;
  *   }
  * )
  */
-class IslandoraRulesDatastreamLoadDomXPath extends RulesActionBase {
-  use IslandoraXPathTrait;
+class RulesDatastreamLoadDomXPath extends RulesActionBase {
+  use XPathTrait;
 
   /**
    * {@inheritdoc}

@@ -25,7 +25,7 @@ use Drupal\rules\Core\RulesActionBase;
  *   }
  * )
  */
-class IslandoraRulesDatastreamLoad extends RulesActionBase {
+class RulesDatastreamLoad extends RulesActionBase {
 
   /**
    * {@inheritdoc}

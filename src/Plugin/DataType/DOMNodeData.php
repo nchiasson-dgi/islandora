@@ -10,9 +10,9 @@ use Drupal\islandora\TypedData\Proxy;
  * @DataType(
  *   id = "islandora_domnode",
  *   label = @Translation("Islandora DOMNode"),
- *   definition_class = "\Drupal\islandora\TypedData\IslandoraDOMNodeDataDefinition"
+ *   definition_class = "\Drupal\islandora\TypedData\DOMNodeDataDefinition"
  * )
  */
-class IslandoraDOMNodeData extends Proxy {
+class DOMNodeData extends Proxy {
   // Nothing to do...
 }

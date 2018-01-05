@@ -7,7 +7,7 @@ use Drupal\Core\TypedData\ComplexDataDefinitionBase;
 /**
  * DOMNode TypedData wrapper definition.
  */
-class IslandoraDOMNodeDataDefinition extends ComplexDataDefinitionBase {
+class DOMNodeDataDefinition extends ComplexDataDefinitionBase {
 
   /**
    * {@inheritdoc}

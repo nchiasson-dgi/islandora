@@ -23,7 +23,7 @@ use AbstractObject;
  *   }
  * )
  */
-class IslandoraObjectHasRelationship extends RulesConditionBase {
+class ObjectHasRelationship extends RulesConditionBase {
 
   /**
    * {@inheritdoc}

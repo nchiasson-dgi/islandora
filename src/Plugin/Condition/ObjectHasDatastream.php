@@ -22,7 +22,7 @@ use AbstractObject;
  *   }
  * )
  */
-class IslandoraObjectHasDatastream extends RulesConditionBase {
+class ObjectHasDatastream extends RulesConditionBase {
 
   /**
    * {@inheritdoc}
