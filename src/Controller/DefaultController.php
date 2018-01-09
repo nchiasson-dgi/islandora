@@ -8,7 +8,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Renderer;
 
-use Drupal\islandora\Form\IslandoraSolutionPackForm;
+use Drupal\islandora\Form\SolutionPackForm;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -57,7 +57,7 @@ class DefaultController extends ControllerBase {
    *
    * @throws \Exception
    */
-  public function islandoraSolutionPacksAdmin() {
+  public function solutionPacksAdmin() {
     module_load_include('inc', 'islandora', 'includes/utilities');
     module_load_include('inc', 'islandora', 'includes/solution_packs');
 
@@ -73,7 +73,7 @@ class DefaultController extends ControllerBase {
       // systems table for consistency in the interface.
       $solution_pack_name = $solution_pack_info['title'];
       $objects = array_filter($solution_pack_info['objects']);
-      $class_name = IslandoraSolutionPackForm::class;
+      $class_name = SolutionPackForm::class;
 
       $output[$solution_pack_module] = $this->formBuilder()->getForm($class_name, $solution_pack_module, $solution_pack_name, $objects);
 
@@ -87,7 +87,7 @@ class DefaultController extends ControllerBase {
    * Redirects to the view of the object indicated by the Drupal variable
    * 'islandora_repository_pid'.
    */
-  public function islandoraViewDefaultObject() {
+  public function viewDefaultObject() {
     $pid = $this->config('islandora.settings')->get('islandora_repository_pid');
     return $this->redirect('islandora.view_object', ['object' => $pid]);
   }
@@ -95,28 +95,16 @@ class DefaultController extends ControllerBase {
   /**
    * Title callback for Drupal title to be the object label.
    */
-  public function islandoraDrupalTitle(AbstractObject $object) {
+  public function drupalTitle(AbstractObject $object) {
     module_load_include('inc', 'islandora', 'includes/breadcrumb');
     // drupal_set_breadcrumb(islandora_get_breadcrumbs($object));
     return $object->label;
   }
 
   /**
-   * Access callback for Drupal object.
-   */
-  public function islandoraObjectAccessCallback($perm, $object, AccountInterface $account) {
-    module_load_include('inc', 'islandora', 'includes/utilities');
-    if (!$object && !islandora_describe_repository()) {
-      islandora_display_repository_inaccessible_message();
-      return FALSE;
-    }
-    return AccessResult::allowedIf(islandora_object_access($perm, $object, $account));
-  }
-
-  /**
    * View islandora object.
    */
-  public function islandoraViewObject(AbstractObject $object, Request $currentRequest) {
+  public function viewObject(AbstractObject $object, Request $currentRequest) {
     module_load_include('inc', 'islandora', 'includes/breadcrumb');
     module_load_include('inc', 'islandora', 'includes/utilities');
     // XXX: This seems so very dumb but given how empty slugs don't play nice
@@ -160,7 +148,7 @@ class DefaultController extends ControllerBase {
   /**
    * Access callback for printing an object.
    */
-  public function islandoraPrintObjectAccess($op, $object, AccountInterface $account) {
+  public function printObjectAccess($op, $object, AccountInterface $account) {
     $object = islandora_object_load($object);
     return AccessResult::allowedIf(islandora_print_object_access($op, $object, $account));
   }
@@ -168,7 +156,7 @@ class DefaultController extends ControllerBase {
   /**
    * Islandora printer object.
    */
-  public static function islandoraPrinterObject(AbstractObject $object) {
+  public static function printerObject(AbstractObject $object) {
     $output = [];
     $temp_arr = [];
 
@@ -188,35 +176,6 @@ class DefaultController extends ControllerBase {
   }
 
   /**
-   * Islandora object access.
-   */
-  public function islandoraObjectAccess($op, $object, AccountInterface $user = NULL) {
-    $cache = &drupal_static(__FUNCTION__);
-    if (!is_object($object)) {
-      // The object could not be loaded... Presumably, we don't have
-      // permission.
-      return FALSE;
-    }
-    if ($user === NULL) {
-      $user = $this->currentUser();
-    }
-
-    // Populate the cache on a miss.
-    if (!isset($cache[$op][$object->id][$user->id()])) {
-      module_load_include('inc', 'islandora', 'includes/utilities');
-
-      $results = islandora_invoke_hook_list('islandora_object_access', $object->models, [
-        $op,
-        $object,
-        $user,
-      ]);
-      // Nothing returned FALSE, and something returned TRUE.
-      $cache[$op][$object->id][$user->id()] = (!in_array(FALSE, $results, TRUE) && in_array(TRUE, $results, TRUE));
-    }
-    return $cache[$op][$object->id][$user->id()];
-  }
-
-  /**
    * Renders the print page for the given object.
    *
    * Modules can either implement preprocess functions to append content onto
@@ -229,7 +188,7 @@ class DefaultController extends ControllerBase {
    * @return array
    *   A renderable array.
    */
-  public function islandoraPrintObject(AbstractObject $object) {
+  public function printObject(AbstractObject $object) {
     return [
       '#title' => $object->label,
       '#theme' => 'islandora_object_print',
@@ -238,30 +197,11 @@ class DefaultController extends ControllerBase {
   }
 
   /**
-   * Object management access callback.
-   */
-  public function islandoraObjectManageAccessCallback($perms, $object = NULL, AccountInterface $account = NULL) {
-    module_load_include('inc', 'islandora', 'includes/utilities');
-
-    if (!$object && !islandora_describe_repository()) {
-      islandora_display_repository_inaccessible_message();
-      return FALSE;
-    }
-
-    $has_access = FALSE;
-    for ($i = 0; $i < count($perms) && !$has_access; $i++) {
-      $has_access = $has_access || islandora_object_access($perms[$i], $object, $account);
-    }
-
-    return $has_access;
-  }
-
-  /**
    * Callback for an autocomplete field in the admin add datastream form.
    *
    * It lists the missing required (may be optional) datastreams.
    */
-  public function islandoraAddDatastreamFormAutocompleteCallback(AbstractObject $object, Request $request) {
+  public function addDatastreamFormAutocompleteCallback(AbstractObject $object, Request $request) {
     module_load_include('inc', 'islandora', 'includes/content_model');
     module_load_include('inc', 'islandora', 'includes/utilities');
     $query = $request->query->get('q');
@@ -283,7 +223,7 @@ class DefaultController extends ControllerBase {
   /**
    * Datastream title callback.
    */
-  public function islandoraViewDatastreamTitle(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
+  public function viewDatastreamTitle(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
     return $datastream->id;
   }
 
@@ -302,7 +242,7 @@ class DefaultController extends ControllerBase {
    *   A BinaryFileResponse if it's a ranged request, a StreamedResponse
    *   otherwise.
    */
-  public function islandoraViewDatastream(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
+  public function viewDatastream(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
     module_load_include('inc', 'islandora', 'includes/mimetype.utils');
     module_load_include('inc', 'islandora', 'includes/datastream');
 
@@ -381,14 +321,14 @@ class DefaultController extends ControllerBase {
    *   A BinaryFileResponse if it's a ranged request, a StreamedResponse
    *   otherwise.
    */
-  public function islandoraDownloadDatastream(AbstractDatastream $datastream) {
-    return $this->islandoraViewDatastream($datastream, TRUE);
+  public function downloadDatastream(AbstractDatastream $datastream) {
+    return $this->viewDatastream($datastream, TRUE);
   }
 
   /**
    * Page callback for editing a datastream.
    */
-  public function islandoraEditDatastream(AbstractDatastream $datastream) {
+  public function editDatastream(AbstractDatastream $datastream) {
     module_load_include('inc', 'islandora', 'includes/utilities');
 
     $edit_registry = islandora_build_datastream_edit_registry($datastream);
@@ -427,7 +367,7 @@ class DefaultController extends ControllerBase {
   /**
    * Page callback for the datastream version table.
    */
-  public function islandoraDatastreamVersionTable(AbstractDatastream $datastream) {
+  public function datastreamVersionTable(AbstractDatastream $datastream) {
     module_load_include('inc', 'islandora', 'includes/datastream.version');
     return islandora_datastream_version_table($datastream);
   }
@@ -435,7 +375,7 @@ class DefaultController extends ControllerBase {
   /**
    * Page callback for session status messages.
    */
-  public function islandoraEventStatus() {
+  public function eventStatus() {
     $results = FALSE;
     if (isset($_SESSION['islandora_event_messages'])) {
       foreach ($_SESSION['islandora_event_messages'] as $message) {
@@ -451,7 +391,7 @@ class DefaultController extends ControllerBase {
   /**
    * Autocomplete the content model name.
    */
-  public function islandoraContentModelAutocomplete(Request $request) {
+  public function contentModelAutocomplete(Request $request) {
     module_load_include('inc', 'islandora', 'includes/content_model.autocomplete');
     $string = $request->query->get('q');
     $content_models = islandora_get_content_model_names();
