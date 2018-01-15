@@ -446,8 +446,8 @@ function islandora_viewers_form($variable_id = NULL, $mimetype = NULL, $model = 
  * given, than any viewer that supports either the give $mimetype or $model will
  * be listed.
  *
- * @param array $mimetype
- *   List of mimetypes that the viewer supports.
+ * @param mixed $mimetype
+ *   A mimetype or list of mimetypes that the viewer supports.
  * @param string $content_model
  *   Specify a content model to return only viewers that support the content
  *   model.
@@ -455,7 +455,7 @@ function islandora_viewers_form($variable_id = NULL, $mimetype = NULL, $model = 
  * @return array
  *   Viewer definitions, or FALSE if none are found.
  */
-function islandora_get_viewers(array $mimetype = [], $content_model = NULL) {
+function islandora_get_viewers($mimetype = [], $content_model = NULL) {
   $viewers = [];
   $defined_viewers = \Drupal::moduleHandler()->invokeAll('islandora_viewer_info');
 
