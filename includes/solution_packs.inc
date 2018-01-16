@@ -446,7 +446,7 @@ function islandora_viewers_form($variable_id = NULL, $mimetype = NULL, $model = 
  * given, than any viewer that supports either the give $mimetype or $model will
  * be listed.
  *
- * @param mixed $mimetype
+ * @param string|array $mimetype
  *   A mimetype or list of mimetypes that the viewer supports.
  * @param string $content_model
  *   Specify a content model to return only viewers that support the content
