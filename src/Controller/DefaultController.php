@@ -156,7 +156,7 @@ class DefaultController extends ControllerBase {
   /**
    * Islandora printer object.
    */
-  public static function printerObject(AbstractObject $object) {
+  public function printerObject(AbstractObject $object) {
     $output = [];
     $temp_arr = [];
 

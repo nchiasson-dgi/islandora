@@ -71,7 +71,7 @@ islandora.printer_object:
   defaults:
     op: 'view fedora repository objects'
     _title: 'Print Object'
-    _controller: '\Drupal\islandora\Controller\DefaultController::printObject'
+    _controller: '\Drupal\islandora\Controller\DefaultController::printerObject'
   requirements:
     _custom_access: '\Drupal\islandora\Controller\DefaultController::printObjectAccess'
   options:
