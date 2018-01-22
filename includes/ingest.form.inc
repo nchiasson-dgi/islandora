@@ -453,14 +453,20 @@ function islandora_ingest_form_stepify(array $form, FormStateInterface $form_sta
  *
  * @param array $form
  *   The Drupal form.
- * @param array $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  */
-function islandora_ingest_form_add_step_context(array &$form, array $form_state) {
+function islandora_ingest_form_add_step_context(array &$form, FormStateInterface $form_state) {
+  if (!(\Drupal::moduleHandler()->moduleExists('islandora_basic_collection'))) {
+    return;
+  }
   $items = [];
   $get_label = function (AbstractObject $collection = NULL, AbstractObject $fedora_cmodel) {
     if (isset($collection['COLLECTION_POLICY'])) {
-      $policy = new CollectionPolicy($collection['COLLECTION_POLICY']->content);
+// @codingStandardsIgnoreStart
+      // @XXX: A use statement in a fuction is bad syntax.
+      $policy = new Drupal\islandora_basic_collection\CollectionPolicy($collection['COLLECTION_POLICY']->content);
+// @codingStandardsIgnoreEnd
       $policy_content_models = $policy->getContentModels();
     }
     return isset($policy_content_models[$fedora_cmodel->id]) ?
