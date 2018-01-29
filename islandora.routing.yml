@@ -218,11 +218,12 @@ islandora.view_datastream_view:
         type: datastream
     _islandora_token_route: TRUE
 islandora.download_datastream:
-  path: '/islandora/object/{object}/datastream/{datastream}/download'
+  path: '/islandora/object/{object}/datastream/{datastream}/download/{filename}'
   defaults:
     perms: 'view fedora repository objects'
     _title: 'Download datastream'
     _controller: '\Drupal\islandora\Controller\DefaultController::downloadDatastream'
+    filename: ''
   requirements:
     _islandora_datastream_access: 'TRUE'
   options:
