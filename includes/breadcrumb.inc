@@ -7,6 +7,8 @@
 
 use Drupal\Core\Link;
 
+use Drupal\islandora\Tuque\IslandoraFedoraRepository;
+
 /**
  * Get an array of links to be passed to drupal_set_breadcrumb().
  *
@@ -92,26 +94,12 @@ function islandora_get_breadcrumbs_recursive($pid, FedoraRepository $repository,
 
   $root = \Drupal::config('islandora.settings')->get('islandora_repository_pid');
   if ($pid == $root) {
-    $title = 'Islandora Repository';
-    $mlid = db_select('menu_links', 'ml')
-      ->condition('ml.link_path', 'islandora')
-      ->fields('ml', ['mlid'])
-      ->execute()
-      ->fetchField();
-
-    if ($mlid) {
-      $link = menu_link_load($mlid);
-      $title = (isset($link['title']) ? $link['title'] : $title);
-    }
-
     return [
       Link::createFromRoute(t('Home'), '<front>'),
-      Link::createFromRoute($title, 'islandora.view_default_object'),
+      Link::createFromRoute(t('Islandora Repository'), 'islandora.view_default_object'),
     ];
-
   }
   else {
-
     $query = <<<EOQ
     PREFIX islandora-rels-ext: <http://islandora.ca/ontology/relsext#>
     PREFIX fedora-rels-ext: <info:fedora/fedora-system:def/relations-external#>
@@ -141,12 +129,12 @@ EOQ;
     $collection_predicate_filters = array_map($same_term_map, $breadcrumb_predicates);
     $query_filters[] = implode(' || ', $collection_predicate_filters);
     $query_order = "ORDER BY DESC(?label)";
-    $query = format_string($query, [
+    $query = strtr($query, [
       '!optionals' => !empty($query_optionals) ? ('OPTIONAL {{' . implode('} UNION {', $query_optionals) . '}}') : '',
       '!filters' => implode(' ', array_map($filter_map, $query_filters)),
       '!order' => $query_order,
     ]);
-    $query = format_string($query, [
+    $query = strtr($query, [
       '!pid' => $pid,
     ]);
     $results = $repository->ri->sparqlQuery($query, 'unlimited');

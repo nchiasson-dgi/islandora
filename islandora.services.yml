@@ -21,4 +21,8 @@ services:
     class: Drupal\islandora\Authentication\Provider\TokenAuth
     arguments: ['@config.factory', '@entity.manager']
     tags:
-      - {name: authentication_provider, provider_id: islandora_auth_token, global: TRUE, priority: 1}
+      - { name: authentication_provider, provider_id: islandora_auth_token, global: TRUE, priority: 1 }
+  islandora.breadcrumb:
+    class: Drupal\islandora\Breadcrumb\ObjectBreadcrumbs
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }
