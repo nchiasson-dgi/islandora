@@ -294,10 +294,17 @@ class DefaultController extends ControllerBase {
     // happen with iOS video requests as they do not support any other way
     // to receive content for playback.
     if (isset($_SERVER['HTTP_RANGE'])) {
-      module_load_include('inc', 'islandora', 'includes/datastream');
-      $file_uri = islandora_view_datastream_retrieve_file_uri($datastream);
-      $binary_content_disposition = isset($content_disposition) ? 'attachment' : NULL;
-      $response = new BinaryFileResponse($file_uri, $status, $headers, $cache_control_visibility, $binary_content_disposition, FALSE, FALSE);
+      // XXX: Can't make assertions on byte ranging of redirect datastreams.
+      // @see https://jira.duraspace.org/browse/ISLANDORA-2084.
+      if (!$download && $datastream->controlGroup == 'R') {
+        $response = RedirectResponse::create($datastream->url);
+      }
+      else {
+        module_load_include('inc', 'islandora', 'includes/datastream');
+        $file_uri = islandora_view_datastream_retrieve_file_uri($datastream);
+        $binary_content_disposition = isset($content_disposition) ? 'attachment' : NULL;
+        $response = new BinaryFileResponse($file_uri, $status, $headers, $cache_control_visibility, $binary_content_disposition, FALSE, FALSE);
+      }
     }
     else {
       $streaming_callback = function () use ($datastream) {
