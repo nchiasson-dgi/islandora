@@ -94,9 +94,12 @@ function islandora_get_breadcrumbs_recursive($pid, FedoraRepository $repository,
 
   $root = \Drupal::config('islandora.settings')->get('islandora_repository_pid');
   if ($pid == $root) {
+    $menu_link_manager = \Drupal::service('plugin.manager.menu.link');
+    $islandora_links = $menu_link_manager->loadLinksByRoute('islandora.view_default_object');
+    $islandora_link = reset($islandora_links);
     return [
       Link::createFromRoute(t('Home'), '<front>'),
-      Link::createFromRoute(t('Islandora Repository'), 'islandora.view_default_object'),
+      Link::createFromRoute($islandora_link->getTitle(), 'islandora.view_default_object'),
     ];
   }
   else {
