@@ -97,7 +97,6 @@ class DefaultController extends ControllerBase {
    */
   public function drupalTitle(AbstractObject $object) {
     module_load_include('inc', 'islandora', 'includes/breadcrumb');
-    // drupal_set_breadcrumb(islandora_get_breadcrumbs($object));
     return $object->label;
   }
 

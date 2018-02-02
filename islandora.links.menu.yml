@@ -37,19 +37,8 @@ islandora.view_default_object_0:
   route_name: islandora.view_default_object_0
   title: 'Browse Objects'
   parent: islandora.view_default_object
-islandora.view_object:
-  route_name: islandora.view_object
-  parent: islandora.view_default_object
-islandora.manage_overview_object:
-  route_name: islandora.manage_overview_object
-  parent: islandora.view_object
-  title: 'Manage'
 islandora.deleted_objects_manage_form:
   route_name: islandora.deleted_objects_manage_form
   parent: islandora.admin_config
   title: 'Manage Deleted Objects'
   description: 'Restore or permanently remove objects with Deleted status'
-islandora.object_properties_form:
-  route_name: islandora.object_properties_form
-  parent: islandora.manage_overview_object
-  title: 'Properties'

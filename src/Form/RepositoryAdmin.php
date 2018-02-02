@@ -213,7 +213,7 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
       ->set('islandora_defer_derivatives_on_ingest', $form_state->getValue('islandora_defer_derivatives_on_ingest'))
       ->set('islandora_show_print_option', $form_state->getValue('islandora_show_print_option'))
       ->set('islandora_render_context_ingeststep', $form_state->getValue('islandora_render_context_ingeststep'))
-      ->set('islandora_breadcrumbs_backends', $form_state->getValue('islandora_breadcrumbs_backend'))
+      ->set('islandora_breadcrumbs_backends', $form_state->getValue('islandora_breadcrumbs_backends'))
       ->set('islandora_risearch_use_itql_when_necessary', $form_state->getValue('islandora_risearch_use_itql_when_necessary'))
       ->set('islandora_require_obj_upload', $form_state->getValue('islandora_require_obj_upload'))
       ->set('islandora_namespace_restriction_enforced', $form_state->getValue('islandora_namespace_restriction_enforced'))
