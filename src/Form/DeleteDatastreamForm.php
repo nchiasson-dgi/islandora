@@ -152,7 +152,7 @@ class DeleteDatastreamForm extends ConfirmFormBase {
     $hooks = islandora_invoke_hook_list(ISLANDORA_DERIVATIVE_CREATION_HOOK, $object->models, [$object]);
     $hook_filter = function ($hook_def) use ($dsid) {
       return isset($hook_def['source_dsid']) && isset($hook_def['destination_dsid']) ?
-        $hook_def['source_dsid'] == $dsid :
+        ($hook_def['source_dsid'] == $dsid && $hook_def['destination_dsid'] != $dsid) :
         FALSE;
     };
     $hooks = array_filter($hooks, $hook_filter);
