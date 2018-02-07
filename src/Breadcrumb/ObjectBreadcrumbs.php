@@ -30,7 +30,6 @@ class ObjectBreadcrumbs implements BreadcrumbBuilderInterface {
     $object_breadcrumbs = islandora_get_breadcrumbs($route_match->getParameter('object'));
     $breadcrumb = new Breadcrumb();
 
-    // Add a link to the homepage as our first crumb.
     foreach ($object_breadcrumbs as $object_breadcrumb) {
       $breadcrumb->addLink($object_breadcrumb);
     }
