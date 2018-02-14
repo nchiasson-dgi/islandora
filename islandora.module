@@ -71,6 +71,7 @@ function islandora_theme() {
     'islandora_viewers_table' => [
       'file' => 'includes/solution_packs.inc',
       'render element' => 'form',
+      'function' => 'theme_islandora_viewers_table',
     ],
     // Print used by the clipper.
     'islandora_object_print' => [

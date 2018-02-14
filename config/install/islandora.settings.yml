@@ -14,3 +14,4 @@ islandora_render_drupal_breadcrumbs: true
 islandora_risearch_use_itql_when_necessary: true
 islandora_require_obj_upload: true
 islandora_breadcrumbs_backends: 'islandora_breadcrumbs_legacy_sparql'
+viewers: []
