@@ -34,3 +34,5 @@ islandora.settings:
       type: boolean
     islandora_breadcrumbs_backends:
       type: string
+    viewers:
+      type: sequence

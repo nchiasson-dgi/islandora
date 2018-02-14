@@ -9,6 +9,7 @@ use Drupal\Core\Extension\InfoParser;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Render\Element;
 
 /**
  * Get the information about required object.
@@ -353,8 +354,8 @@ function islandora_check_object_status(AbstractObject $object_definition) {
  * the same goes for the $model parameter. If both are given, than any viewer
  * that supports either the give $mimetype or $model will be listed.
  *
- * @param string $variable_id
- *   The ID of the Drupal variable to save the viewer settings in.
+ * @param string $viewer_type
+ *   The id of the viewer type.
  * @param string $mimetype
  *   The table will be populated with viewers supporting this mimetype.
  * @param string $model
@@ -363,7 +364,7 @@ function islandora_check_object_status(AbstractObject $object_definition) {
  * @return array
  *   A form api array which defines a themed table to select a viewer.
  */
-function islandora_viewers_form($variable_id = NULL, $mimetype = NULL, $model = NULL) {
+function islandora_viewers_form($viewer_type = NULL, $mimetype = NULL, $model = NULL) {
   $form = [];
   $viewers = islandora_get_viewers($mimetype, $model);
   if (!empty($viewers)) {
@@ -374,17 +375,14 @@ function islandora_viewers_form($variable_id = NULL, $mimetype = NULL, $model = 
     ];
     $viewers = array_merge_recursive($no_viewer, $viewers);
   }
-  // @FIXME
-  // The correct configuration object could not be determined. You'll need to
-  // rewrite this call manually.
-  // $viewers_config = variable_get($variable_id, array());
+  $viewers_config = islandora_get_viewer_info($viewer_type);
   $form['viewers'] = [
     '#type' => 'fieldset',
     '#title' => t('Viewers'),
   ];
 
   if (!empty($viewers)) {
-    $form['viewers'][$variable_id] = [
+    $form['viewers'][$viewer_type] = [
       '#type' => 'item',
       '#title' => t('Select a viewer'),
       '#description' => t('Preferred viewer for your solution pack. These may be provided by third-party modules.'),
@@ -394,44 +392,33 @@ function islandora_viewers_form($variable_id = NULL, $mimetype = NULL, $model = 
 
     foreach ($viewers as $name => $profile) {
       $options[$name] = '';
-      $form['viewers'][$variable_id]['name'][$name] = [
+      $form['viewers'][$viewer_type]['name'][$name] = [
         '#type' => 'hidden',
         '#value' => $name,
       ];
-      $form['viewers'][$variable_id]['label'][$name] = [
+      $form['viewers'][$viewer_type]['label'][$name] = [
         '#type' => 'item',
         '#markup' => $profile['label'],
       ];
-      $form['viewers'][$variable_id]['description'][$name] = [
+      $form['viewers'][$viewer_type]['description'][$name] = [
         '#type' => 'item',
         '#markup' => $profile['description'],
       ];
-      // @FIXME
-      // l() expects a Url object, created from a route name or external URI.
-      // @codingStandardsIgnoreStart
-      // $form['viewers'][$variable_id]['configuration'][$name] = [
-              // '#type' => 'item',
-              // '#markup' => (isset($profile['configuration']) AND $profile['configuration'] != '') ? l(t('configure'), $profile['configuration']) : '',
-              // ];
-      // @codingStandardsIgnoreEnd
+      $form['viewers'][$viewer_type]['configuration'][$name] = [
+        '#type' => 'item',
+        '#markup' => (isset($profile['configuration']) && $profile['configuration'] != '') ? Link::createFromRoute(t('configure'), $profile['configuration'])->toString() : '',
+      ];
     }
-    $form['viewers'][$variable_id]['default'] = [
+    $form['viewers'][$viewer_type]['default'] = [
       '#type' => 'radios',
       '#options' => isset($options) ? $options : [],
-      // @codingStandardsIgnoreStart
       '#default_value' => !empty($viewers_config) ? $viewers_config['default'] : 'none',
-      // @codingStandardsIgnoreEnd
     ];
   }
   else {
-    $form['viewers'][$variable_id . '_no_viewers'] = [
+    $form['viewers'][$viewer_type . '_no_viewers'] = [
       '#markup' => t('No viewers detected.'),
     ];
-
-    // @FIXME
-    // The correct configuration object could not be determined. You'll need to
-    // rewrite this call manually.
-    // variable_del($variable_id);
   }
   return $form;
 }
@@ -482,11 +469,9 @@ function islandora_get_viewers($mimetype = [], $content_model = NULL) {
  */
 function theme_islandora_viewers_table($variables) {
   $form = $variables['form'];
-  // @codingStandardsIgnoreStart
-  // XXX Usage is commented out below.
   $rows = [];
   foreach ($form['name'] as $key => $element) {
-    if (is_array($element) && \Drupal\Core\Render\Element::child($key)) {
+    if (is_array($element) && Element::child($key)) {
       $row = [];
       $row[] = ['data' => \Drupal::service("renderer")->render($form['default'][$key])];
       $row[] = ['data' => \Drupal::service("renderer")->render($form['label'][$key])];
@@ -495,32 +480,19 @@ function theme_islandora_viewers_table($variables) {
       $rows[] = ['data' => $row];
     }
   }
-  // @codingStandardsIgnoreEnd
-  // @codingStandardsIgnoreStart
-  // XXX Usage is commented out below.
   $header = [];
   $header[] = ['data' => t('Default')];
   $header[] = ['data' => t('Label')];
   $header[] = ['data' => t('Description')];
   $header[] = ['data' => t('Configuration')];
-  // @codingStandardsIgnoreEnd
   $output = '';
-  // @FIXME
-  // theme() has been renamed to _theme() and should NEVER be called directly.
-  // Calling _theme() directly can alter the expected output and potentially
-  // introduce security issues (see https://www.drupal.org/node/2195739). You
-  // should use renderable arrays instead.
-  //
-  // Remove coding standard annotations above.
-  //
-  // @see https://www.drupal.org/node/2195739
-  // @codingStandardsIgnoreStart
-  // $output .= theme('table', array(
-  //                'header' => $header,
-  //                'rows' => $rows,
-  //                'attributes' => array('id' => 'islandora-viewers-table'),
-  //     ));
-  // @codingStandardsIgnoreEnd
+  $table = [
+    '#theme' => 'table',
+    '#header' => $header,
+    '#rows' => $rows,
+    '#attributes' => ['id' => 'islandora-viewers-table'],
+  ];
+  $output .= \Drupal::service('renderer')->render($table);
   $output .= drupal_render_children($form);
   return $output;
 }
@@ -531,8 +503,8 @@ function theme_islandora_viewers_table($variables) {
  * @param mixed $params
  *   Array or string with data the module needs in order to render a full
  *   viewer.
- * @param string $variable_id
- *   The id of the Drupal variable the viewer settings are saved in.
+ * @param string $viewer_type
+ *   The id of the viewer type.
  * @param AbstractObject $fedora_object
  *   The tuque object representing the fedora object being displayed.
  *
@@ -540,16 +512,10 @@ function theme_islandora_viewers_table($variables) {
  *   The callback to the viewer module. Returns a rendered viewer. Returns FALSE
  *   if no viewer is set.
  */
-function islandora_get_viewer($params = NULL, $variable_id = NULL, AbstractObject $fedora_object = NULL) {
-
-  // @FIXME
-  // The correct configuration object could not be determined. You'll need to
-  // rewrite this call manually.
-  // $settings = variable_get($variable_id, array());
-  // @codingStandardsIgnoreStart
-  // XXX $settings is commented out and thus undefined.
+function islandora_get_viewer($params = NULL, $viewer_type = NULL, AbstractObject $fedora_object = NULL) {
+  $settings = islandora_get_viewer_info($viewer_type);
   if (!empty($settings) and $settings['default'] !== 'none') {
-    $viewer_id = islandora_get_viewer_id($variable_id);
+    $viewer_id = islandora_get_viewer_id($viewer_type);
     if ($viewer_id and $params !== NULL) {
       $callback = islandora_get_viewer_callback($viewer_id);
       if (function_exists($callback)) {
@@ -557,31 +523,43 @@ function islandora_get_viewer($params = NULL, $variable_id = NULL, AbstractObjec
       }
     }
   }
-  // @codingStandardsIgnoreEnd
   return FALSE;
+}
+
+/**
+ * Get the information about a viewer config.
+ */
+function islandora_get_viewer_info($viewer_type) {
+  $settings = \Drupal::config('islandora.settings')->get('viewers');
+  return isset($settings[$viewer_type]) ? $settings[$viewer_type] : [];
+}
+
+/**
+ * Set the information about a viewer config.
+ */
+function islandora_set_viewer_info($viewer_type, $info) {
+  $config = \Drupal::service('config.factory')->getEditable('islandora.settings');
+  $settings = $config->get('viewers');
+  $settings[$viewer_type] = $info;
+  $config->set('viewers', $settings);
+  $config->save();
 }
 
 /**
  * Get id of the enabled viewer.
  *
- * @param string $variable_id
- *   The ID of the Drupal variable the viewer settings are saved in.
+ * @param string $viewer_type
+ *   The id of the viewer type.
  *
  * @return string
  *   The enabled viewer id. Returns FALSE if no viewer config is set.
  */
-function islandora_get_viewer_id($variable_id) {
+function islandora_get_viewer_id($viewer_type) {
 
-  // @FIXME
-  // The correct configuration object could not be determined. You'll need to
-  // rewrite this call manually.
-  // $viewers_config = variable_get($variable_id, array());
-  // @codingStandardsIgnoreStart
-  // XXX $viewers_config is undefined, commented out above.
+  $viewers_config = islandora_get_viewer_info($viewer_type);
   if (!empty($viewers_config)) {
     return $viewers_config['default'];
   }
-  // @codingStandardsIgnoreEnd
   return FALSE;
 }
 
