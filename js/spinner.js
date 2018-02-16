@@ -21,6 +21,10 @@
           }
         });
       });
+
+      // Remove Drupal core handler that blocks our second submit of forms.
+      $('body').off('submit.singleSubmit');
+
       $.each(settings.spinner, function (base, value) {
         var id = '#' + base,
           message = $('<div/>').text(settings.spinner[base].message);
@@ -34,6 +38,7 @@
                 return;
               }
               if ($(this).data('clicked').is(id) && $(this).data('submitted') === undefined) {
+                event.preventDefault();
                 // Prevent this from being entered a second time.
                 $(this).data('submitted', true);
                 // Add Message.
@@ -49,8 +54,13 @@
                   $(':submit').attr('disabled', 'disabled');
                 }
                 setTimeout(function () {
-                  $(id).removeAttr('disabled');
-                  $(id).click();
+                  // Allow for the button to be clicked, then click it then
+                  // prevent the default behaviour.
+                  $(id).removeAttr('disabled')
+                    .click()
+                    .click(function (event) {
+                      event.preventDefault();
+                    });
                 }, 500);
               }
               return true;
