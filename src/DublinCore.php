@@ -154,7 +154,7 @@ class DublinCore {
    *   The instantiated object.
    */
   public static function importFromXmlString($dc_xml) {
-    $dc_doc = new \DOMDocument();
+    $dc_doc = new DOMDocument();
     if (!empty($dc_xml) && $dc_doc->loadXML($dc_xml)) {
       $oai_dc = $dc_doc->getElementsByTagNameNS('http://purl.org/dc/elements/1.1/', '*');
       $new_dc = new DublinCore();
