@@ -2,6 +2,8 @@
 
 namespace Drupal\islandora;
 
+use DomDocument;
+
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
 
