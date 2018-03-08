@@ -315,13 +315,17 @@ function islandora_user_access_check($object_or_datastream, array $permissions, 
 function islandora_object_datastream_tokened_access_callback($perm, $object = NULL, $datastream = NULL) {
   module_load_include('inc', 'islandora', 'includes/utilities');
 
+  // Token validation requires a valid object and PID in order to make a
+  // potential match in the db.
   $token_account = NULL;
-  $token = filter_input(INPUT_GET, TokenAuth::TOKEN_NAME, FILTER_SANITIZE_STRING);
+  if (is_object($object) && is_object($datastream)) {
+    $token = filter_input(INPUT_GET, TokenAuth::TOKEN_NAME, FILTER_SANITIZE_STRING);
 
-  if ($token) {
-    $user = islandora_validate_object_token($object->id, $datastream->id, $token);
-    if ($user) {
-      $token_account = \Drupal::entityManager()->getStorage('user')->load($user->id());
+    if ($token) {
+      $user = islandora_validate_object_token($object->id, $datastream->id, $token);
+      if ($user) {
+        $token_account = \Drupal::entityManager()->getStorage('user')->load($user->id());
+      }
     }
   }
 
