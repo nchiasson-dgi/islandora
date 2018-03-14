@@ -7,8 +7,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\Component\Utility\Xss;
-use Drupal\Core\Extension\ModuleHandler;
-use Drupal\Core\Render\Renderer;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Render\RendererInterface;
 
 use Drupal\filter\Render\FilteredMarkup;
 
@@ -29,7 +29,7 @@ class SolutionPackForm extends FormBase {
   /**
    * Constructor.
    */
-  public function __construct(ModuleHandler $moduleHandler, Renderer $renderer) {
+  public function __construct(ModuleHandlerInterface $moduleHandler, RendererInterface $renderer) {
     $this->moduleHandler = $moduleHandler;
     $this->renderer = $renderer;
   }
