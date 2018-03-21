@@ -147,13 +147,18 @@ function islandora_objects_object_mapper($object_id) {
   $img = \Drupal::service("renderer")->render($img);
 
   if ($object) {
-    $description = NULL;
-    if (isset($object['DC']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['DC'])) {
-      $dc = DublinCore::importFromXmlString($object['DC']->content);
-      if ($dc) {
-        $dc = $dc->asArray();
-        $description = $dc['dc:description']['value'];
+    try {
+      $description = NULL;
+      if (isset($object['DC']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['DC'])) {
+        $dc = DublinCore::importFromXmlString($object['DC']->content);
+        if ($dc) {
+          $dc = $dc->asArray();
+          $description = $dc['dc:description']['value'];
+        }
       }
+    }
+    catch (Exception $e) {
+      drupal_set_message(t('Error retrieving object %s %t', ['%s' => $object->id, '%t' => $e->getMessage()]), 'error', FALSE);
     }
     return [
       'label' => $object->label,
