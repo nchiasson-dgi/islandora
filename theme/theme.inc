@@ -138,22 +138,33 @@ function islandora_objects_object_mapper($object_id) {
   $module_path = drupal_get_path('module', 'islandora');
 
   $url = Url::fromRoute('islandora.view_object', ['object' => $object_id]);
-  $img = [
-    '#theme' => 'image',
-    '#uri' => ($object && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['TN']) ?
-      Url::fromRoute('islandora.view_datastream_view', ['object' => $object_id, 'datastream' => 'TN'])->toString() :
-      "$module_path/images/folder.png"),
-  ];
-  $img = \Drupal::service("renderer")->render($img);
+  try {
+    $img = [
+      '#theme' => 'image',
+      '#uri' => ($object && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['TN']) ?
+        Url::fromRoute('islandora.view_datastream_view', ['object' => $object_id, 'datastream' => 'TN'])->toString() :
+        "$module_path/images/folder.png"),
+    ];
+    $img = \Drupal::service("renderer")->render($img);
+  }
+  catch (Exception $e) {
+    drupal_set_message(t('Error retrieving object %s %t', ['%s' => $object->id, '%t' => $e->getMessage()]), 'error', FALSE);
+    $img = "";
+  }
 
   if ($object) {
-    $description = NULL;
-    if (isset($object['DC']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['DC'])) {
-      $dc = DublinCore::importFromXmlString($object['DC']->content);
-      if ($dc) {
-        $dc = $dc->asArray();
-        $description = $dc['dc:description']['value'];
+    try {
+      $description = NULL;
+      if (isset($object['DC']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['DC'])) {
+        $dc = DublinCore::importFromXmlString($object['DC']->content);
+        if ($dc) {
+          $dc = $dc->asArray();
+          $description = $dc['dc:description']['value'];
+        }
       }
+    }
+    catch (Exception $e) {
+      drupal_set_message(t('Error retrieving object %s %t', ['%s' => $object->id, '%t' => $e->getMessage()]), 'error', FALSE);
     }
     return [
       'label' => $object->label,
