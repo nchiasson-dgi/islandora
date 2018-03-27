@@ -59,7 +59,13 @@ class DatastreamVersionReplaceForm extends FormBase {
     $form_state->set('dsid', $datastream->id);
 
     $extensions = islandora_get_extensions_for_datastream($object, $datastream->id);
-    $valid_extensions = implode(' ', $extensions);
+    if (empty($extensions)) {
+      // In case no extensions are returned, don't limit.
+      $valid_extensions = NULL;
+    }
+    else {
+      $valid_extensions = implode(' ', $extensions);
+    }
     $upload_size = min((int) ini_get('post_max_size'), (int) ini_get('upload_max_filesize'));
     return [
       'dsid_fieldset' => [
