@@ -1,5 +1,6 @@
 name: Islandora
 description: 'View and manage Fedora objects'
+configure: islandora.repository_admin
 package: Islandora
 dependencies:
   - drupal:image
