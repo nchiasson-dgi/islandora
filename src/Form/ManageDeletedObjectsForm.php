@@ -273,15 +273,15 @@ EOQ;
    * restrictions or XACML.
    *
    * @return string[]
-   *  An array of Sparql "FILTER()" statements, to be injected into a Sparql
-   *  query.
+   *   An array of Sparql "FILTER()" statements, to be injected into a Sparql
+   *   query.
    */
   protected function getBaseFilters() {
     // Reusing the basic collection query filter.
-    $filter_modules = array(
+    $filter_modules = [
       'islandora_xacml_api',
       'islandora',
-    );
+    ];
     $filters = [];
     foreach ($filter_modules as $module) {
       $filters = array_merge_recursive($filters, (array) $this->moduleHandler->invoke($module, 'islandora_basic_collection_get_query_filters', 'view'));
