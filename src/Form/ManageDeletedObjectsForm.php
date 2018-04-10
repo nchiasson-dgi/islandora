@@ -225,7 +225,7 @@ WHERE {
 }
 EOQ;
     $filtered_query = strtr($query, [
-      '!base_filters' => $this->getBaseFilters(),
+      '!base_filters' => implode("\n", $this->getBaseFilters()),
     ]);
     $results = $tuque->repository->ri->sparqlQuery($filtered_query);
     $content_models = [];
@@ -284,7 +284,7 @@ EOQ;
     ];
     $filters = [];
     foreach ($filter_modules as $module) {
-      $filters = array_merge_recursive($filters, (array) $this->moduleHandler->invoke($module, 'islandora_basic_collection_get_query_filters', 'view'));
+      $filters = array_merge_recursive($filters, (array) $this->moduleHandler->invoke($module, 'islandora_basic_collection_get_query_filters', ['view']));
     }
 
     $filter_map = function ($filter) {

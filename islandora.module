@@ -871,7 +871,7 @@ function islandora_islandora_basic_collection_get_query_filters() {
   if ($enforced) {
     $namespace_array = islandora_get_allowed_namespaces();
     $namespace_sparql = implode('|', $namespace_array);
-    return ['islandora_namespace_restrictions' => format_string('regex(str(?object), "info:fedora/(!namespaces):")', ['!namespaces' => $namespace_sparql])];
+    return ['islandora_namespace_restrictions' => strtr('regex(str(?object), "info:fedora/(!namespaces):")', ['!namespaces' => $namespace_sparql])];
   }
 }
 
