@@ -214,14 +214,20 @@ class ManageDeletedObjectsForm extends FormBase {
   public function getContentModelsOfDeleted() {
     $tuque = islandora_get_tuque_connection();
     $query = <<<EOQ
-SELECT DISTINCT ?cmodel ?label FROM <#ri> WHERE {
+SELECT DISTINCT ?cmodel ?label
+FROM <#ri>
+WHERE {
   ?object <fedora-model:state> <fedora-model:Deleted> ;
           <fedora-model:hasModel> ?cmodel .
   ?cmodel <fedora-model:label> ?label
-FILTER(!sameTerm(?cmodel, <info:fedora/fedora-system:FedoraObject-3.0>))
+  FILTER(!sameTerm(?cmodel, <info:fedora/fedora-system:FedoraObject-3.0>))
+  !base_filters
 }
 EOQ;
-    $results = $tuque->repository->ri->sparqlQuery($query);
+    $filtered_query = strtr($query, [
+      '!base_filters' => implode("\n", $this->getBaseFilters()),
+    ]);
+    $results = $tuque->repository->ri->sparqlQuery($filtered_query);
     $content_models = [];
     foreach ($results as $result) {
       $content_models[$result['cmodel']['value']] = $result['label']['value'];
@@ -245,7 +251,8 @@ SELECT DISTINCT ?object ?object_label ?model ?model_label FROM <#ri> WHERE {
           <fedora-model:state> <fedora-model:Deleted> ;
           <fedora-model:label> ?object_label .
   ?model  <fedora-model:label> ?model_label .
-  FILTER(!filter)
+  !model_filter
+  !base_filters
 }
 EOQ;
     $pid_filters = array_map(function ($pid) {
@@ -253,9 +260,37 @@ EOQ;
     }, $cmodels);
     $filters = implode(' || ', $pid_filters);
     $sparql_query = strtr($query, [
-      '!filter' => $filters,
+      '!model_filter' => "FILTER($filters)",
+      '!base_filters' => implode("\n", $this->getBaseFilters()),
     ]);
     return $sparql_query;
+  }
+
+  /**
+   * Helper; grab base filters to filter out results.
+   *
+   * In short, avoid showing things which should not be shown due to namespace
+   * restrictions or XACML.
+   *
+   * @return string[]
+   *   An array of Sparql "FILTER()" statements, to be injected into a Sparql
+   *   query.
+   */
+  protected function getBaseFilters() {
+    // Reusing the basic collection query filter.
+    $filter_modules = [
+      'islandora_xacml_api',
+      'islandora',
+    ];
+    $filters = [];
+    foreach ($filter_modules as $module) {
+      $filters = array_merge_recursive($filters, (array) $this->moduleHandler->invoke($module, 'islandora_basic_collection_get_query_filters', ['view']));
+    }
+
+    $filter_map = function ($filter) {
+      return "FILTER($filter)";
+    };
+    return array_map($filter_map, $filters);
   }
 
   /**
