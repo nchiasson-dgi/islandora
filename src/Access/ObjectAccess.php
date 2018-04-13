@@ -63,6 +63,9 @@ class ObjectAccess implements AccessInterface {
       }
       return $result;
     }
+    elseif (!$object) {
+      return AccessResult::allowed();
+    }
     else {
       return AccessResult::allowedIf(islandora_object_access($perms, $object, $account));
     }

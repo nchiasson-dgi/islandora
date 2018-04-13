@@ -11,6 +11,7 @@ use Drupal\Core\Render\Renderer;
 use Drupal\islandora\Form\SolutionPackForm;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -103,9 +104,12 @@ class DefaultController extends ControllerBase {
   /**
    * View islandora object.
    */
-  public function viewObject(AbstractObject $object, Request $currentRequest) {
+  public function viewObject($object, Request $currentRequest) {
     module_load_include('inc', 'islandora', 'includes/breadcrumb');
     module_load_include('inc', 'islandora', 'includes/utilities');
+    if (!$object) {
+      throw new NotFoundHttpException();
+    }
     // XXX: This seems so very dumb but given how empty slugs don't play nice
     // in Drupal as defaults this needs to be the case. If it's possible to get
     // around this by making the empty slug route in YAML or a custom Routing
@@ -250,7 +254,7 @@ class DefaultController extends ControllerBase {
         $datastream = $datastream[$version];
       }
       else {
-        return drupal_not_found();
+        throw new NotFoundHttpException();
       }
     }
     $headers = [
