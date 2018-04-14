@@ -56,15 +56,15 @@ class ObjectAccess implements AccessInterface {
       islandora_display_repository_inaccessible_message();
       return AccessResult::forbidden();
     }
+    elseif (!$object) {
+      return AccessResult::forbidden();
+    }
     if (is_array($perms)) {
       $result = AccessResult::neutral();
       foreach ($perms as $perm) {
         $result = $islandora_access_conjunction == 'AND' ? $result->andIf(AccessResult::allowedIf(islandora_object_access($perm, $object, $account))) : $result->orIf(AccessResult::allowedIf(islandora_object_access($perm, $object, $account)));
       }
       return $result;
-    }
-    elseif (!$object) {
-      return AccessResult::allowed();
     }
     else {
       return AccessResult::allowedIf(islandora_object_access($perms, $object, $account));
