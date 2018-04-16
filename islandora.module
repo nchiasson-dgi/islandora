@@ -464,11 +464,8 @@ function islandora_get_tuque_connection($user = NULL, $url = NULL) {
  * @return FedoraObject
  *   If the given object id exists in the repository then this returns a
  *   FedoraObject.
- *   If no object was found it returns FALSE which triggers
- *   drupal_page_not_found().
- *   If the object was inaccessible then NULL is returned, and the
- *   access callback is expected to catch that case, triggering
- *   drupal_access_denied().
+ *   If no object was found it returns FALSE.
+ *   If the object was inaccessible then NULL is returned.
  */
 function islandora_object_load($object_id) {
   $tuque = islandora_get_tuque_connection();

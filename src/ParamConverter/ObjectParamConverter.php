@@ -30,7 +30,19 @@ class ObjectParamConverter implements ParamConverterInterface {
     // around this by making the empty slug route in YAML or a custom Routing
     // object we can remove this.
     $value = $value === 'root' ? $this->config->get('islandora_repository_pid') : $value;
-    return islandora_object_load($value);
+    $object = islandora_object_load($value);
+    if ($object) {
+      // Success.
+      return $object;
+    }
+    elseif ($object === FALSE) {
+      // Return for 404.
+      return NULL;
+    }
+    else {
+      // Let the access layer take care of it.
+      return FALSE;
+    }
   }
 
   /**
