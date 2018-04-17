@@ -563,7 +563,7 @@ function islandora_tokened_datastream_load($datastream_id, array $map) {
  *
  * @return FedoraDatastream
  *   If the given datastream ID exists then this returns a FedoraDatastream
- *   object, otherwise it returns NULL which triggers drupal_page_not_found().
+ *   object, otherwise it returns NULL.
  */
 function islandora_datastream_load($datastream_id, $object_id) {
   $object = is_object($object_id) ? $object_id : islandora_object_load($object_id);
@@ -855,7 +855,6 @@ function islandora_datastream_access($op, $datastream, $user = NULL) {
       !in_array(FALSE, $datastream_results, TRUE) && in_array(TRUE, $datastream_results, TRUE)
     );
   }
-
   return $cache[$op][$datastream->parent->id][$datastream->id][$user->id()];
 }
 

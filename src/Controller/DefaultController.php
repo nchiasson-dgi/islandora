@@ -104,12 +104,9 @@ class DefaultController extends ControllerBase {
   /**
    * View islandora object.
    */
-  public function viewObject($object, Request $currentRequest) {
+  public function viewObject(AbstractObject $object, Request $currentRequest) {
     module_load_include('inc', 'islandora', 'includes/breadcrumb');
     module_load_include('inc', 'islandora', 'includes/utilities');
-    if (!$object) {
-      throw new NotFoundHttpException();
-    }
     // XXX: This seems so very dumb but given how empty slugs don't play nice
     // in Drupal as defaults this needs to be the case. If it's possible to get
     // around this by making the empty slug route in YAML or a custom Routing
@@ -248,7 +245,6 @@ class DefaultController extends ControllerBase {
   public function viewDatastream(AbstractDatastream $datastream, $download = FALSE, $version = NULL) {
     module_load_include('inc', 'islandora', 'includes/mimetype.utils');
     module_load_include('inc', 'islandora', 'includes/datastream');
-
     if ($version !== NULL) {
       if (isset($datastream[$version])) {
         $datastream = $datastream[$version];
