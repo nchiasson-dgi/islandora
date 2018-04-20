@@ -3,6 +3,7 @@
 namespace Drupal\islandora\ParamConverter;
 
 use Drupal\Core\ParamConverter\ParamConverterInterface;
+use Drupal\Core\ParamConverter\ParamNotConvertedException;
 use Drupal\Core\Config\ConfigFactoryInterface;
 
 use Symfony\Component\Routing\Route;
@@ -36,8 +37,7 @@ class ObjectParamConverter implements ParamConverterInterface {
       return $object;
     }
     elseif ($object === FALSE) {
-      // Return for 404.
-      return NULL;
+      throw new ParamNotConvertedException();
     }
     else {
       // Let the access layer take care of it.
