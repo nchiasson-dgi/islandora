@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 use Drupal\islandora\Tuque\IslandoraFedoraRepository;
 
@@ -161,7 +162,7 @@ EOQ;
       // render the last two links and break (on the next pass).
       return array_merge(
         islandora_get_breadcrumbs_recursive($root, $repository, $context),
-        ['...']
+        [Link::fromTextAndUrl('...', Url::fromUri('internal:/'))]
       );
     }
   }
