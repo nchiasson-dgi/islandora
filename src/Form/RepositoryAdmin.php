@@ -3,6 +3,7 @@
 namespace Drupal\islandora\Form;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use RepositoryException;
 
 /**
@@ -258,20 +259,20 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
       $status['message'] = $this->t('Successfully connected to Fedora Server (Version @version).', [
         '@version' => $info['repositoryVersion'],
       ]);
-      $status['image'] = '/core/misc/icons/73b355/check.svg';
+      $status['image'] = Url::fromUri('base:core/misc/icons/73b355/check.svg')->toString();
     }
     elseif ($info) {
       $status['message'] = $this->t('Unable to authenticate when connecting to to Fedora Server (Version @version). Please configure the @filter.', [
         '@version' => $info['repositoryVersion'],
         '@filter' => 'Drupal Filter',
       ]);
-      $status['image'] = '/core/misc/icons/e29700/warning.svg';
+      $status['image'] = Url::fromUri('base:core/misc/icons/e29700/warning.svg')->toString();
     }
     else {
       $status['message'] = $this->t('Unable to connect to Fedora server at @islandora_url', [
         '@islandora_url' => $url,
       ]);
-      $status['image'] = '/core/misc/icons/e32700/error.svg';
+      $status['image'] = Url::fromUri('base:core/misc/icons/e32700/error.svg')->toString();
     }
     return $status;
   }

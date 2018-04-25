@@ -140,12 +140,12 @@ class SolutionPackForm extends FormBase {
     $ok_image = [
       '#type' => 'image',
       '#theme' => 'image',
-      '#uri' => '/core/misc/icons/73b355/check.svg',
+      '#uri' => Url::fromUri('base:core/misc/icons/73b355/check.svg')->toString(),
     ];
     $warning_image = [
       '#type' => 'image',
       '#theme' => 'image',
-      '#uri' => '/core/misc/icons/e29700/warning.svg',
+      '#uri' => Url::fromUri('base:core/misc/icons/e29700/warning.svg')->toString(),
     ];
     $status_info = [
       'up_to_date' => [
