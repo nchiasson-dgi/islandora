@@ -33,6 +33,13 @@ islandora.solution_packs_admin_form:
     _controller: '\Drupal\islandora\Controller\DefaultController::solutionPacksAdmin'
   requirements:
     _permission: 'add fedora datastreams'
+islandora.viewers_admin:
+  path: 'admin/config/islandora/islandora_viewers'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Islandora Viewers'
+  requirements:
+    _permission: 'administer site configuration'
 islandora.tools_admin:
   path: 'admin/config/islandora/tools'
   defaults:
