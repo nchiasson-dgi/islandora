@@ -30,6 +30,11 @@ islandora.tools_admin:
   parent: islandora.admin_config
   title: 'Islandora Utility Modules'
   description: 'Configure Islandora utility modules.'
+islandora.viewers_admin:
+  route_name: islandora.viewers_admin
+  parent: islandora.admin_config
+  title: 'Islandora Viewers'
+  description: 'Configure custom viewers.'
 islandora.view_default_object:
   route_name: islandora.view_default_object
   title: 'Islandora Repository'

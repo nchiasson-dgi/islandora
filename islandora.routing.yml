@@ -33,6 +33,13 @@ islandora.solution_packs_admin_form:
     _controller: '\Drupal\islandora\Controller\DefaultController::solutionPacksAdmin'
   requirements:
     _permission: 'add fedora datastreams'
+islandora.viewers_admin:
+  path: 'admin/config/islandora/islandora_viewers'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Islandora Viewers'
+  requirements:
+    _permission: 'administer site configuration'
 islandora.tools_admin:
   path: 'admin/config/islandora/tools'
   defaults:
@@ -81,11 +88,11 @@ islandora.printer_object:
 islandora.print_object:
   path: '/islandora/object/{object}/print'
   defaults:
-    op: 'view fedora repository objects'
+    perms: 'view fedora repository objects'
     _title: 'Print Object'
     _controller: '\Drupal\islandora\Controller\DefaultController::printObject'
   requirements:
-    _custom_access: '\Drupal\islandora\Controller\DefaultController::printObjectAccess'
+    _islandora_object_access: 'TRUE'
   options:
     parameters:
       object:

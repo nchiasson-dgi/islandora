@@ -75,6 +75,7 @@ function islandora_theme() {
     ],
     // Print used by the clipper.
     'islandora_object_print' => [
+      'function' => 'theme_islandora_object_print',
       'file' => 'theme/theme.inc',
       'variables' => ['object' => NULL, 'content' => []],
     ],

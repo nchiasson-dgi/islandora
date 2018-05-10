@@ -6,7 +6,6 @@
  */
 
 use Drupal\file\Entity\File;
-use Drupal\Core\Form\FormState;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\Component\Utility\Unicode;
@@ -646,30 +645,6 @@ function islandora_directory_exists_message($path) {
     $message = t('Unable to locate directory at @path', ['@path' => $path]);
   }
   return Drupal::service('renderer')->render($image) . $message;
-}
-
-/**
- * Gets the default value for the given system_settings_form() element.
- *
- * Checks the $form_state for the default value if not it checks
- * variable_get(). Assumes #tree is FALSE. This is only really required
- * for elements that utilize AJAX, as their value can change before the
- * submit actually takes place.
- *
- * @param string $name
- *   The name of the system settings form element.
- * @param mixed $default_value
- *   The default value for the system settings form element.
- * @param \Drupal\Core\Form\FormState $form_state
- *   The Drupal form state object.
- *
- * @return mixed
- *   The default value for use in a the system_settings_form().
- */
-function islandora_system_settings_form_default_value($name, $default_value, FormState &$form_state) {
-  $values = $form_state->getValues();
-  return isset($values[$name]) ? $values[$name] : variable_get($name, $default_value);
-
 }
 
 /**
