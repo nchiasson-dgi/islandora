@@ -210,7 +210,7 @@ function islandora_uninstall_solution_pack($module, $force = FALSE) {
 
   if (!$force) {
     foreach ($existing_objects as $object) {
-      $object_link = Link::createFromRoute($object->label, 'islandora.view_object', ['object' => $object->id]);
+      $object_link = Link::createFromRoute($object->label, 'islandora.view_object', ['object' => $object->id])->toString();
       $msg = $t('@module: Did not remove @object_link. It may be used by other sites.', [
         '@object_link' => $object_link,
         '@module' => $module_name,
