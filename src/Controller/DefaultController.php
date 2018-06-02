@@ -287,6 +287,10 @@ class DefaultController extends ControllerBase {
       if ($duplicate_extension_position === FALSE) {
         $filename .= $extension;
       }
+
+      // Allow other modules to modify or replace the filename.
+      $this->moduleHandler()->alter('islandora_datastream_filename', $filename, $datastream);
+
       $content_disposition = "attachment; filename=\"{$filename}\"";
     }
     // We need to see if the chunking is being requested. This will mainly
