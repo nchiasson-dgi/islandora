@@ -62,6 +62,7 @@ class IslandoraFedoraObject extends FedoraObject {
    * @see FedoraObject::ingestDatastream()
    */
   public function ingestDatastream(&$datastream) {
+    module_load_include('inc', 'islandora', 'includes/tuque_wrapper');
     $object = $datastream->parent;
     $context = [
       'action' => 'ingest',
@@ -120,6 +121,7 @@ class IslandoraFedoraObject extends FedoraObject {
    * @see FedoraObject::purgeObject()
    */
   public function purgeDatastream($id) {
+    module_load_include('inc', 'islandora', 'includes/tuque_wrapper');
     $this->populateDatastreams();
 
     if (!array_key_exists($id, $this->datastreams)) {

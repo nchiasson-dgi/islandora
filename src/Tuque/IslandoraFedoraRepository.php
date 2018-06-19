@@ -23,6 +23,7 @@ class IslandoraFedoraRepository extends FedoraRepository {
    * @see FedoraRepository::ingestObject()
    */
   public function ingestObject(NewFedoraObject &$object) {
+    module_load_include('inc', 'islandora', 'includes/tuque_wrapper');
     try {
       foreach ($object as $dsid => $datastream) {
         $datastream_context = [

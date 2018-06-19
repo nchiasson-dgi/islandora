@@ -24,6 +24,7 @@ class IslandoraFedoraApiM extends FedoraApiM {
    * @see FedoraApiM::modifyDatastream
    */
   public function modifyDatastream($pid, $dsid, $params = []) {
+    module_load_include('inc', 'islandora', 'includes/tuque_wrapper');
     $object = islandora_object_load($pid);
     $datastream = $object[$dsid];
     $context = [
