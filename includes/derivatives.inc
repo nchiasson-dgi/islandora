@@ -183,6 +183,7 @@ function islandora_derivative_logging(array $logging_results) {
  *   An array of operations to be called from within a batch.
  */
 function islandora_do_batch_derivatives(AbstractObject $object, array $options) {
+  module_load_include('inc', 'islandora', 'includes/regenerate_derivatives.form');
   $operations = [];
   $derivatives = islandora_get_derivative_list($object, $options);
   foreach ($derivatives as $derivative) {
