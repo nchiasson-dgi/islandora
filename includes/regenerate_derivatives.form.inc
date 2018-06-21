@@ -6,46 +6,6 @@
  */
 
 /**
- * Regenerate a single datastream derivative confirm form.
- *
- * @param array $form
- *   The Drupal form.
- * @param array $form_state
- *   The Drupal form state.
- * @param AbstractDatastream $datastream
- *   The datastream to have derivatives regenerated for.
- *
- * @return array
- *   The Drupal form definition.
- */
-function islandora_regenerate_datastream_derivative_form(array $form, array &$form_state, AbstractDatastream $datastream) {
-  $form_state['datastream'] = $datastream;
-  return confirm_form($form,
-    t('Are you sure you want to regenerate the derivative for the %dsid datastream?', ['%dsid' => $datastream->id]),
-    "islandora/object/{$datastream->parent->id}/manage/datastreams",
-    t('This will create a new version of the datastream. Please wait while this happens.'),
-    t('Regenerate'),
-    t('Cancel')
-  );
-}
-
-/**
- * Submit handler for the regenerate datastream derivative form.
- *
- * @param array $form
- *   The Drupal form.
- * @param array $form_state
- *   The Drupal form state.
- */
-function islandora_regenerate_datastream_derivative_form_submit(array $form, array &$form_state) {
-  module_load_include('inc', 'islandora', 'includes/derivatives');
-  $datastream = $form_state['datastream'];
-  $batch = islandora_regenerate_datastream_derivative_batch($datastream);
-  batch_set($batch);
-  $form_state['redirect'] = "islandora/object/{$datastream->parent->id}/manage/datastreams";
-}
-
-/**
  * Creates a batch to go out and re-create all of the derivatives for an object.
  *
  * @param AbstractObject $object
