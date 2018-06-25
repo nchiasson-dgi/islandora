@@ -106,7 +106,7 @@ function template_preprocess_islandora_objects(array &$variables) {
   $page = pager_default_initialize(count($objects), $limit);
   $objects = array_slice($objects, $page * $limit, $limit);
 
-  $variables['pager'] = ['#type' => 'pager', 'quantity' => 10];
+  $variables['pager'] = ['#type' => 'pager', '#quantity' => 10];
 
   $objects = array_map('islandora_objects_object_mapper', $objects);
   $theme = $grid_display ? 'islandora_objects_grid' : 'islandora_objects_list';
