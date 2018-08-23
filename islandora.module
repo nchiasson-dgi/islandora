@@ -1083,7 +1083,7 @@ function islandora_conditionally_clear_cache() {
 
   $functions = [
     // Object changes in response to a form.
-    'form_execute_handlers' => 'islandora_cache_clear_all',
+    'executesubmithandlers' => 'islandora_cache_clear_all',
     // Object changes in response to a batch. Note that this will not match on
     // a drush batch, as drush uses a different set of functions to run
     // batches. We intentionally do not clear batches in response to drush
@@ -1111,7 +1111,6 @@ function islandora_cache_clear_all() {
   if (isset($clear)) {
     $clear =& drupal_static(__FUNCTION__, FALSE);
   }
-
   if (!$clear) {
     $clear = TRUE;
     drupal_register_shutdown_function('islandora_shutdown_cache_clear_all');
@@ -1125,6 +1124,7 @@ function islandora_cache_clear_all() {
  */
 function islandora_shutdown_cache_clear_all() {
   \Drupal::cache('render')->deleteAll();
+  \Drupal::cache('dynamic_page_cache')->deleteAll();
 }
 
 /**
@@ -1133,7 +1133,6 @@ function islandora_shutdown_cache_clear_all() {
 function islandora_schedule_cache_clear_for_batch() {
   $batch =& batch_get();
   static $scheduled;
-
   $scheduled = isset($scheduled) || isset($batch['islandora_cache_clear_scheduled']);
 
   if ($scheduled || !isset($batch['id'])) {
@@ -1141,7 +1140,6 @@ function islandora_schedule_cache_clear_for_batch() {
     // batch is not running.
     return;
   }
-
   $clear_batch = [
     'operations' => [
       ['islandora_cache_clear_all', []],
