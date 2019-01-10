@@ -172,9 +172,8 @@ function islandora_derivative_logging(array $logging_results) {
         $message_status,
         FALSE
       );
-
-      if (isset($_SESSION['messages']['warning']) && isset($_SESSION['messages']['status'])) {
-        unset($_SESSION['messages']['status']);
+      if (isset($_SESSION['_symfony_flashes']['warning']) && isset($_SESSION['_symfony_flashes']['status'])) {
+        unset($_SESSION['_symfony_flashes']['status']);
       }
     }
   }
