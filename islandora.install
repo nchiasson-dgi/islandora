@@ -33,8 +33,10 @@ function islandora_requirements($phase) {
  * @see islandora_islandora_required_objects()
  */
 function islandora_install() {
-  module_load_include('inc', 'islandora', 'includes/solution_packs');
-  islandora_install_solution_pack('islandora');
+  drupal_set_message(
+    t('This module supplies the Fedora object islandora:root. Please verify it is installed if needed.'),
+    'status'
+  );
 }
 
 /**
