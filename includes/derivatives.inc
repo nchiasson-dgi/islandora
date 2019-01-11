@@ -130,8 +130,20 @@ function islandora_do_derivatives(AbstractObject $object, array $options) {
  *       log if not defined.
  */
 function islandora_derivative_logging(array $logging_results) {
+  $result_messages = [
+    'success' => Link::createFromRoute(
+      t('Derivatives successfully created'),
+      'islandora.event_status'
+    )->toString(),
+    'incomplete' => Link::createFromRoute(
+      t('Not all derivatives successfully created.  Please check log messages'),
+      'islandora.event_status'
+    )->toString(),
+  ];
   foreach ($logging_results as $result) {
     foreach ($result['messages'] as $message) {
+      $result_message = $result_messages['success'];
+      $message_status = 'status';
       if ($message['type'] === 'dsm') {
         if (isset($message['severity']) && $message['severity'] != 'status') {
           drupal_set_message(Xss::filter(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : [])), $message['severity']);
@@ -144,14 +156,6 @@ function islandora_derivative_logging(array $logging_results) {
             'message' => Xss::filter(format_string($message['message'], isset($message['message_sub']) ? $message['message_sub'] : [])),
             'severity' => 'status',
           ];
-          drupal_set_message(
-            Link::createFromRoute(
-              t('Derivatives successfully created.'),
-              'islandora.event_status'
-            )->toString(),
-            'status',
-            FALSE
-          );
         }
       }
       else {
@@ -160,6 +164,16 @@ function islandora_derivative_logging(array $logging_results) {
           $message['message'],
           isset($message['message_sub']) ? $message['message_sub'] : []
         );
+        $result_message = $result_messages['incomplete'];
+        $message_status = 'warning';
+      }
+      drupal_set_message(
+        $result_message,
+        $message_status,
+        FALSE
+      );
+      if (isset($_SESSION['_symfony_flashes']['warning']) && isset($_SESSION['_symfony_flashes']['status'])) {
+        unset($_SESSION['_symfony_flashes']['status']);
       }
     }
   }
