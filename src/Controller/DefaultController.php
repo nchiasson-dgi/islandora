@@ -142,6 +142,9 @@ class DefaultController extends ControllerBase {
 
     arsort($output);
     $this->moduleHandler()->alter($hooks, $object, $output);
+
+    $this->renderer->addCacheableDependency($output, $this->config('islandora.settings'));
+
     return $output;
   }
 
