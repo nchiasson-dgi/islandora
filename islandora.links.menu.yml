@@ -47,3 +47,8 @@ islandora.deleted_objects_manage_form:
   parent: islandora.admin_config
   title: 'Manage Deleted Objects'
   description: 'Restore or permanently remove objects with Deleted status'
+islandora.orphaned_objects:
+  route_name: islandora.orphaned_objects
+  parent: system.admin_reports
+  title: 'Orphaned Islandora objects'
+  description: 'List of orphaned Islandora objects.'
