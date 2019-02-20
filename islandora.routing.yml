@@ -380,3 +380,10 @@ islandora.deleted_objects_manage_form:
     _form: '\Drupal\islandora\Form\ManageDeletedObjectsForm'
   requirements:
     _permission: 'manage deleted objects'
+islandora.orphaned_objects:
+  path: '/admin/reports/orphaned_objects/list'
+  defaults:
+    _title: 'Orphaned Islandora objects'
+    _form: '\Drupal\islandora\Form\OrphanedObjects'
+  requirements:
+    _permission: 'view and delete a list of orphaned objects'

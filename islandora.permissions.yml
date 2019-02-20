@@ -31,3 +31,6 @@
 'replace a datastream with new content, preserving version history':
   title: 'Replace datastreams'
   description: 'Add new datastream content as latest version.'
+'view and delete a list of orphaned objects':
+  title: 'Manage orphaned Islandora objects'
+  description: 'View a list of orphaned Islandora objects.'
