@@ -36,3 +36,8 @@ islandora.settings:
       type: string
     viewers:
       type: sequence
+      sequence:
+        type: mapping
+        mapping:
+          default:
+            type: string

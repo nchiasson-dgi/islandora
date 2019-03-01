@@ -395,24 +395,29 @@ function islandora_viewers_form($viewer_type = NULL, $mimetype = NULL, $model = 
       $form['viewers'][$viewer_type]['name'][$name] = [
         '#type' => 'hidden',
         '#value' => $name,
+        '#input' => FALSE,
       ];
       $form['viewers'][$viewer_type]['label'][$name] = [
         '#type' => 'item',
         '#markup' => $profile['label'],
+        '#input' => FALSE,
       ];
       $form['viewers'][$viewer_type]['description'][$name] = [
         '#type' => 'item',
         '#markup' => $profile['description'],
+        '#input' => FALSE,
       ];
       $form['viewers'][$viewer_type]['configuration'][$name] = [
         '#type' => 'item',
         '#markup' => (isset($profile['configuration']) && $profile['configuration'] != '') ? Link::createFromRoute(t('configure'), $profile['configuration'])->toString() : '',
+        '#input' => FALSE,
       ];
     }
     $form['viewers'][$viewer_type]['default'] = [
       '#type' => 'radios',
       '#options' => isset($options) ? $options : [],
       '#default_value' => !empty($viewers_config) ? $viewers_config['default'] : 'none',
+      '#input' => TRUE,
     ];
   }
   else {
@@ -469,14 +474,15 @@ function islandora_get_viewers($mimetype = [], $content_model = NULL) {
  */
 function theme_islandora_viewers_table($variables) {
   $form = $variables['form'];
+  $renderer = \Drupal::service("renderer");
   $rows = [];
   foreach ($form['name'] as $key => $element) {
     if (is_array($element) && Element::child($key)) {
       $row = [];
-      $row[] = ['data' => \Drupal::service("renderer")->render($form['default'][$key])];
-      $row[] = ['data' => \Drupal::service("renderer")->render($form['label'][$key])];
-      $row[] = ['data' => \Drupal::service("renderer")->render($form['description'][$key])];
-      $row[] = ['data' => \Drupal::service("renderer")->render($form['configuration'][$key])];
+      $row[] = ['data' => $renderer->render($form['default'][$key])];
+      $row[] = ['data' => $renderer->render($form['label'][$key])];
+      $row[] = ['data' => $renderer->render($form['description'][$key])];
+      $row[] = ['data' => $renderer->render($form['configuration'][$key])];
       $rows[] = ['data' => $row];
     }
   }
@@ -492,7 +498,7 @@ function theme_islandora_viewers_table($variables) {
     '#rows' => $rows,
     '#attributes' => ['id' => 'islandora-viewers-table'],
   ];
-  $output .= \Drupal::service('renderer')->render($table);
+  $output .= $renderer->render($table);
   $output .= drupal_render_children($form);
   return $output;
 }
