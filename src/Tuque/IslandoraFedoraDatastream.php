@@ -5,13 +5,29 @@ namespace Drupal\islandora\Tuque;
 require_once __DIR__ . '/Base.php';
 
 use FedoraDatastream;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
 
 /**
  * Class IslandoraFedoraDatastream.
  *
  * @package Drupal\islandora\Tuque
  */
-class IslandoraFedoraDatastream extends FedoraDatastream {
+class IslandoraFedoraDatastream extends FedoraDatastream implements RefinableCacheableDependencyInterface {
+  use RefinableCacheableDependencyTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct($id, AbstractFedoraObject $object, FedoraRepository $repository) {
+    parent::__construct($id, $object, $repository);
+
+    $this->addCacheableDependency($object);
+    $this->addCacheTags([
+      "{$this->parent->id}/{$id}",
+    ]);
+  }
+
   protected $fedoraRelsIntClass = IslandoraFedoraRelsInt::class;
   protected $fedoraDatastreamVersionClass = IslandoraFedoraDatastreamVersion::class;
 

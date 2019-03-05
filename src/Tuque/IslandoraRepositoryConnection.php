@@ -6,12 +6,16 @@ require_once __DIR__ . '/Base.php';
 
 use RepositoryConnection;
 
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
+
 /**
  * Class IslandoraRepositoryConnection.
  *
  * @package Drupal\islandora\Tuque
  */
-class IslandoraRepositoryConnection extends RepositoryConnection {
+class IslandoraRepositoryConnection extends RepositoryConnection implements RefinableCacheableDependencyInterface {
+  use RefinableCacheableDependencyTrait;
 
   /**
    * Constructor.

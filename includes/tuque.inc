@@ -15,6 +15,7 @@ use Drupal\islandora\Tuque\IslandoraSimpleCache;
 use Drupal\islandora\Tuque\IslandoraFedoraApi;
 use Drupal\islandora\Tuque\IslandoraRepositoryConnection;
 use Drupal\user\Entity\User;
+use Drupal\Core\Cache\CacheableMetadata;
 
 /**
  * A class to include the Tuque library.
@@ -66,27 +67,45 @@ class IslandoraTuque {
    *   The URL to the Fedora instance or NULL.
    */
   public function __construct($user = NULL, $url = NULL) {
+    $cache_meta = CacheableMetadata::createFromRenderArray([]);
+
     if (!isset($user)) {
       $user = \Drupal::currentUser();
+    }
+    else {
+      // A user was explicitly passed... let's avoid caching.
+      $cache_meta->mergeCacheMaxAge(0);
     }
 
     if ($user->isAnonymous()) {
       $user_string = 'anonymous';
       $pass_string = 'anonymous';
+
+      $cache_meta->addCacheContexts('user.roles:anonymous');
     }
     else {
       $user_entity = User::load($user->id());
+
+      $cache_meta->addCacheableDependency($user_entity);
+
       $user_string = $user_entity->getAccountName();
       $pass_string = $user_entity->getPassword();
     }
 
     if (!isset($url)) {
-      $url = \Drupal::config('islandora.settings')->get('islandora_base_url');
+      $config = \Drupal::config('islandora.settings');
+      $url = $config->get('islandora_base_url');
+      $cache_meta->addCacheableDependency($config);
+    }
+    else {
+      // A url was explicitly passed... let's avoid caching.
+      $cache_meta->mergeCacheMaxAge(0);
     }
 
     if (static::exists()) {
       module_load_include('inc', 'islandora', 'includes/tuque_wrapper');
       $this->connection = new IslandoraRepositoryConnection($url, $user_string, $pass_string);
+      $this->connection->addCacheableDependency($cache_meta);
       $this->connection->reuseConnection = TRUE;
       $this->api = new IslandoraFedoraApi($this->connection);
       $this->cache = new IslandoraSimpleCache();

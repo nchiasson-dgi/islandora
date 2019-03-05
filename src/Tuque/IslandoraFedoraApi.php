@@ -8,12 +8,16 @@ use FedoraApi;
 use FedoraApiA;
 use FedoraApiSerializer;
 
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
+
 /**
  * Class IslandoraFedoraApi.
  *
  * @package Drupal\islandora\Tuque
  */
-class IslandoraFedoraApi extends FedoraApi {
+class IslandoraFedoraApi extends FedoraApi implements RefinableCacheableDependencyInterface {
+  use RefinableCacheableDependencyTrait;
 
   /**
    * Instantiate a IslandoraFedoraApi object.
@@ -27,6 +31,8 @@ class IslandoraFedoraApi extends FedoraApi {
     $this->a = new FedoraApiA($connection, $serializer);
     $this->m = new IslandoraFedoraApiM($connection, $serializer);
     $this->connection = $connection;
+
+    $this->addCacheableDependency($connection);
   }
 
 }

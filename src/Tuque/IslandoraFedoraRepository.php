@@ -7,12 +7,26 @@ require_once __DIR__ . '/Base.php';
 use FedoraRepository;
 use NewFedoraObject;
 
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
+
 /**
  * Class IslandoraFedoraRepository.
  *
  * @package Drupal\islandora\Tuque
  */
-class IslandoraFedoraRepository extends FedoraRepository {
+class IslandoraFedoraRepository extends FedoraRepository implements RefinableCacheableDependencyInterface {
+  use RefinableCacheableDependencyTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(FedoraApi $api, AbstractCache $cache) {
+    parent::__construct($api, $cache);
+
+    $this->addCacheableDependency($api);
+  }
+
   protected $queryClass = IslandoraRepositoryQuery::class;
   protected $newObjectClass = IslandoraNewFedoraObject::class;
   protected $objectClass = IslandoraFedoraObject::class;
