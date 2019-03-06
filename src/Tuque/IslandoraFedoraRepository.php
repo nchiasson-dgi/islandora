@@ -6,6 +6,8 @@ require_once __DIR__ . '/Base.php';
 
 use FedoraRepository;
 use NewFedoraObject;
+use FedoraApi;
+use AbstractCache;
 
 use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Cache\RefinableCacheableDependencyTrait;

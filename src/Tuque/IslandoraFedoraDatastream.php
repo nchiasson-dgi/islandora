@@ -5,6 +5,8 @@ namespace Drupal\islandora\Tuque;
 require_once __DIR__ . '/Base.php';
 
 use FedoraDatastream;
+use AbstractFedoraObject;
+use FedoraRepository;
 use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
 
