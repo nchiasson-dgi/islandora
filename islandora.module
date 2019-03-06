@@ -9,6 +9,7 @@ use Drupal\islandora\DublinCore;
 use Drupal\islandora\Authentication\Provider\TokenAuth;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Cache\CacheableDependencyInterface;
 
 // @codingStandardsIgnoreStart
 // Common datastreams.
@@ -1158,7 +1159,7 @@ function islandora_cache_clear_all() {
  */
 function islandora_shutdown_cache_clear_all() {
   Cache::invalidateTags([
-    'islandora_listing',
+    \Drupal\islandora\Controller\DefaultController::LISTING_TAG,
   ]);
 }
 

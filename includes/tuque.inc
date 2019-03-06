@@ -81,7 +81,7 @@ class IslandoraTuque {
       $user_string = 'anonymous';
       $pass_string = 'anonymous';
 
-      $cache_meta->addCacheContexts('user.roles:anonymous');
+      $cache_meta->addCacheContexts(['user.roles:anonymous']);
     }
     else {
       $user_entity = User::load($user->id());
