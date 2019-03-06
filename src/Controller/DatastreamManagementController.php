@@ -2,7 +2,10 @@
 
 namespace Drupal\islandora\Controller;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Cache\CacheableMetadata;
 
 use Drupal\islandora\Utility\Links;
 
@@ -17,13 +20,28 @@ use AbstractDatastream;
 class DatastreamManagementController extends ControllerBase {
   const VERSION_PERM = ISLANDORA_VIEW_DATASTREAM_HISTORY;
 
+  protected $renderer;
   protected $links;
 
   /**
    * Constructor.
    */
-  public function __construct() {
-    $this->links = new Links($this->config('islandora.settings'), $this->moduleHandler());
+  public function __construct(RendererInterface $renderer) {
+    $this->renderer = $renderer;
+    $this->links = new Links(
+      $this->config('islandora.settings'),
+      $this->moduleHandler(),
+      $this->renderer
+    );
+  }
+
+  /**
+   * Dependency Injection.
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('renderer')
+    );
   }
 
   /**
@@ -45,6 +63,9 @@ class DatastreamManagementController extends ControllerBase {
     }
     arsort($output);
     $this->moduleHandler()->alter(ISLANDORA_EDIT_HOOK, $object, $output);
+
+    $this->renderer->addCacheableDependency($output, $object);
+
     return $output;
   }
 
@@ -61,11 +82,17 @@ class DatastreamManagementController extends ControllerBase {
     $output = [
       '#type' => 'table',
       '#header' => $this->defaultHeader($object),
+      '#cache' => [
+        'contexts' => ['languages'],
+      ],
     ];
 
     foreach ($object as $dsid => $datastream) {
       $output["datastream-$dsid"] = $this->defaultRowContent($datastream);
+      $this->renderer->addCacheableDependency($output, $datastream);
     }
+
+    $this->renderer->addCacheableDependency($output, $object);
 
     return $output;
   }

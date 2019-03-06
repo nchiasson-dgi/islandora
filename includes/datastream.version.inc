@@ -17,7 +17,8 @@ function islandora_datastream_version_table($datastream) {
 
   $linker = new Links(
     \Drupal::config('islandora'),
-    \Drupal::getContainer()->get('module_handler')
+    \Drupal::getContainer()->get('module_handler'),
+    \Drupal::service('renderer')
   );
   $parent = $datastream->parent;
   $table = [];

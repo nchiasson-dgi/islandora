@@ -6,7 +6,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
-use Drupal\Core\Render\Renderer;
+use Drupal\Core\Render\RendererInterface;
 
 use Drupal\islandora\Form\SolutionPackForm;
 
@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Drupal\Core\Cache\CacheableJsonResponse as JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 use AbstractObject;
@@ -27,6 +27,7 @@ use AbstractDatastream;
  * @package Drupal\islandora\Controller
  */
 class DefaultController extends ControllerBase {
+  const LISTING_TAG = 'islandora_listing';
 
   protected $renderer;
 
@@ -35,7 +36,7 @@ class DefaultController extends ControllerBase {
   /**
    * Constructor for dependency injection.
    */
-  public function __construct(Renderer $renderer, $appRoot) {
+  public function __construct(RendererInterface $renderer, $appRoot) {
     $this->renderer = $renderer;
     $this->appRoot = $appRoot;
   }
@@ -53,7 +54,7 @@ class DefaultController extends ControllerBase {
   /**
    * Administer solutions packs.
    *
-   * @return array|string
+   * @return array
    *   Renderable for the solution pack administration page.
    *
    * @throws \Exception
@@ -64,10 +65,21 @@ class DefaultController extends ControllerBase {
 
     if (!islandora_describe_repository()) {
       islandora_display_repository_inaccessible_message();
-      return '';
+      return [
+        '#markup' => '',
+        '#cache' => [
+          'max-age' => 0,
+        ],
+      ];
     }
 
-    $output = [];
+    $output = [
+      '#cache' => [
+        'tags' => [
+          static::LISTING_TAG,
+        ],
+      ],
+    ];
     $enabled_solution_packs = islandora_solution_packs_get_required_objects();
     foreach ($enabled_solution_packs as $solution_pack_module => $solution_pack_info) {
       // @todo We should probably get the title of the solution pack from the
@@ -143,7 +155,7 @@ class DefaultController extends ControllerBase {
     arsort($output);
     $this->moduleHandler()->alter($hooks, $object, $output);
 
-    $this->renderer->addCacheableDependency($output, $this->config('islandora.settings'));
+    $this->renderer->addCacheableDependency($output, $object);
 
     return $output;
   }
@@ -153,7 +165,8 @@ class DefaultController extends ControllerBase {
    */
   public function printObjectAccess($op, $object, AccountInterface $account) {
     $object = islandora_object_load($object);
-    return AccessResult::allowedIf(islandora_print_object_access($op, $object, $account));
+    return AccessResult::allowedIf(islandora_print_object_access($op, $object, $account))
+      ->addCacheableDependency($object);
   }
 
   /**
@@ -175,6 +188,9 @@ class DefaultController extends ControllerBase {
 
     // Prompt to print.
     $output['#attached']['library'][] = 'islandora/islandora-print-js';
+
+    $this->renderer->addCacheableDependency($output, $object);
+
     return $output;
   }
 
@@ -192,11 +208,15 @@ class DefaultController extends ControllerBase {
    *   A renderable array.
    */
   public function printObject(AbstractObject $object) {
-    return [
+    $output = [
       '#title' => $object->label,
       '#theme' => 'islandora_object_print',
       '#object' => $object,
     ];
+
+    $this->renderer->addCacheableDependency($output, $object);
+
+    return $output;
   }
 
   /**
@@ -220,7 +240,9 @@ class DefaultController extends ControllerBase {
     foreach ($dsids as $dsid) {
       $output[] = ['value' => $dsid, 'label' => $dsid];
     }
-    return new JsonResponse($output);
+
+    return (new JsonResponse($output))
+      ->addCacheableDependency($object);
   }
 
   /**
@@ -373,6 +395,9 @@ class DefaultController extends ControllerBase {
             '#url' => Url::fromUserInput($entry['url']),
           ];
         }
+
+        $this->renderer->addCacheableDependency($list, $datastream);
+
         return $list;
     }
   }
@@ -414,7 +439,16 @@ class DefaultController extends ControllerBase {
         $output[] = ['value' => $model, 'label' => $label];
       }
     }
-    return new JsonResponse($output);
+    $response = new JsonResponse($output);
+
+    $response->getCacheableMetadata()
+      ->addCacheableDependency($this->config('islandora.settings'))
+      ->addCacheTags([static::LISTING_TAG])
+      ->addCacheContexts([
+        'url.query_args:q',
+      ]);
+
+    return $response;
   }
 
 }

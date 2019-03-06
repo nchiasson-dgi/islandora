@@ -6,6 +6,7 @@ use Drupal\Core\Url;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Config\ConfigBase;
+use Drupal\Core\Render\RendererInterface;
 
 use AbstractDatastream;
 
@@ -19,20 +20,22 @@ class Links {
 
   protected $config;
   protected $moduleHandler;
+  protected $renderer;
 
   /**
    * Constructor.
    */
-  public function __construct(ConfigBase $config, ModuleHandlerInterface $module_handler) {
+  public function __construct(ConfigBase $config, ModuleHandlerInterface $module_handler, RendererInterface $renderer) {
     $this->config = $config;
     $this->moduleHandler = $module_handler;
+    $this->renderer = $renderer;
   }
 
   /**
    * Helper to generate a link to download a datastream.
    */
   public function download(AbstractDatastream $datastream) {
-    return islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $datastream) ?
+    $output = islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $datastream) ?
       [
         '#type' => 'link',
         '#title' => $this->t('download'),
@@ -44,6 +47,9 @@ class Links {
       [
         '#plain_text' => '',
       ];
+
+    $this->renderer->addCacheableDependency($output, $datastream);
+    return $output;
   }
 
   /**
@@ -53,7 +59,7 @@ class Links {
     $label = $label === NULL ? $datastream->id : $label;
 
     if ($version === NULL) {
-      return islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $datastream) ?
+      $output = islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $datastream) ?
         [
           '#type' => 'link',
           '#title' => $label,
@@ -63,9 +69,11 @@ class Links {
           ]),
         ] :
         ['#plain_text' => $label];
+      $this->renderer->addCacheableDependency($output, $datastream);
+      return $output;
     }
     else {
-      return islandora_datastream_access(ISLANDORA_VIEW_DATASTREAM_HISTORY, $datastream) ?
+      $output = islandora_datastream_access(ISLANDORA_VIEW_DATASTREAM_HISTORY, $datastream) ?
         [
           '#title' => $label,
           '#type' => 'link',
@@ -76,6 +84,9 @@ class Links {
           ]),
         ] :
         ['#plain_text' => $label];
+
+      $this->renderer->addCacheableDependency($output, $datastream[$version]);
+      return $output;
     }
   }
 
@@ -103,14 +114,16 @@ class Links {
       ]);
     }
 
-    if ($can_delete && isset($link)) {
-      return [
+    $output = ($can_delete && isset($link)) ?
+      [
         '#title' => $this->t('delete'),
         '#url' => $link,
         '#type' => 'link',
-      ];
-    }
-    return ['#plain_text' => ''];
+      ] :
+      ['#plain_text' => ''];
+    $this->renderer->addCacheableDependency($output, $version === NULL ? $datastream : $datastream[$version]);
+    return $output;
+
   }
 
   /**
@@ -131,14 +144,16 @@ class Links {
     else {
       $can_revert = FALSE;
     }
-    if ($can_revert) {
-      return [
+    $output = ($can_revert) ?
+      [
         '#type' => 'link',
         '#title' => $this->t('revert'),
         '#url' => $link,
-      ];
-    }
-    return ['#plain_text' => ''];
+      ] :
+      ['#plain_text' => ''];
+
+    $this->renderer->addCacheableDependency($output, $version === NULL ? $datastream : $datastream[$version]);
+    return $output;
   }
 
   /**
@@ -149,7 +164,7 @@ class Links {
     $edit_registry = islandora_build_datastream_edit_registry($datastream);
     $can_edit = count($edit_registry) > 0 && islandora_datastream_access(ISLANDORA_METADATA_EDIT, $datastream);
 
-    return $can_edit ?
+    $output = $can_edit ?
       [
         '#type' => 'link',
         '#title' => $this->t('edit'),
@@ -159,6 +174,8 @@ class Links {
         ]),
       ] :
       ['#plain_text' => ''];
+    $this->renderer->addCacheableDependency($output, $datastream);
+    return $output;
   }
 
   /**
@@ -167,32 +184,38 @@ class Links {
   public function versions(AbstractDatastream $datastream) {
     $see_history = islandora_datastream_access(ISLANDORA_VIEW_DATASTREAM_HISTORY, $datastream);
     if ($see_history) {
-      if ($datastream->versionable) {
-        return [
+      $output = $datastream->versionable ?
+        [
           '#type' => 'link',
           '#title' => count($datastream),
           '#url' => Url::fromRoute('islandora.datastream_version_table', [
             'object' => $datastream->parent->id,
             'datastream' => $datastream->id,
           ]),
+        ] :
+        [
+          '#plain_text' => $this->t('Not Versioned'),
         ];
-      }
-      else {
-        return $this->t('Not Versioned');
-      }
     }
-    return ['#plain_text' => ''];
+    else {
+      $output = ['#plain_text' => ''];
+    }
+
+    $this->renderer->addCacheableDependency($output, $datastream);
+    return $output;
   }
 
   /**
    * Helper to generate a link to the form to replace the datastream's content.
    */
   public function replace(AbstractDatastream $datastream) {
+    $output = NULL;
+
     if (islandora_datastream_access(ISLANDORA_REPLACE_DATASTREAM_CONTENT, $datastream)) {
       $var_string = $this->config->get('islandora_ds_replace_exclude_enforced');
       $replace_exclude = explode(",", $var_string);
       if (!in_array($datastream->id, $replace_exclude)) {
-        return [
+        $output = [
           '#type' => 'link',
           '#title' => $this->t('replace'),
           '#url' => Url::fromRoute('islandora.datastream_version_replace_form', [
@@ -202,24 +225,32 @@ class Links {
         ];
       }
     }
-    return ['#plain_text' => ''];
+
+    if (!isset($output)) {
+      $output = ['#plain_text' => ''];
+    }
+
+    $this->renderer->addCacheableDependency($output, $datastream);
+    return $output;
   }
 
   /**
    * Helper to generate a link to the form to kick off derivative regeneration.
    */
   public function regenerate(AbstractDatastream $datastream) {
-    if (islandora_datastream_access(ISLANDORA_REGENERATE_DERIVATIVES, $datastream)) {
-      return [
+    $output = islandora_datastream_access(ISLANDORA_REGENERATE_DERIVATIVES, $datastream) ?
+      [
         '#type' => 'link',
         '#title' => $this->t('regenerate'),
         '#url' => Url::fromRoute('islandora.regenerate_datastream_derivative_form', [
           'object' => $datastream->parent->id,
           'datastream' => $datastream->id,
         ]),
-      ];
-    }
-    return ['#plain_text' => ''];
+      ] :
+      ['#plain_text' => ''];
+
+    $this->renderer->addCacheableDependency($output, $datastream);
+    return $output;
   }
 
 }
