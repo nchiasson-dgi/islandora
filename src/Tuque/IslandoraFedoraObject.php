@@ -27,10 +27,12 @@ class IslandoraFedoraObject extends FedoraObject implements RefinableCacheableDe
   public function __construct($id, FedoraRepository $repository) {
     parent::__construct($id, $repository);
 
-    $this->addCacheableDependency($repository);
-    $this->addCacheTags([
-      $id,
-    ]);
+    $this
+      ->addCacheableDependency($repository)
+      ->addCacheTags($this->models)
+      ->addCacheTags([
+        $id,
+      ]);
   }
 
   /**
