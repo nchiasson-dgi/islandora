@@ -79,6 +79,8 @@ class DatastreamManagementController extends ControllerBase {
    *   A renderable array for the datastream table.
    */
   protected function defaultContent(AbstractObject $object) {
+    $cache_meta = (new CacheableMetadata())
+      ->addCacheableDependency($object);
     $output = [
       '#type' => 'table',
       '#header' => $this->defaultHeader($object),
@@ -89,10 +91,10 @@ class DatastreamManagementController extends ControllerBase {
 
     foreach ($object as $dsid => $datastream) {
       $output["datastream-$dsid"] = $this->defaultRowContent($datastream);
-      $this->renderer->addCacheableDependency($output, $datastream);
+      $cache_meta->addCacheableDependency($datastream);
     }
 
-    $this->renderer->addCacheableDependency($output, $object);
+    $cache_meta->applyTo($output);
 
     return $output;
   }
