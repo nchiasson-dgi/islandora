@@ -9,4 +9,4 @@ use Drupal\islandora\Form\Abstracts\ModuleHandlerAdminForm as AbstractParent;
  *
  * @deprecated
  */
-class ModuleHandlerAdminForm extends AbstractParent {}
+abstract class ModuleHandlerAdminForm extends AbstractParent {}
