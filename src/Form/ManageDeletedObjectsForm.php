@@ -5,7 +5,10 @@ namespace Drupal\islandora\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Extension\ModuleHandler;
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Access\AccessResult;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\islandora\Controller\DefaultController;
 
 /**
  * Builds the manage deleted object form.
@@ -45,6 +48,16 @@ class ManageDeletedObjectsForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     module_load_include('inc', 'islandora', 'includes/utilities');
     module_load_include('inc', 'islandora', 'includes/manage_deleted_objects');
+
+    $cache_meta = (new CacheableMetadata())
+      ->addCacheTags([
+        DefaultController::LISTING_TAG,
+      ])
+      ->addCacheContexts([
+        'url.query_args.pagers',
+        'url.query_args:models',
+      ]);
+
     $form += [
       '#tree' => TRUE,
       'actions' => [
@@ -101,7 +114,9 @@ class ManageDeletedObjectsForm extends FormBase {
         '#value' => $this->t('Restore selected objects'),
         '#tableselect' => TRUE,
       ];
-      if ($this->currentUser()->hasPermission(ISLANDORA_PURGE)) {
+      $purge_check = AccessResult::allowIfHasPermission($this->currentUser(), ISLANDORA_PURGE);
+      $cache_meta->addCacheableDependency($purge_check);
+      if ($purge_check->isAllowed()) {
         $form['actions']['purge'] = [
           '#type' => 'submit',
           '#value' => $this->t('Irrevocably purge selected objects'),
@@ -141,6 +156,9 @@ class ManageDeletedObjectsForm extends FormBase {
         ];
       }
     }
+
+    $cache_meta->applyTo($form);
+
     return $form;
   }
 

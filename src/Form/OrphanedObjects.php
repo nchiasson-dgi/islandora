@@ -9,6 +9,8 @@ use Drupal\Core\StringTranslation\TranslationInterface;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+use Drupal\islandora\Controller\DefaultController;
+
 /**
  * Orphaned Islandora Objects management form.
  */
@@ -101,6 +103,11 @@ class OrphanedObjects extends FormBase {
         '#options' => $rows,
         '#attributes' => [],
         '#empty' => $this->t('No orphaned objects were found.'),
+        '#cache' => [
+          'tags' => [
+            DefaultController::LISTING_TAG,
+          ],
+        ],
       ];
       if (!empty($rows)) {
         $form['submit_selected'] = [

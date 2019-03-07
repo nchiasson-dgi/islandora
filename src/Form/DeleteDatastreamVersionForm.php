@@ -2,9 +2,10 @@
 
 namespace Drupal\islandora\Form;
 
-use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+
+use Drupal\islandora\Form\Abstracts\DatastreamVersionConfirmFormBase;
 
 use AbstractDatastream;
 
@@ -13,7 +14,7 @@ use AbstractDatastream;
  *
  * @package \Drupal\islandora\Form
  */
-class DeleteDatastreamVersionForm extends ConfirmFormBase {
+class DeleteDatastreamVersionForm extends DatastreamVersionConfirmFormBase {
   protected $datastream;
 
   /**
@@ -56,8 +57,11 @@ class DeleteDatastreamVersionForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, AbstractDatastream $datastream = NULL, $version = NULL) {
-    if (!isset($datastream[$version]) || count($datastream) < 2) {
-      return drupal_not_found();
+    if (!isset($datastream[$version])) {
+      throw new Exception($this->t('This indicated version could not be found.'));
+    }
+    elseif (count($datastream) < 2) {
+      throw new Exception($this->t('There must be at least two versions in order to delete one.'));
     }
 
     $this->datastream = $datastream;
@@ -65,7 +69,7 @@ class DeleteDatastreamVersionForm extends ConfirmFormBase {
     $form_state->set('datastream', $datastream);
     $form_state->set('version', $version);
 
-    return parent::buildForm($form, $form_state);
+    return parent::buildForm($form, $form_state, $datastream, $version);
   }
 
   /**

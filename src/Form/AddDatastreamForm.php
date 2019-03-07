@@ -2,11 +2,12 @@
 
 namespace Drupal\islandora\Form;
 
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 
 use Drupal\Component\Utility\Html;
+
+use Drupal\islandora\Form\Abstracts\ObjectFormBase;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -17,7 +18,7 @@ use AbstractObject;
  *
  * @package \Drupal\islandora\Form
  */
-class AddDatastreamForm extends FormBase {
+class AddDatastreamForm extends ObjectFormBase {
   /**
    * File entity storage.
    *
@@ -62,7 +63,7 @@ class AddDatastreamForm extends FormBase {
     $unused_datastreams = "'" . implode("', '", $unused_datastreams) . "'";
     $upload_size = min((int) ini_get('post_max_size'), (int) ini_get('upload_max_filesize'));
 
-    return [
+    $form = [
       '#attributes' => [
         'enctype' => 'multipart/form-data',
       ],
@@ -128,6 +129,8 @@ class AddDatastreamForm extends FormBase {
         ],
       ],
     ];
+
+    return parent::buildForm($form, $form_state, $object);
   }
 
   /**

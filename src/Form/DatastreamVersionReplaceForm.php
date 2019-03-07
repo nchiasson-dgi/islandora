@@ -2,11 +2,12 @@
 
 namespace Drupal\islandora\Form;
 
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+
+use Drupal\islandora\Form\Abstracts\DatastreamFormBase;
 
 use AbstractDatastream;
 
@@ -15,7 +16,7 @@ use AbstractDatastream;
  *
  * @package \Drupal\islandora\Form
  */
-class DatastreamVersionReplaceForm extends FormBase {
+class DatastreamVersionReplaceForm extends DatastreamFormBase {
   /**
    * File entity storage.
    *
@@ -67,7 +68,7 @@ class DatastreamVersionReplaceForm extends FormBase {
       $valid_extensions = implode(' ', $extensions);
     }
     $upload_size = min((int) ini_get('post_max_size'), (int) ini_get('upload_max_filesize'));
-    return [
+    $form = [
       'dsid_fieldset' => [
         '#type' => 'fieldset',
         '#title' => $this->t("Update Datastream"),
@@ -110,6 +111,8 @@ class DatastreamVersionReplaceForm extends FormBase {
         ],
       ],
     ];
+
+    return parent::buildForm($form, $form_state, $datastream);
   }
 
   /**

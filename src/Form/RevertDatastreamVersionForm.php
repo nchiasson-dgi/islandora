@@ -2,18 +2,18 @@
 
 namespace Drupal\islandora\Form;
 
-use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 
 use AbstractDatastream;
+use Drupal\islandora\Form\Abstracts\DatastreamVersionConfirmFormBase;
 
 /**
  * Datastream version reversion form.
  *
  * @package \Drupal\islandora\Form
  */
-class RevertDatastreamVersionForm extends ConfirmFormBase {
+class RevertDatastreamVersionForm extends DatastreamVersionConfirmFormBase {
   /**
    * The datastream on which is being operated.
    *
@@ -69,7 +69,7 @@ class RevertDatastreamVersionForm extends ConfirmFormBase {
     $form_state->set(['object_id'], $datastream->parent->id);
     $form_state->set(['version'], $version);
 
-    return parent::buildForm($form, $form_state);
+    return parent::buildForm($form, $form_state, $datastream, $version);
   }
 
   /**

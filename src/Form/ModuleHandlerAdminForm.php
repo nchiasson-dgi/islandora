@@ -2,36 +2,11 @@
 
 namespace Drupal\islandora\Form;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Form\ConfigFormBase;
-use Drupal\Core\Extension\ModuleHandlerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\islandora\Form\Abstracts\ModuleHandlerAdminForm as AbstractParent;
 
 /**
- * Configuration for the Islandora module.
+ * Helper; poor-man alias of the other class here.
+ *
+ * @deprecated
  */
-abstract class ModuleHandlerAdminForm extends ConfigFormBase {
-
-  protected $moduleHandler;
-
-  /**
-   * Class constructor.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler) {
-    parent::__construct($config_factory);
-    $this->moduleHandler = $module_handler;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    // Instantiates this form class.
-    return new static(
-    // Load the service required to construct this class.
-      $container->get('config.factory'),
-      $container->get('module_handler')
-    );
-  }
-
-}
+class ModuleHandlerAdminForm extends AbstractParent {}

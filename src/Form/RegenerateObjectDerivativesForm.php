@@ -2,18 +2,18 @@
 
 namespace Drupal\islandora\Form;
 
-use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 
 use AbstractObject;
+use Drupal\islandora\Form\Abstracts\ObjectConfirmFormBase;
 
 /**
  * Derivative regeneration form.
  *
  * @package \Drupal\islandora\Form
  */
-class RegenerateObjectDerivativesForm extends ConfirmFormBase {
+class RegenerateObjectDerivativesForm extends ObjectConfirmFormBase {
 
   /**
    * The object on which we are operating.
