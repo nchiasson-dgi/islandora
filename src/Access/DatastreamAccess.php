@@ -38,20 +38,29 @@ class DatastreamAccess implements AccessInterface {
     // in Drupal as defaults this needs to be the case. If it's possible to get
     // around this by making the empty slug route in YAML or a custom Routing
     // object we can remove this.
+    $result = AccessResult::neutral()
+      ->addCacheableDependency($object)
+      ->addCacheableDependency($datastream)
+      ->cachePerPermissions();
+
     if (!$datastream && !islandora_describe_repository()) {
       islandora_display_repository_inaccessible_message();
-      return AccessResult::forbidden();
-    }
-    if (is_array($perms)) {
-      $result = AccessResult::neutral();
-      foreach ($perms as $perm) {
-        $result = $islandora_access_conjunction == 'AND' ? $result->andIf(AccessResult::allowedIf(islandora_datastream_access($perm, $datastream, $account))) : $result->orIf(AccessResult::allowedIf(islandora_datastream_access($perm, $datastream, $account)));
-      }
-      return $result;
+      $result = AccessResult::forbidden()
+        ->inheritCacheability($result)
+        ->mergeCacheMaxAge(10);
     }
     else {
-      return AccessResult::allowedIf(islandora_datastream_access($perms, $datastream, $account));
+      if (!is_array($perms)) {
+        $perms = [$perms];
+      }
+
+      $op_if = $islandora_access_conjunction == 'AND' ? 'andIf' : 'orIf';
+
+      foreach ($perms as $perm) {
+        $result = $result->{$op_if}(AccessResult::allowedIf(islandora_datastream_access($perm, $datastream, $account)));
+      }
     }
+    return $result;
   }
 
 }
