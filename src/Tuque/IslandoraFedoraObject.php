@@ -29,10 +29,33 @@ class IslandoraFedoraObject extends FedoraObject implements RefinableCacheableDe
 
     $this
       ->addCacheableDependency($repository)
-      ->addCacheTags($this->models)
+      ->addCacheTags(array_map('static::getDrupalCacheObjectTag', $this->models))
       ->addCacheTags([
-        $id,
+        $this->drupalCacheTag(),
       ]);
+  }
+
+  /**
+   * Get the cache tag for the given object.
+   *
+   * @return string
+   *   The cache tag for this object.
+   */
+  public function drupalCacheTag() {
+    return static::getDrupalCacheObjectTag($this->id);
+  }
+
+  /**
+   * Helper; generate an object tag, given a PID.
+   *
+   * @param string $id
+   *   The PID for which to generate a cache tag.
+   *
+   * @return string
+   *   The cache tag for the given PID.
+   */
+  protected static function getDrupalCacheObjectTag($id) {
+    return "islandora_object:{$id}";
   }
 
   /**
