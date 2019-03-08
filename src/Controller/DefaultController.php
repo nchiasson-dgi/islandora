@@ -249,7 +249,7 @@ class DefaultController extends ControllerBase {
 
     $response = new JsonResponse($output);
 
-    $cache_meta = $response->getCacheableMetadata()
+    $response->getCacheableMetadata()
       ->addCacheableDependency($object)
       ->addCacheContexts([
         'url.query_args:q',
