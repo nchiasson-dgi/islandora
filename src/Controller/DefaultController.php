@@ -7,6 +7,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Cache\CacheableMetadata;
 
 use Drupal\islandora\Form\SolutionPackForm;
 
@@ -166,7 +167,8 @@ class DefaultController extends ControllerBase {
   public function printObjectAccess($op, $object, AccountInterface $account) {
     $object = islandora_object_load($object);
     return AccessResult::allowedIf(islandora_print_object_access($op, $object, $account))
-      ->addCacheableDependency($object);
+      ->addCacheableDependency($object)
+      ->cachePerPermissions();
   }
 
   /**
@@ -176,6 +178,9 @@ class DefaultController extends ControllerBase {
     $output = [];
     $temp_arr = [];
 
+    $cache_meta = (new CacheableMetadata())
+      ->addCacheableDependency($object);
+
     // Dispatch print hook.
     foreach (islandora_build_hook_list(ISLANDORA_PRINT_HOOK, $object->models) as $hook) {
       $temp = $this->moduleHandler()->invokeAll($hook, [$object]);
@@ -183,13 +188,14 @@ class DefaultController extends ControllerBase {
         $temp_arr = array_merge_recursive($temp_arr, $temp);
       }
     }
+    $cache_meta->applyTo($temp_arr);
     $output = islandora_default_islandora_printer_object($object, $this->renderer->render($temp_arr));
     arsort($output);
 
     // Prompt to print.
     $output['#attached']['library'][] = 'islandora/islandora-print-js';
 
-    $this->renderer->addCacheableDependency($output, $object);
+    $cache_meta->applyTo($output);
 
     return $output;
   }
@@ -241,8 +247,15 @@ class DefaultController extends ControllerBase {
       $output[] = ['value' => $dsid, 'label' => $dsid];
     }
 
-    return (new JsonResponse($output))
-      ->addCacheableDependency($object);
+    $response = new JsonResponse($output);
+
+    $cache_meta = $response->getCacheableMetadata()
+      ->addCacheableDependency($object)
+      ->addCacheContexts([
+        'url.query_args:q',
+      ]);
+
+    return $response;
   }
 
   /**
