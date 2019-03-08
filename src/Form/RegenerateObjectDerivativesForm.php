@@ -63,7 +63,7 @@ class RegenerateObjectDerivativesForm extends ObjectConfirmFormBase {
   public function buildForm(array $form, FormStateInterface $form_state, AbstractObject $object = NULL) {
     $this->object = $object;
     $form_state->set(['object'], $object->id);
-    return parent::buildForm($form, $form_state);
+    return parent::buildForm($form, $form_state, $object);
   }
 
   /**
