@@ -2,18 +2,18 @@
 
 namespace Drupal\islandora\Form;
 
+use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 
 use AbstractDatastream;
-use Drupal\islandora\Form\Abstracts\DatastreamConfirmFormBase;
 
 /**
  * Datastream derivative regeneration form.
  *
  * @package \Drupal\islandora\Form
  */
-class RegenerateDatastreamDerivativeForm extends DatastreamConfirmFormBase {
+class RegenerateDatastreamDerivativeForm extends ConfirmFormBase {
 
   /**
    * The object in which we are operating.
@@ -73,7 +73,7 @@ class RegenerateDatastreamDerivativeForm extends DatastreamConfirmFormBase {
       'object_id' => $datastream->parent->id,
       'dsid' => $datastream->id,
     ]);
-    return parent::buildForm($form, $form_state, $datastream);
+    return parent::buildForm($form, $form_state);
   }
 
   /**

@@ -15,7 +15,6 @@ use Drupal\filter\Render\FilteredMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use AbstractObject;
-use Drupal\islandora\Controller\DefaultController;
 
 /**
  * Class SolutionPackForm.
@@ -203,12 +202,10 @@ class SolutionPackForm extends FormBase {
         'label' => $label,
         'pid' => $object->id,
         'status' => [
-          'data' => [
-            'image' => $object_status_info['image'],
-            'status' => [
-              '#markup' => $object_status['status_friendly'],
-            ],
-          ],
+          '#markup' => $this->t('@image @status', [
+            '@image' => $this->renderer->renderRoot($object_status_info['image']),
+            '@status' => $object_status['status_friendly'],
+          ]),
         ],
       ];
 
@@ -218,14 +215,6 @@ class SolutionPackForm extends FormBase {
     $solution_pack_status_info = $status_info[$solution_pack_status];
 
     $form = [
-      '#cache' => [
-        'tags' => [
-          DefaultController::LISTING_TAG,
-        ],
-        // XXX: Being an admin status-kind-of-thing, we probably don't actually
-        // want to cache this in the render cache or things of the like.
-        'max-age' => 0,
-      ],
       'solution_pack' => [
         '#type' => 'fieldset',
         '#collapsible' => FALSE,

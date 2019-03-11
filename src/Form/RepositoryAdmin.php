@@ -4,7 +4,6 @@ namespace Drupal\islandora\Form;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-use Drupal\islandora\Form\Abstracts\ModuleHandlerAdminForm;
 use RepositoryException;
 
 /**

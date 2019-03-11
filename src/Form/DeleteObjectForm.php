@@ -2,19 +2,18 @@
 
 namespace Drupal\islandora\Form;
 
+use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 
 use AbstractObject;
-
-use Drupal\islandora\Form\Abstracts\ObjectConfirmFormBase;
 
 /**
  * Object deletion confirmation form.
  *
  * @package \Drupal\islandora\Form
  */
-class DeleteObjectForm extends ObjectConfirmFormBase {
+class DeleteObjectForm extends ConfirmFormBase {
   /**
    * The object on which is being operated.
    *
@@ -63,7 +62,7 @@ class DeleteObjectForm extends ObjectConfirmFormBase {
   public function buildForm(array $form, FormStateInterface $form_state, AbstractObject $object = NULL) {
     $this->object = $object;
     $form_state->set(['object'], $object);
-    return parent::buildForm($form, $form_state, $object);;
+    return parent::buildForm($form, $form_state);;
   }
 
   /**

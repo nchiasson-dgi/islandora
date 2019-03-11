@@ -2,8 +2,9 @@
 
 namespace Drupal\islandora\Form;
 
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
 
@@ -47,11 +48,6 @@ class ObjectPropertiesForm extends FormBase {
       }
     }
     return [
-      '#cache' => [
-        // XXX: Prevent all caching, since we're dependent on widely varying
-        // derivative configuration.
-        'max-age' => 0,
-      ],
       'pid' => [
         '#type' => 'hidden',
         '#value' => $object->id,

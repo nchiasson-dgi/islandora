@@ -2,20 +2,18 @@
 
 namespace Drupal\islandora\Form;
 
+use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
 use AbstractDatastream;
-use Drupal\islandora\Form\Abstracts\DatastreamVersionConfirmFormBase;
 
 /**
  * Datastream version reversion form.
  *
  * @package \Drupal\islandora\Form
  */
-class RevertDatastreamVersionForm extends DatastreamVersionConfirmFormBase {
+class RevertDatastreamVersionForm extends ConfirmFormBase {
   /**
    * The datastream on which is being operated.
    *
@@ -62,20 +60,16 @@ class RevertDatastreamVersionForm extends DatastreamVersionConfirmFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, AbstractDatastream $datastream = NULL, $version = NULL) {
-    if (!isset($datastream[$version])) {
-      throw new NotFoundHttpException('The given version does not exist.');
+    if (!isset($datastream[$version]) || count($datastream) < 2) {
+      return drupal_not_found();
     }
-    elseif (count($datastream) < 2) {
-      throw new NotFoundHttpException('You are not allowed to delete the last version; the datastream must be deleted as a whole.');
-    }
-
     $this->datastream = $datastream;
 
     $form_state->set(['dsid'], $datastream->id);
     $form_state->set(['object_id'], $datastream->parent->id);
     $form_state->set(['version'], $version);
 
-    return parent::buildForm($form, $form_state, $datastream, $version);
+    return parent::buildForm($form, $form_state);
   }
 
   /**
@@ -114,10 +108,7 @@ class RevertDatastreamVersionForm extends DatastreamVersionConfirmFormBase {
       '%o' => $islandora_object->label,
     ]));
 
-    $form_state->setRedirect('islandora.datastream_version_table', [
-      'object' => $islandora_object->id,
-      'datastream' => $datastream_to_revert->id,
-    ]);
+    $form_state->setRedirect('islandora.datastream_version_table', ['object' => $islandora_object->id, 'datastream' => $datastream_to_revert->id]);
   }
 
 }

@@ -2,10 +2,9 @@
 
 namespace Drupal\islandora\Form;
 
+use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-
-use Drupal\islandora\Form\Abstracts\DatastreamConfirmFormBase;
 
 use AbstractDatastream;
 use AbstractObject;
@@ -15,7 +14,7 @@ use AbstractObject;
  *
  * @package \Drupal\islandora\Form
  */
-class DeleteDatastreamForm extends DatastreamConfirmFormBase {
+class DeleteDatastreamForm extends ConfirmFormBase {
 
   /**
    * {@inheritdoc}
@@ -98,7 +97,7 @@ class DeleteDatastreamForm extends DatastreamConfirmFormBase {
       ],
     ];
 
-    return parent::buildForm($form, $form_state, $datastream);
+    return parent::buildForm($form, $form_state);
   }
 
   /**

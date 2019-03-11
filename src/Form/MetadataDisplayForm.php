@@ -3,7 +3,6 @@
 namespace Drupal\islandora\Form;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\islandora\Form\Abstracts\ModuleHandlerAdminForm;
 
 /**
  * Base class for configuration forms in Islandora that require invoking hooks.
