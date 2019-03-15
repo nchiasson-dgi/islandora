@@ -15,6 +15,8 @@ use Drupal\islandora\Tuque\IslandoraSimpleCache;
 use Drupal\islandora\Tuque\IslandoraFedoraApi;
 use Drupal\islandora\Tuque\IslandoraRepositoryConnection;
 use Drupal\user\Entity\User;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
 
 /**
  * A class to include the Tuque library.
@@ -26,8 +28,9 @@ use Drupal\user\Entity\User;
  * Possibly as a service such that Dependency Injection can happen as
  * necessary.
  */
-class IslandoraTuque {
+class IslandoraTuque implements RefinableCacheableDependencyInterface {
 // @codingStandardsIgnoreEnd
+  use RefinableCacheableDependencyTrait;
 
   /**
    * Connection to the repository.
@@ -69,24 +72,40 @@ class IslandoraTuque {
     if (!isset($user)) {
       $user = \Drupal::currentUser();
     }
+    else {
+      // A user was explicitly passed... let's avoid caching.
+      $this->mergeCacheMaxAge(0);
+    }
 
     if ($user->isAnonymous()) {
       $user_string = 'anonymous';
       $pass_string = 'anonymous';
+
+      $this->addCacheContexts(['user.roles:anonymous']);
     }
     else {
       $user_entity = User::load($user->id());
+
+      $this->addCacheableDependency($user_entity);
+
       $user_string = $user_entity->getAccountName();
       $pass_string = $user_entity->getPassword();
     }
 
     if (!isset($url)) {
-      $url = \Drupal::config('islandora.settings')->get('islandora_base_url');
+      $config = \Drupal::config('islandora.settings');
+      $url = $config->get('islandora_base_url');
+      $this->addCacheableDependency($config);
+    }
+    else {
+      // A url was explicitly passed... let's avoid caching.
+      $this->mergeCacheMaxAge(0);
     }
 
     if (static::exists()) {
       module_load_include('inc', 'islandora', 'includes/tuque_wrapper');
       $this->connection = new IslandoraRepositoryConnection($url, $user_string, $pass_string);
+      $this->connection->addCacheableDependency($this);
       $this->connection->reuseConnection = TRUE;
       $this->api = new IslandoraFedoraApi($this->connection);
       $this->cache = new IslandoraSimpleCache();

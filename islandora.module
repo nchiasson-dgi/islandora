@@ -7,6 +7,10 @@
 
 use Drupal\islandora\DublinCore;
 use Drupal\islandora\Authentication\Provider\TokenAuth;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\islandora\Controller\DefaultController;
 
 // @codingStandardsIgnoreStart
 // Common datastreams.
@@ -887,14 +891,18 @@ function islandora_islandora_object_ingested(AbstractObject $object) {
     return;
   }
   islandora_run_derivatives($object, NULL);
-  islandora_conditionally_clear_cache();
+
+  $cache_meta = CacheableMetadata::createFromObject($object);
+  islandora_conditionally_clear_cache($cache_meta);
 }
 
 /**
  * Implements hook_islandora_object_modified().
  */
 function islandora_islandora_object_modified(AbstractObject $object) {
-  islandora_conditionally_clear_cache();
+  $cache_meta = CacheableMetadata::createFromObject($object);
+
+  islandora_conditionally_clear_cache($cache_meta);
 }
 
 /**
@@ -910,7 +918,11 @@ function islandora_islandora_datastream_ingested(AbstractObject $object, Abstrac
     return;
   }
   islandora_run_derivatives($object, $datastream->id);
-  islandora_conditionally_clear_cache();
+
+  $cache_meta = CacheableMetadata::createFromObject($object)
+    ->addCacheableDependency($datastream);
+
+  islandora_conditionally_clear_cache($cache_meta);
 }
 
 /**
@@ -931,21 +943,36 @@ function islandora_islandora_datastream_modified(AbstractObject $object, Abstrac
     'ds_modified_params' => $params,
   ]);
   islandora_derivative_logging($logging_results);
-  islandora_conditionally_clear_cache();
+
+  $cache_meta = CacheableMetadata::createFromObject($object)
+    ->addCacheableDependency($datastream);
+
+  islandora_conditionally_clear_cache($cache_meta);
 }
 
 /**
  * Implements hook_islandora_object_purged().
  */
 function islandora_islandora_object_purged($pid) {
-  islandora_conditionally_clear_cache();
+  $cache_meta = CacheableMetadata::createFromRenderArray([
+    '#cache' => [
+      'tags' => [
+        $pid,
+      ],
+    ],
+  ]);
+  islandora_conditionally_clear_cache($cache_meta);
 }
 
 /**
  * Implements hook_islandora_datastream_purged().
  */
 function islandora_islandora_datastream_purged(AbstractObject $object, $dsid) {
-  islandora_conditionally_clear_cache();
+  $cache_meta = CacheableMetadata::createFromObject($object)
+    ->addCacheTags([
+      "{$object->id}/{$dsid}",
+    ]);
+  islandora_conditionally_clear_cache($cache_meta);
 }
 
 /**
@@ -1075,11 +1102,19 @@ function islandora_entity_set_property(&$data, $name, $value, $langcode) {
  * If we are responding to form submission or during a batch which ingested,
  * modified or purged an object or datastream, we want to be sure to clear the
  * cache at the end of the process.
+ *
+ * @param Drupal\Core\Cache\CacheableDependencyInterface $cache_meta
+ *   An optional CacheableDependencyInterface object, from which we will grab
+ *   the tags and use them to invalidate cache entries.
  */
-function islandora_conditionally_clear_cache() {
+function islandora_conditionally_clear_cache(CacheableDependencyInterface $cache_meta = NULL) {
   static $clear;
   if (!isset($clear)) {
     $clear =& drupal_static(__FUNCTION__, FALSE);
+  }
+
+  if ($cache_meta) {
+    Cache::invalidateTags($cache_meta->getCacheTags());
   }
 
   $functions = [
@@ -1124,8 +1159,9 @@ function islandora_cache_clear_all() {
  * This should be made more targeted in the future.
  */
 function islandora_shutdown_cache_clear_all() {
-  \Drupal::cache('render')->deleteAll();
-  \Drupal::cache('dynamic_page_cache')->deleteAll();
+  Cache::invalidateTags([
+    DefaultController::LISTING_TAG,
+  ]);
 }
 
 /**

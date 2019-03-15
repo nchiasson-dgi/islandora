@@ -49,26 +49,34 @@ class ObjectAccess implements AccessInterface {
     // in Drupal as defaults this needs to be the case. If it's possible to get
     // around this by making the empty slug route in YAML or a custom Routing
     // object we can remove this.
+    $config = $this->configFactory->get('islandora.settings');
     $object = islandora_object_load($object === 'root' ?
-      $this->configFactory->get('islandora.settings')->get('islandora_repository_pid') :
+      $config->get('islandora_repository_pid') :
       $object);
-    if (!$object && !islandora_describe_repository()) {
-      islandora_display_repository_inaccessible_message();
-      return AccessResult::forbidden();
-    }
-    elseif (!$object) {
-      return AccessResult::forbidden();
-    }
-    if (is_array($perms)) {
-      $result = AccessResult::neutral();
-      foreach ($perms as $perm) {
-        $result = $islandora_access_conjunction == 'AND' ? $result->andIf(AccessResult::allowedIf(islandora_object_access($perm, $object, $account))) : $result->orIf(AccessResult::allowedIf(islandora_object_access($perm, $object, $account)));
+
+    $result = AccessResult::neutral()
+      ->addCacheableDependency($config)
+      ->addCacheableDependency($object)
+      ->cachePerPermissions();
+
+    if (!$object) {
+      if (!islandora_describe_repository()) {
+        islandora_display_repository_inaccessible_message();
       }
-      return $result;
+      return AccessResult::forbidden()
+        ->inheritCacheability($result);
     }
-    else {
-      return AccessResult::allowedIf(islandora_object_access($perms, $object, $account));
+
+    if (!is_array($perms)) {
+      $perms = [$perms];
     }
+
+    $op_if = $islandora_access_conjunction == 'AND' ? 'andIf' : 'orIf';
+
+    foreach ($perms as $perm) {
+      $result = $result->{$op_if}(AccessResult::allowedIf(islandora_object_access($perm, $object, $account)));
+    }
+    return $result;
   }
 
 }

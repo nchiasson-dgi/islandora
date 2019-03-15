@@ -5,16 +5,58 @@ namespace Drupal\islandora\Tuque;
 require_once __DIR__ . '/Base.php';
 
 use FedoraObject;
+use FedoraRepository;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
 
 /**
  * Class IslandoraFedoraObject.
  *
  * @package Drupal\islandora\Tuque
  */
-class IslandoraFedoraObject extends FedoraObject {
+class IslandoraFedoraObject extends FedoraObject implements RefinableCacheableDependencyInterface {
+  use RefinableCacheableDependencyTrait;
+
   protected $newFedoraDatastreamClass = IslandoraNewFedoraDatastream::class;
   protected $fedoraDatastreamClass = IslandoraFedoraDatastream::class;
   protected $fedoraRelsExtClass = IslandoraFedoraRelsExt::class;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct($id, FedoraRepository $repository) {
+    parent::__construct($id, $repository);
+
+    $this
+      ->addCacheableDependency($repository)
+      ->addCacheTags(array_map('static::getDrupalCacheObjectTag', $this->models))
+      ->addCacheTags([
+        $this->drupalCacheTag(),
+      ]);
+  }
+
+  /**
+   * Get the cache tag for the given object.
+   *
+   * @return string
+   *   The cache tag for this object.
+   */
+  public function drupalCacheTag() {
+    return static::getDrupalCacheObjectTag($this->id);
+  }
+
+  /**
+   * Helper; generate an object tag, given a PID.
+   *
+   * @param string $id
+   *   The PID for which to generate a cache tag.
+   *
+   * @return string
+   *   The cache tag for the given PID.
+   */
+  protected static function getDrupalCacheObjectTag($id) {
+    return "islandora_object:{$id}";
+  }
 
   /**
    * Magical magic, to allow recursive modifications.
