@@ -160,7 +160,9 @@ function islandora_is_valid_dsid($dsid) {
  *   or if the url is incorrect.
  */
 function islandora_describe_repository($url = NULL) {
-  $url = isset($url) ? $url : \Drupal::config('islandora.settings')->get('islandora_base_url');
+  $url = isset($url) ?
+    $url :
+    \Drupal::state()->get('islandora_base_url', 'http://localhost:8080/fedora');
   $connection = islandora_get_tuque_connection();
   if ($connection) {
     try {

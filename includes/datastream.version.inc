@@ -128,7 +128,7 @@ function islandora_get_object_extensions(AbstractObject $object) {
  *   Array of audit values.
  */
 function islandora_get_audit_trail($pid, $dsid) {
-  $url = \Drupal::config('islandora.settings')->get('islandora_base_url');
+  $url = \Drupal::state()->get('islandora_base_url', 'http://localhost:8080/fedora');
   $connection = islandora_get_tuque_connection(NULL, $url);
   $xml = $connection->api->m->getObjectXml($pid);
   $simple_xml = simplexml_load_string($xml);

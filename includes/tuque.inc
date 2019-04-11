@@ -93,9 +93,7 @@ class IslandoraTuque implements RefinableCacheableDependencyInterface {
     }
 
     if (!isset($url)) {
-      $config = \Drupal::config('islandora.settings');
-      $url = $config->get('islandora_base_url');
-      $this->addCacheableDependency($config);
+      $url = \Drupal::state()->get('islandora_base_url', 'http://localhost:8080/fedora');
     }
     else {
       // A url was explicitly passed... let's avoid caching.

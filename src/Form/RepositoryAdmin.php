@@ -31,7 +31,10 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
   public function buildForm(array $form, FormStateInterface $form_state) {
     module_load_include('inc', 'islandora', 'includes/utilities');
     $values = $form_state->getValues();
-    $url = isset($values['islandora_base_url']) ? $values['islandora_base_url'] : $this->config('islandora.settings')->get('islandora_base_url');
+    $url = isset($values['islandora_base_url']) ?
+      $values['islandora_base_url'] :
+      $this->state->get('islandora_base_url', 'http://localhost:8080/fedora');
+
     $restrict_namespaces = isset($values['islandora_namespace_restriction_enforced']) ? $values['islandora_namespace_restriction_enforced'] : $this->config('islandora.settings')->get('islandora_namespace_restriction_enforced');
     $breadcrumb_backend_options = $this->moduleHandler->invokeAll('islandora_breadcrumbs_backends');
     $map_to_title = function ($backend) {
@@ -60,7 +63,7 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
           'islandora_base_url' => [
             '#type' => 'textfield',
             '#title' => $this->t('Fedora base URL'),
-            '#default_value' => $this->config('islandora.settings')->get('islandora_base_url'),
+            '#default_value' => $url,
             '#description' => $this->t('The URL to use for REST connections'),
             '#required' => TRUE,
             '#ajax' => [
@@ -206,8 +209,8 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $this->state->set('islandora_base_url', $form_state->getValue('islandora_base_url'));
     $this->config('islandora.settings')
-      ->set('islandora_base_url', $form_state->getValue('islandora_base_url'))
       ->set('islandora_repository_pid', $form_state->getValue('islandora_repository_pid'))
       ->set('islandora_use_object_semaphores', $form_state->getValue('islandora_use_object_semaphores'))
       ->set('islandora_semaphore_period', $form_state->getValue('islandora_semaphore_period'))
