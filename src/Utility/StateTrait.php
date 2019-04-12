@@ -39,6 +39,26 @@ trait StateTrait {
   }
 
   /**
+   * Set a single thing.
+   *
+   * @param string $var
+   *   The key to set.
+   * @param mixed $value
+   *   The value to set for the key.
+   *
+   * @throws Exception
+   *   If the passed $var is not one described in our ::stateDefaults().
+   */
+  public static function stateSet($var, $value) {
+    if (!array_key_exists($var, static::stateDefaults())) {
+      throw new Exception(t('@var is not one of ours...', [
+        '@var' => $var,
+      ]));
+    }
+    \Drupal::state()->set($var, $value);
+  }
+
+  /**
    * Set ALL our values, assuming similarly named fields in a form.
    *
    * @param Drupal\Core\Form\FormStateInterface $form_state
