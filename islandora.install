@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Url;
+use Drupal\islandora\Form\RepositoryAdmin;
 
 /**
  * Implements hook_requirements().
@@ -47,6 +48,8 @@ function islandora_install() {
 function islandora_uninstall() {
   module_load_include('inc', 'islandora', 'includes/solution_packs');
   islandora_install_solution_pack('islandora', 'uninstall');
+
+  RepositoryAdmin::stateDeleteAll();
 }
 
 /**

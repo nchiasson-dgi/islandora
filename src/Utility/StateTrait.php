@@ -10,13 +10,6 @@ use Drupal\Core\Form\FormStateInterface;
 trait StateTrait {
 
   /**
-   * Memoize the defaults.
-   *
-   * @var array
-   */
-  protected static $stateDefaults = NULL;
-
-  /**
    * Helper; define the defaults for our state keys.
    *
    * @return array
@@ -34,17 +27,15 @@ trait StateTrait {
    *   The value for the key.
    */
   public static function stateGet($var) {
-    if (!isset(static::$stateDefaults)) {
-      static::$stateDefaults = static::stateDefaults();
-    }
+    $defaults = static::stateDefaults();
 
-    if (!array_key_exists($var, static::$defaults)) {
+    if (!array_key_exists($var, $defaults)) {
       throw new Exception(t('@var is not one of ours...', [
         '@var' => $var,
       ]));
     }
 
-    return static::$defaults[$var];
+    return $defaults[$var];
   }
 
   /**
@@ -59,6 +50,13 @@ trait StateTrait {
       $form_state->getValues(),
       static::stateDefaults()
     ));
+  }
+
+  /**
+   * Delete all the values defined via ::stateDefaults().
+   */
+  public static function stateDeleteAll() {
+    \Drupal::state()->deleteMultiple(array_keys(static::stateDefaults()));
   }
 
 }
