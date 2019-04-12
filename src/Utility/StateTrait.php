@@ -2,6 +2,8 @@
 
 namespace Drupal\islandora\Utility;
 
+use Drupal\Core\Form\FormStateInterface;
+
 /**
  * Helper for state access.
  */
@@ -37,6 +39,18 @@ trait StateTrait {
     }
 
     return $defaults[$var];
+  }
+
+  /**
+   * Set ALL our values, assuming similarly named fields in a form.
+   *
+   * @param Drupal\Core\Form\FormStateInterface $form_state
+   */
+  public function stateSetAll(FormStateInterface $form_state) {
+    \Drupal::state()->setMultiple(array_intersect_key(
+      $form_state->getValues(),
+      static::stateDefaults()
+    ));
   }
 
 }
