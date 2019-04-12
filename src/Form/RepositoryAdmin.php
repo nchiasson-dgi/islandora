@@ -6,10 +6,13 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use RepositoryException;
 
+use Drupal\islandora\Utility\StateTrait;
+
 /**
  * Configuration for the Islandora module.
  */
 class RepositoryAdmin extends ModuleHandlerAdminForm {
+  use StateTrait;
 
   /**
    * {@inheritdoc}
@@ -28,12 +31,21 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
   /**
    * {@inheritdoc}
    */
+  public static function stateDefaults() {
+    return [
+      'islandora_base_url' => 'http://localhost:8080/fedora',
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     module_load_include('inc', 'islandora', 'includes/utilities');
     $values = $form_state->getValues();
     $url = isset($values['islandora_base_url']) ?
       $values['islandora_base_url'] :
-      $this->state->get('islandora_base_url', 'http://localhost:8080/fedora');
+      static::stateGet('islandora_base_url');
 
     $restrict_namespaces = isset($values['islandora_namespace_restriction_enforced']) ? $values['islandora_namespace_restriction_enforced'] : $this->config('islandora.settings')->get('islandora_namespace_restriction_enforced');
     $breadcrumb_backend_options = $this->moduleHandler->invokeAll('islandora_breadcrumbs_backends');
@@ -209,7 +221,7 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->state->set('islandora_base_url', $form_state->getValue('islandora_base_url'));
+    $this->stateSetAll($form_state);
     $this->config('islandora.settings')
       ->set('islandora_repository_pid', $form_state->getValue('islandora_repository_pid'))
       ->set('islandora_use_object_semaphores', $form_state->getValue('islandora_use_object_semaphores'))
