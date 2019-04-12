@@ -8,6 +8,12 @@ use Drupal\Core\Form\FormStateInterface;
  * Helper for state access.
  */
 trait StateTrait {
+
+  /**
+   * Memoize the defaults.
+   *
+   * @var array
+   */
   protected static $stateDefaults = NULL;
 
   /**
@@ -38,13 +44,15 @@ trait StateTrait {
       ]));
     }
 
-    return $defaults[$var];
+    return static::$defaults[$var];
   }
 
   /**
    * Set ALL our values, assuming similarly named fields in a form.
    *
    * @param Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state from which to pull values. We expect value names to match
+   *   the keys from ::stateDefaults().
    */
   public function stateSetAll(FormStateInterface $form_state) {
     \Drupal::state()->setMultiple(array_intersect_key(

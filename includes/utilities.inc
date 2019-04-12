@@ -12,7 +12,6 @@ use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
 
 use Drupal\islandora\Event\RepositoryEvent;
-use Drupal\islandora\Form\RepositoryAdmin;
 
 /**
  * Convert bytes to human readable format.
