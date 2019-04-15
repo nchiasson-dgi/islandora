@@ -2,8 +2,6 @@ islandora.settings:
   type: config_object
   label: Settings
   mapping:
-    islandora_base_url:
-      type: string
     islandora_namespace_restriction_enforced:
       type: boolean
     islandora_pids_allowed:
