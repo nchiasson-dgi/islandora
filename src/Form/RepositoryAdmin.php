@@ -42,12 +42,14 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     module_load_include('inc', 'islandora', 'includes/utilities');
-    $values = $form_state->getValues();
-    $url = isset($values['islandora_base_url']) ?
-      $values['islandora_base_url'] :
-      static::stateGet('islandora_base_url');
 
-    $restrict_namespaces = isset($values['islandora_namespace_restriction_enforced']) ? $values['islandora_namespace_restriction_enforced'] : $this->config('islandora.settings')->get('islandora_namespace_restriction_enforced');
+    $url = $form_state->getValue('islandora_base_url', static::stateGet('islandora_base_url'));
+
+    $restrict_namespaces = $form_state->getValue(
+      'islandora_namespace_restriction_enforced',
+      $this->config('islandora.settings')->get('islandora_namespace_restriction_enforced')
+    );
+
     $breadcrumb_backend_options = $this->moduleHandler->invokeAll('islandora_breadcrumbs_backends');
     $map_to_title = function ($backend) {
       return $backend['title'];
