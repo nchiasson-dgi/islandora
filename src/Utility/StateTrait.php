@@ -35,7 +35,7 @@ trait StateTrait {
       ]));
     }
 
-    return $defaults[$var];
+    return \Drupal::state()->get($var, $defaults[$var]);
   }
 
   /**
