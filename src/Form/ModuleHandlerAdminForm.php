@@ -5,7 +5,6 @@ namespace Drupal\islandora\Form;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\State\StateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -18,10 +17,9 @@ abstract class ModuleHandlerAdminForm extends ConfigFormBase {
   /**
    * Class constructor.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, StateInterface $state) {
+  public function __construct(ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler) {
     parent::__construct($config_factory);
     $this->moduleHandler = $module_handler;
-    $this->state = $state;
   }
 
   /**
@@ -32,8 +30,7 @@ abstract class ModuleHandlerAdminForm extends ConfigFormBase {
     return new static(
     // Load the service required to construct this class.
       $container->get('config.factory'),
-      $container->get('module_handler'),
-      $container->get('state')
+      $container->get('module_handler')
     );
   }
 
