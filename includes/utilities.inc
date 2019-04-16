@@ -160,8 +160,7 @@ function islandora_is_valid_dsid($dsid) {
  *   or if the url is incorrect.
  */
 function islandora_describe_repository($url = NULL) {
-  $url = isset($url) ? $url : \Drupal::config('islandora.settings')->get('islandora_base_url');
-  $connection = islandora_get_tuque_connection();
+  $connection = islandora_get_tuque_connection(NULL, $url);
   if ($connection) {
     try {
       $info = $connection->api->a->describeRepository();

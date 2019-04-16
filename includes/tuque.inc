@@ -14,6 +14,7 @@ use Drupal\islandora\Tuque\IslandoraFedoraRepository;
 use Drupal\islandora\Tuque\IslandoraSimpleCache;
 use Drupal\islandora\Tuque\IslandoraFedoraApi;
 use Drupal\islandora\Tuque\IslandoraRepositoryConnection;
+use Drupal\islandora\Form\RepositoryAdmin;
 use Drupal\user\Entity\User;
 use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
@@ -93,9 +94,7 @@ class IslandoraTuque implements RefinableCacheableDependencyInterface {
     }
 
     if (!isset($url)) {
-      $config = \Drupal::config('islandora.settings');
-      $url = $config->get('islandora_base_url');
-      $this->addCacheableDependency($config);
+      $url = RepositoryAdmin::stateGet('islandora_base_url');
     }
     else {
       // A url was explicitly passed... let's avoid caching.

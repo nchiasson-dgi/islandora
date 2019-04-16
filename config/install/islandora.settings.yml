@@ -1,4 +1,3 @@
-islandora_base_url: 'http://localhost:8080/fedora'
 islandora_namespace_restriction_enforced: false
 islandora_pids_allowed: 'default: demo: changeme: ilives: islandora-book: books: newspapers: '
 islandora_basic_collection_generate_uuid: false
