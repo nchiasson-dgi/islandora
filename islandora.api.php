@@ -797,16 +797,14 @@ function hook_islandora_breadcrumbs_alter(array &$breadcrumbs, $context, $object
  *
  * @return array
  *   An associative array where the values are the following:
- *   -label: Human readable display label for selection.
- *   -description: A description of what the metadata display viewer does.
- *   -metadata callback: A callable function that provides the markup to be
- *    passed  off to the template files. Returns markup or FALSE if the viewer
- *    wishes to default back to the Dublin Core display for the current object.
- *   -description callback: A callable function that provides the markup to be
- *    passed for the description. Returns markup or FALSE if the viewer
- *    wishes to default back to the Dublin Core display for the current object.
- *   -configuration (Optional): A route name to the administration page for the
- *    metadata display.
+ *   - label: Human readable display label for selection.
+ *   - description: A description of what the metadata display viewer does.
+ *   - metadata callback: A callable implementing
+ *     callback_islandora_metadata_display().
+ *   - description callback: A callable implementing
+ *     callback_islandora_description_display().
+ *   - configuration (Optional): A route name to the administration page for the
+ *     metadata display.
  *
  * @see islandora_retrieve_metadata_markup()
  */
@@ -815,11 +813,41 @@ function hook_islandora_metadata_display_info() {
     'hookable_displays_yay' => [
       'label' => t('Hookable display yay!'),
       'description' => t('This is purely an example of how to implement this.'),
-      'metadata callback' => 'hookable_displays_some_function_that_returns_metadata_markup',
-      'description callback' => 'hookable_displays_some_function_that_returns_description_markup',
+      'metadata callback' => 'callback_islandora_metadata_display',
+      'description callback' => 'callback_islandora_description_display',
       'configuration' => 'islandora.sample_route',
     ],
   ];
+}
+
+/**
+ * Metadata display callback.
+ *
+ * @param AbstractObject $object
+ *   The object for which to render metadata.
+ * @param bool $print
+ *   A flag indicatig if the metadata is being output for printing.
+ *
+ * @return array|bool
+ *   A renderable array representing the metadata to display; alternatively,
+ *   boolean FALSE may be returned to force the Dublin Core display to be shown.
+ */
+function callback_islandora_metadata_display(AbstractObject $object, $print = FALSE) {
+
+}
+
+/**
+ * Description display callback.
+ *
+ * @param AbstractObject $object
+ *   The object for which to render a description.
+ *
+ * @return array|bool
+ *   A renderable array representing the description to display; alternatively,
+ *   boolean FALSE may be returned to force the Dublin Core display to be shown.
+ */
+function callback_islandora_description_display(AbstractObject $object) {
+
 }
 
 /**

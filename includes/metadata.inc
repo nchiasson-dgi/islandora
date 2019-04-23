@@ -122,15 +122,7 @@ function islandora_metadata_display_callback(AbstractObject $object, $print = FA
 }
 
 /**
- * Metadata display callback for rendering Dublin Core metadata.
- *
- * @param AbstractObject $object
- *   An AbstractObject representing an object within Fedora.
- * @param bool $print
- *   Whether the display is being printed or not.
- *
- * @return array
- *   Renderable array representing the rendered metadata from Dublin Core.
+ * Implements callback_islandora_metadata_display() for Dublin Core.
  */
 function islandora_metadata_display_renderable_callback(AbstractObject $object, $print = FALSE) {
   return [
@@ -141,13 +133,7 @@ function islandora_metadata_display_renderable_callback(AbstractObject $object, 
 }
 
 /**
- * Metadata description callback for rendering Dublin Core description.
- *
- * @param AbstractObject $islandora_object
- *   An AbstractObject representing an object within Fedora.
- *
- * @return array
- *   Render array representing the rendered metadata from Dublin Core.
+ * Implements callback_islandora_description_display() for Dublin Core.
  */
 function islandora_metadata_description_callback(AbstractObject $islandora_object) {
   return [
