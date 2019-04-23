@@ -47,7 +47,7 @@ function islandora_retrieve_renderable_metadata(AbstractObject $object, $print =
     // The callback doesn't have any markup provided for this particular object,
     // default back to the dublin_core display.
     if ($markup === FALSE) {
-      $markup = _islandora_metadata_display_callback($object, $print);
+      $markup = islandora_metadata_display_renderable_callback($object, $print);
     }
     elseif (is_string($markup) || (is_object($markup) && is_callable([$markup, '__toString']))) {
       $markup = [
