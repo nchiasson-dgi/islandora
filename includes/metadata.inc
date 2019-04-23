@@ -16,15 +16,15 @@
  * @return string
  *   Markup to be rendered for display on Islandora object pages.
  *
- * @deprecated _islandora_retrieve_metadata_markup() should be preferred.
+ * @deprecated islandora_retrieve_renderable_metadata() should be preferred.
  */
 function islandora_retrieve_metadata_markup(AbstractObject $object, $print = FALSE) {
-  $markup = _islandora_retrieve_metadata_markup($object, $print);
+  $markup = islandora_retrieve_renderable_metadata($object, $print);
   return \Drupal::service('renderer')->render($markup);
 }
 
 /**
- * Retrieves the metadata display markup for an Islandora object.
+ * Retrieves the metadata display for an Islandora object.
  *
  * @param AbstractObject $object
  *   An AbstractObject representing an object within Fedora.
@@ -34,7 +34,7 @@ function islandora_retrieve_metadata_markup(AbstractObject $object, $print = FAL
  * @return array
  *   Renderable array to be rendered for display on Islandora object pages.
  */
-function _islandora_retrieve_metadata_markup(AbstractObject $object, $print = FALSE) {
+function islandora_retrieve_renderable_metadata(AbstractObject $object, $print = FALSE) {
   $viewers = \Drupal::moduleHandler()->invokeAll('islandora_metadata_display_info');
   $config = \Drupal::config('islandora.settings');
   $viewer = $config->get('islandora_metadata_display');
@@ -70,10 +70,10 @@ function _islandora_retrieve_metadata_markup(AbstractObject $object, $print = FA
  * @return string
  *   Markup to be rendered for description on Islandora object pages.
  *
- * @deprecated _islandora_retrieve_description_markup() should be preferred.
+ * @deprecated islandora_retrieve_renderable_description() should be preferred.
  */
 function islandora_retrieve_description_markup(AbstractObject $object) {
-  $markup = _islandora_retrieve_description_markup($object);
+  $markup = islandora_retrieve_renderable_description($object);
   return \Drupal::service('renderer')->render($markup);
 }
 
@@ -86,7 +86,7 @@ function islandora_retrieve_description_markup(AbstractObject $object) {
  * @return array
  *   Markup to be rendered for description on Islandora object pages.
  */
-function _islandora_retrieve_description_markup(AbstractObject $object) {
+function islandora_retrieve_renderable_description(AbstractObject $object) {
   $viewers = \Drupal::moduleHandler()->invokeAll('islandora_metadata_display_info');
   $config = \Drupal::config('islandora.settings');
   $viewer = $config->get('islandora_metadata_display');
@@ -117,7 +117,7 @@ function _islandora_retrieve_description_markup(AbstractObject $object) {
  *   Markup representing the rendered metadata from Dublin Core.
  */
 function islandora_metadata_display_callback(AbstractObject $object, $print = FALSE) {
-  $render_array = _islandora_metadata_display_callback($object, $print);
+  $render_array = islandora_metadata_display_renderable_callback($object, $print);
   return \Drupal::service('renderer')->render($render_array);
 }
 
@@ -132,7 +132,7 @@ function islandora_metadata_display_callback(AbstractObject $object, $print = FA
  * @return array
  *   Renderable array representing the rendered metadata from Dublin Core.
  */
-function _islandora_metadata_display_callback(AbstractObject $object, $print = FALSE) {
+function islandora_metadata_display_renderable_callback(AbstractObject $object, $print = FALSE) {
   return [
     '#theme' => 'islandora_dublin_core_display',
     '#islandora_object' => $object,
