@@ -833,7 +833,7 @@ function hook_islandora_metadata_display_info() {
  *   boolean FALSE may be returned to force the Dublin Core display to be shown.
  */
 function callback_islandora_metadata_display(AbstractObject $object, $print = FALSE) {
-
+  return FALSE;
 }
 
 /**
@@ -847,7 +847,7 @@ function callback_islandora_metadata_display(AbstractObject $object, $print = FA
  *   boolean FALSE may be returned to force the Dublin Core display to be shown.
  */
 function callback_islandora_description_display(AbstractObject $object) {
-
+  return FALSE;
 }
 
 /**
