@@ -90,7 +90,7 @@ function islandora_retrieve_renderable_description(AbstractObject $object) {
   $viewers = \Drupal::moduleHandler()->invokeAll('islandora_metadata_display_info');
   $config = \Drupal::config('islandora.settings');
   $viewer = $config->get('islandora_metadata_display');
-  $markup = '';
+  $markup = [];
   if (isset($viewers[$viewer]['description callback'])) {
     $hooks = islandora_build_hook_list(ISLANDORA_METADATA_OBJECT_DESCRIPTION_ALTER, $object->models);
     \Drupal::moduleHandler()->alter($hooks, $object);
