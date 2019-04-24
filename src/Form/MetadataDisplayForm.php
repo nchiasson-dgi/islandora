@@ -56,6 +56,7 @@ class MetadataDisplayForm extends ModuleHandlerAdminForm {
         'description' => [
           '#plain_text' => $this->t("Don't show any metadata for displaying"),
         ],
+        'configuration' => [],
       ];
 
       $form['viewers'][$display_name] = [
@@ -72,6 +73,9 @@ class MetadataDisplayForm extends ModuleHandlerAdminForm {
           '#type' => 'link',
           '#url' => islandora_get_url_from_path_or_route($values['configuration']),
         ];
+      }
+      else {
+        $form['viewers'][$display_name]['configuration'] = [];
       }
     }
     return parent::buildForm($form, $form_state);
