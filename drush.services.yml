@@ -1,5 +1,7 @@
 services:
   islandora.commands:
     class: \Drupal\islandora\Commands\IslandoraCommands
+    arguments:
+      - '@module_handler'
     tags:
       - { name: drush.command }
