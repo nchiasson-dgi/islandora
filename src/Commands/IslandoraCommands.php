@@ -5,7 +5,6 @@ namespace Drupal\islandora\Commands;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drush\Commands\DrushCommands;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Consolidation\OutputFormatters\Options\FormatterOptions;
 
 /**
  * A Drush commandfile.
@@ -20,8 +19,16 @@ use Consolidation\OutputFormatters\Options\FormatterOptions;
  */
 class IslandoraCommands extends DrushCommands {
 
+  /**
+   * Module handler.
+   *
+   * @var Drupal\Core\Extension\ModuleHandlerInterface
+   */
   protected $moduleHandler;
 
+  /**
+   * Constructor.
+   */
   public function __construct(ModuleHandlerInterface $module_handler) {
     $this->moduleHandler = $module_handler;
   }
@@ -29,7 +36,6 @@ class IslandoraCommands extends DrushCommands {
   /**
    * Install Solution Pack objects.
    *
-    * @param array $options An associative array of options whose values come from cli, aliases, config, etc.
    * @option module
    *   The module for which to install the required objects.
    * @option force
@@ -37,7 +43,8 @@ class IslandoraCommands extends DrushCommands {
    * @usage drush -u 1 ispiro --module=islandora
    *   Install missing solution pack objects for the "islandora" module.
    * @usage drush -u 1 ispiro --module=islandora --force
-   *   Install all solution pack objects for the "islandora" module, purging any which currently exist.
+   *   Install all solution pack objects for the "islandora" module, purging
+   *   any which currently exist.
    * @validate-module-enabled islandora
    *
    * @command islandora:solution-pack-install-required-objects
@@ -65,7 +72,6 @@ class IslandoraCommands extends DrushCommands {
   /**
    * Uninstall Solution Pack objects.
    *
-    * @param array $options An associative array of options whose values come from cli, aliases, config, etc.
    * @option module
    *   The module for which to uninstall the required objects.
    * @option force
@@ -73,7 +79,8 @@ class IslandoraCommands extends DrushCommands {
    * @usage drush -u 1 ispuro --module=islandora
    *   Uninstall solution pack objects for the "islandora" module.
    * @usage drush -u 1 ispuro --module=islandora --force
-   *   Force uninstallation of all solution pack objects for the "islandora" module.
+   *   Force uninstallation of all solution pack objects for the "islandora"
+   *   module.
    * @validate-module-enabled islandora
    *
    * @command islandora:solution-pack-uninstall-required-objects
@@ -101,7 +108,6 @@ class IslandoraCommands extends DrushCommands {
   /**
    * Get Solution Pack object status.
    *
-    * @param array $options An associative array of options whose values come from cli, aliases, config, etc.
    * @option module
    *   The module for which to get the status of the required objects.
    * @usage drush -u 1 ispros
@@ -119,7 +125,9 @@ class IslandoraCommands extends DrushCommands {
    *
    * @command islandora:solution-pack-required-objects-status
    * @aliases ispros,islandora-solution-pack-required-objects-status
+   *
    * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+   *   Rows of required object state info.
    */
   public function solutionPackRequiredObjectsStatus(array $options = [
     'module' => self::OPT,
@@ -135,10 +143,9 @@ class IslandoraCommands extends DrushCommands {
       $required_objects = islandora_solution_packs_get_required_objects();
     }
     else {
-      $this->logger()->warning('"{@module}" is not installed/enabled?...', [
+      throw new \Exception(strtr('"@module" is not installed/enabled?...', [
         '@module' => $module,
-      ]);
-      return;
+      ]));
     }
 
     $rows = [];
@@ -160,7 +167,6 @@ class IslandoraCommands extends DrushCommands {
   /**
    * Install Solution Pack content models.
    *
-    * @param array $options An associative array of options whose values come from cli, aliases, config, etc.
    * @option module
    *   The module for which to install the content models.
    * @usage drush -u 1 ispicm --module=islandora
@@ -172,7 +178,6 @@ class IslandoraCommands extends DrushCommands {
    */
   public function solutionPackInstallContentModels(array $options = [
     'module' => self::REQ,
-    'asdf' => self::REQ,
   ]) {
     module_load_include('inc', 'islandora', 'includes/solution_packs');
     $module = $options['module'];
@@ -200,7 +205,11 @@ class IslandoraCommands extends DrushCommands {
           $new_object = islandora_add_object($object_to_add);
           $verb = $deleted ? dt("Replaced") : dt("Added");
           if ($new_object) {
-            $this->logger()->notice("{0} {1} - {2}", [$verb, $object_to_add->id, $object_to_add->label]);
+            $this->logger()->notice("{0} {1} - {2}", [
+              $verb,
+              $object_to_add->id,
+              $object_to_add->label,
+            ]);
           }
         }
       }
