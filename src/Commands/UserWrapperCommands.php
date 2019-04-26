@@ -4,16 +4,21 @@ namespace Drupal\islandora\Commands;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountSwitcherInterface;
-use Drupal\Core\Session\UserSession;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\CommandError;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
-use Drush\Commands\DrushCommands;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
+/**
+ * Command wrapper to perform user switching.
+ *
+ * Prior to Drush 9, there was a "--user" option which could be used to run
+ * commands as other users... this command wrapper introduces the
+ * "@islandora-user-wrap" annotation so we can reintroduce it where we want to.
+ */
 class UserWrapperCommands implements LoggerAwareInterface {
 
   use LoggerAwareTrait;
@@ -41,6 +46,9 @@ class UserWrapperCommands implements LoggerAwareInterface {
    */
   protected $user = FALSE;
 
+  /**
+   * Constructor.
+   */
   public function __construct(AccountSwitcherInterface $account_switcher, EntityTypeManagerInterface $entity_type_manager) {
     $this->switcher = $account_switcher;
     $this->entityTypeManager = $entity_type_manager;

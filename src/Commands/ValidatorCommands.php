@@ -2,19 +2,16 @@
 
 namespace Drupal\islandora\Commands;
 
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Session\AccountSwitcherInterface;
-use Drupal\Core\Session\UserSession;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\CommandError;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
-use Drush\Commands\DrushCommands;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Drush\Utils\StringUtils;
 
+/**
+ * Some misc validators.
+ */
 class ValidatorCommands implements LoggerAwareInterface {
 
   use LoggerAwareTrait;
