@@ -47,6 +47,9 @@ class IslandoraCommands extends DrushCommands {
    *   any which currently exist.
    * @validate-module-enabled islandora
    *
+   * @islandora-user-wrap
+   * @islandora-require-option module
+   *
    * @command islandora:solution-pack-install-required-objects
    * @aliases ispiro,islandora-solution-pack-install-required-objects
    */
@@ -82,6 +85,9 @@ class IslandoraCommands extends DrushCommands {
    *   Force uninstallation of all solution pack objects for the "islandora"
    *   module.
    * @validate-module-enabled islandora
+   *
+   * @islandora-user-wrap
+   * @islandora-require-option module
    *
    * @command islandora:solution-pack-uninstall-required-objects
    * @aliases ispuro,islandora-solution-pack-uninstall-required-objects
@@ -123,6 +129,8 @@ class IslandoraCommands extends DrushCommands {
    *   status_label: Readable Status
    * @default-fields module,pid,status
    *
+   * @islandora-user-wrap
+   *
    * @command islandora:solution-pack-required-objects-status
    * @aliases ispros,islandora-solution-pack-required-objects-status
    *
@@ -130,7 +138,7 @@ class IslandoraCommands extends DrushCommands {
    *   Rows of required object state info.
    */
   public function solutionPackRequiredObjectsStatus(array $options = [
-    'module' => self::OPT,
+    'module' => self::REQ,
   ]) {
     module_load_include('inc', 'islandora', 'includes/solution_packs');
 
@@ -172,6 +180,9 @@ class IslandoraCommands extends DrushCommands {
    * @usage drush -u 1 ispicm --module=islandora
    *   Install missing solution pack objects for the "islandora" module.
    * @validate-module-enabled islandora
+   *
+   * @islandora-user-wrap
+   * @islandora-require-option module
    *
    * @command islandora:solution-pack-install-content_models
    * @aliases ispicm,islandora-solution-pack-install-content_models
