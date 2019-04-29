@@ -11,6 +11,8 @@ use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\islandora\Controller\DefaultController;
+use Drupal\islandora\Tuque\IslandoraFedoraDatastream;
+use Drupal\islandora\Tuque\IslandoraFedoraObject;
 
 // @codingStandardsIgnoreStart
 // Common datastreams.
@@ -957,7 +959,7 @@ function islandora_islandora_object_purged($pid) {
   $cache_meta = CacheableMetadata::createFromRenderArray([
     '#cache' => [
       'tags' => [
-        $pid,
+        IslandoraFedoraObject::getDrupalCacheObjectTag($pid),
       ],
     ],
   ]);
@@ -970,7 +972,7 @@ function islandora_islandora_object_purged($pid) {
 function islandora_islandora_datastream_purged(AbstractObject $object, $dsid) {
   $cache_meta = CacheableMetadata::createFromObject($object)
     ->addCacheTags([
-      "{$object->id}/{$dsid}",
+      IslandoraFedoraDatastream::getDrupalCacheDatastreamTag($object, $dsid),
     ]);
   islandora_conditionally_clear_cache($cache_meta);
 }
