@@ -4,18 +4,18 @@ services:
     arguments:
       - '@module_handler'
     tags:
-      - { name: drush.command }
+      - name: drush.command
   islandora.command.user_wrapper:
     class: \Drupal\islandora\Commands\UserWrapperCommands
     arguments:
       - '@account_switcher'
       - '@entity_type.manager'
     tags:
-      - { name: drush.command }
+      - name: drush.command
   islandora.command.validators:
     class: \Drupal\islandora\Commands\ValidatorCommands
     tags:
-      - { name: drush.command }
+      - name: drush.command
   islandora.command.user_wrapping_alterer:
     class: \Drupal\islandora\Commands\UserWrappingAlterer
     tags:

@@ -1221,3 +1221,63 @@ function islandora_islandora_solution_pack_child_relationships($cmodels) {
   // exist when the hook is called, even if no module responds.
   return ['predicate' => [], 'prefix' => []];
 }
+
+/**
+ * Implements hook_batch_alter().
+ */
+function islandora_batch_alter(&$batch) {
+  // XXX: Batches performed under Drush 9 do not inherit the user of the
+  // caller, and Drush 9's "process.manager" service is not easily
+  // overridable so as to be able to override... SO: Let's wrap all batch
+  // operations passing through the CLI if they have been submitted as an
+  // authenticated user, to make them run as said authenticated user.
+  // Somewhat associated with Drush 9's whole dropping-support-for-the-"--user"
+  // -argument business...
+  // @see https://github.com/drush-ops/drush/issues/3396
+  if (PHP_SAPI !== 'cli') {
+    return;
+  }
+
+  $user = \Drupal::currentUser();
+  if (!$user->isAuthenticated()) {
+    return;
+  }
+
+  $wrap_op = function ($op) use ($user) {
+    list($func, $args) = $op;
+    return $func !== '_islandora_user_wrapped_batch_op' ?
+      [
+        '_islandora_user_wrapped_batch_op',
+        [
+          $user->id(),
+          $op,
+        ],
+      ] :
+      $op;
+  };
+
+  foreach ($batch['sets'] as &$set) {
+    $set['operations'] = array_map($wrap_op, $set['operations']);
+  }
+  // XXX: Clean up the reference.
+  unset($set);
+}
+
+/**
+ * Wrap batch op with user.
+ */
+function _islandora_user_wrapped_batch_op($id, $info, &$context) {
+
+  $switcher = \Drupal::service('account_switcher');
+  try {
+    $user = \Drupal::service('entity_type.manager')->getStorage('user')->load($id);
+    $switcher->switchTo($user);
+
+    list($op, $args) = $info;
+    return call_user_func_array($op, array_merge($args, [&$context]));
+  }
+  finally {
+    $switcher->switchBack();
+  }
+
+}

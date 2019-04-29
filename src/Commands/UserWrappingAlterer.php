@@ -24,6 +24,9 @@ class UserWrappingAlterer implements CommandInfoAltererInterface {
    */
   const COMMANDS = [
     'batch:process',
+    'pm:enable',
+    'pm:uninstall',
+    'updatedb',
   ];
 
   protected $logger;
