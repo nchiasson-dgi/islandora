@@ -1238,22 +1238,34 @@ function islandora_batch_alter(&$batch) {
     return;
   }
 
+  $logger = \Drupal::logger('islandora');
   $user = \Drupal::currentUser();
   if (!$user->isAuthenticated()) {
+    $logger->debug('Non-authenticated batch; skipping @wrapper wrapping...', [
+      '@wrapper' => '_islandora_user_wrapped_batch_op',
+    ]);
     return;
   }
 
-  $wrap_op = function ($op) use ($user) {
+  $wrap_op = function ($op) use ($user, $logger) {
     $func = reset($op);
-    return $func !== '_islandora_user_wrapped_batch_op' ?
-      [
+    if ($func !== '_islandora_user_wrapped_batch_op') {
+      $logger->debug('Wrapping @func with @wrapper to maintain the user (@uid).', [
+        '@func' => $func,
+        '@wrapper' => '_islandora_user_wrapped_batch_op',
+        '@uid' => $user->id(),
+      ]);
+      return [
         '_islandora_user_wrapped_batch_op',
         [
           $user->id(),
           $op,
         ],
-      ] :
-      $op;
+      ];
+    }
+    else {
+      return $op;
+    }
   };
 
   foreach ($batch['sets'] as &$set) {
