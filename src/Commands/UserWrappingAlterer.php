@@ -29,8 +29,16 @@ class UserWrappingAlterer implements CommandInfoAltererInterface {
     'updatedb',
   ];
 
+  /**
+   * The logger to use.
+   *
+   * @var Drupal\Core\Logger\LoggerChannelInterface
+   */
   protected $logger;
 
+  /**
+   * Constructor.
+   */
   public function __construct(LoggerChannelFactoryInterface $logger_factory) {
     $this->logger = $logger_factory->get('islandora');
   }

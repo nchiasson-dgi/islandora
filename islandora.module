@@ -1244,7 +1244,7 @@ function islandora_batch_alter(&$batch) {
   }
 
   $wrap_op = function ($op) use ($user) {
-    list($func, $args) = $op;
+    $func = reset($op);
     return $func !== '_islandora_user_wrapped_batch_op' ?
       [
         '_islandora_user_wrapped_batch_op',
