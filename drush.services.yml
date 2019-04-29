@@ -16,3 +16,9 @@ services:
     class: \Drupal\islandora\Commands\ValidatorCommands
     tags:
       - { name: drush.command }
+  islandora.command.user_wrapping_alterer:
+    class: \Drupal\islandora\Commands\UserWrappingAlterer
+    tags:
+      - name: drush.command_info_alterer
+    arguments:
+      - '@logger.factory'
