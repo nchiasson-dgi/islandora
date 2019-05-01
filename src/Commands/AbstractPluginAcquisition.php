@@ -74,7 +74,17 @@ abstract class AbstractPluginAcquisition extends DrushCommands implements SiteAl
   abstract protected function getDescriptor();
 
   /**
-   * Get the "original" installation dir.
+   * Get the directory into which to unpack the plugin.
+   *
+   * @return string
+   *   The directory into which the plugin will initially be unpacked.
+   */
+  protected function getUnpackDir($path) {
+    return $this->getInstallDir($path);
+  }
+
+  /**
+   * Get the original installation dir; possibly inside of the "unpack" dir.
    *
    * @param string $path
    *   The containing directory where it might have been installed.
@@ -84,7 +94,7 @@ abstract class AbstractPluginAcquisition extends DrushCommands implements SiteAl
    *   installed.
    */
   protected function getOriginalDir($path) {
-    return $this->getInstallDir($path);
+    return $this->getUnpackDir($path);
   }
 
   /**
@@ -125,7 +135,7 @@ abstract class AbstractPluginAcquisition extends DrushCommands implements SiteAl
       // Decompress the archive.
       $this->archiveManager
         ->getInstance(['filepath' => $filepath])
-        ->extract($install_dir);
+        ->extract($this->getUnpackDir($path));
 
       // Change the directory name if needed.
       if ($original_dir != $install_dir) {
