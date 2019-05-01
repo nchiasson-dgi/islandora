@@ -100,7 +100,7 @@ abstract class AbstractPluginAcquisition extends DrushCommands implements SiteAl
   /**
    * Download and install the plugin.
    */
-  public function plugin($path = NULL) {
+  protected function plugin($path = NULL) {
     if (!$path) {
       $this->logger()->debug('Acquiring default installation path.');
       $path = implode('/', [
