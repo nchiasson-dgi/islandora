@@ -7,15 +7,7 @@ use Drush\Commands\DrushCommands;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
- * A Drush commandfile.
- *
- * In addition to this file, you need a drush.services.yml
- * in root of your module, and a composer.json file that provides the name
- * of the services file to use.
- *
- * See these files for an example of injecting Drupal services:
- *   - http://cgit.drupalcode.org/devel/tree/src/Commands/DevelCommands.php
- *   - http://cgit.drupalcode.org/devel/tree/drush.services.yml
+ * Drush commandfile for Islandora.
  */
 class IslandoraCommands extends DrushCommands {
 
@@ -40,9 +32,9 @@ class IslandoraCommands extends DrushCommands {
    *   The module for which to install the required objects.
    * @option force
    *   Force reinstallation of the objects.
-   * @usage drush -u 1 ispiro --module=islandora
+   * @usage drush -u1 ispiro --module=islandora
    *   Install missing solution pack objects for the "islandora" module.
-   * @usage drush -u 1 ispiro --module=islandora --force
+   * @usage drush -u1 ispiro --module=islandora --force
    *   Install all solution pack objects for the "islandora" module, purging
    *   any which currently exist.
    * @validate-module-enabled islandora
@@ -79,9 +71,9 @@ class IslandoraCommands extends DrushCommands {
    *   The module for which to uninstall the required objects.
    * @option force
    *   Force uninstallation of the objects.
-   * @usage drush -u 1 ispuro --module=islandora
+   * @usage drush -u1 ispuro --module=islandora
    *   Uninstall solution pack objects for the "islandora" module.
-   * @usage drush -u 1 ispuro --module=islandora --force
+   * @usage drush -u1 ispuro --module=islandora --force
    *   Force uninstallation of all solution pack objects for the "islandora"
    *   module.
    * @validate-module-enabled islandora
@@ -116,9 +108,9 @@ class IslandoraCommands extends DrushCommands {
    *
    * @option module
    *   The module for which to get the status of the required objects.
-   * @usage drush -u 1 ispros
+   * @usage drush -u1 ispros
    *   Get the status of all solution pack objects.
-   * @usage drush -u 1 ispros --module=islandora
+   * @usage drush -u1 ispros --module=islandora
    *   Get the status of solution pack objects for the "islandora" module.
    * @validate-module-enabled islandora
    * @table-style default
@@ -177,7 +169,7 @@ class IslandoraCommands extends DrushCommands {
    *
    * @option module
    *   The module for which to install the content models.
-   * @usage drush -u 1 ispicm --module=islandora
+   * @usage drush -u1 ispicm --module=islandora
    *   Install missing solution pack objects for the "islandora" module.
    * @validate-module-enabled islandora
    *
