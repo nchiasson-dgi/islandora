@@ -10,15 +10,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Drupal\Component\Plugin\PluginManagerInterface;
 
 /**
- * A Drush commandfile.
- *
- * In addition to this file, you need a drush.services.yml
- * in root of your module, and a composer.json file that provides the name
- * of the services file to use.
- *
- * See these files for an example of injecting Drupal services:
- *   - http://cgit.drupalcode.org/devel/tree/src/Commands/DevelCommands.php
- *   - http://cgit.drupalcode.org/devel/tree/drush.services.yml
+ * Abstract class to hold common code for plugin acquisition.
  */
 abstract class AbstractPluginAcquisition extends DrushCommands implements SiteAliasManagerAwareInterface {
 
