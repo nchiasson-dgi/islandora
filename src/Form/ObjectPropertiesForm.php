@@ -103,9 +103,7 @@ class ObjectPropertiesForm extends FormBase {
       'delete' => [
         '#type' => 'submit',
         '#access' => islandora_object_access(ISLANDORA_PURGE, $object),
-        '#value' => $this->t("Permanently remove '@label' from repository", [
-          '@label' => Unicode::truncate($object->label, 32, TRUE, TRUE),
-        ]),
+        '#value' => $this->t("Permanently remove object"),
         '#submit' => ['::redirectToDelete'],
         '#limit_validation_errors' => [
           [
