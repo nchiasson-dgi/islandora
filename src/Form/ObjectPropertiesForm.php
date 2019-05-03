@@ -6,7 +6,6 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\Unicode;
 
 use AbstractObject;
 
@@ -98,12 +97,12 @@ class ObjectPropertiesForm extends FormBase {
       ],
       'submit' => [
         '#type' => 'submit',
-        '#value' => 'Update Properties',
+        '#value' => $this->t('Update Properties'),
       ],
       'delete' => [
         '#type' => 'submit',
         '#access' => islandora_object_access(ISLANDORA_PURGE, $object),
-        '#value' => $this->t("Permanently remove object"),
+        '#value' => $this->t('Delete Object'),
         '#submit' => ['::redirectToDelete'],
         '#limit_validation_errors' => [
           [
@@ -114,7 +113,7 @@ class ObjectPropertiesForm extends FormBase {
       'regenerate' => [
         '#type' => 'submit',
         '#access' => $regenerate_derivatives_access,
-        '#value' => $this->t("Regenerate all derivatives"),
+        '#value' => $this->t('Regenerate Derivatives'),
         '#submit' => ['::redirectToRegenerate'],
       ],
     ];
