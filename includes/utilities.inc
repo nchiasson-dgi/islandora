@@ -816,6 +816,7 @@ function islandora_deprecated($release, $solution = NULL) {
  * Old, bad thing.
  */
 function islandora_as_renderable_array(&$markup_array) {
+  // @codingStandardsIgnoreLine
   trigger_error('islandora_as_renderable_array called; leaving things as-is.', E_USER_DEPRECATED);
 }
 
