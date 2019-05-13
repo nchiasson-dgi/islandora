@@ -5,6 +5,7 @@
  * Defines functions used when viewing metadata displays on Islandora objects.
  */
 
+// @codingStandardsIgnoreStart
 /**
  * Retrieves the metadata display markup for an Islandora object.
  *
@@ -19,6 +20,7 @@
  * @deprecated islandora_retrieve_renderable_metadata() should be preferred.
  */
 function islandora_retrieve_metadata_markup(AbstractObject $object, $print = FALSE) {
+// @codingStandardsIgnoreEnd
   $markup = islandora_retrieve_renderable_metadata($object, $print);
   return \Drupal::service('renderer')->render($markup);
 }
@@ -61,6 +63,7 @@ function islandora_retrieve_renderable_metadata(AbstractObject $object, $print =
   return $markup;
 }
 
+// @codingStandardsIgnoreStart
 /**
  * Retrieves the metadata display description for an Islandora object.
  *
@@ -73,6 +76,7 @@ function islandora_retrieve_renderable_metadata(AbstractObject $object, $print =
  * @deprecated islandora_retrieve_renderable_description() should be preferred.
  */
 function islandora_retrieve_description_markup(AbstractObject $object) {
+// @codingStandardsIgnoreEnd
   $markup = islandora_retrieve_renderable_description($object);
   return \Drupal::service('renderer')->render($markup);
 }
