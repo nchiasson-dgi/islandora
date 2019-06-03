@@ -57,45 +57,45 @@ function islandora_uninstall() {
  */
 function islandora_schema() {
   $schema['islandora_authtokens'] = [
-    'description' => 'The hub for all islandora authentication tokens',
+    'description' => 'The hub for all islandora authentication tokens.',
     'fields' => [
       'id' => [
-        'description' => 'Key',
+        'description' => 'Key.',
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ],
       'token' => [
-        'description' => 'A unique identifier for this token',
+        'description' => 'A unique identifier for this token.',
         'type' => 'varchar',
         'length' => 64,
       ],
       'remaining_uses' => [
-        'description' => 'How many uses until this should be removed',
+        'description' => 'How many uses until this should be removed.',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ],
       'uid' => [
-        'description' => 'The user ID that requested this token',
+        'description' => 'The user ID that requested this token.',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ],
       'time' => [
-        'description' => 'When this token was created',
+        'description' => 'When this token was created.',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ],
       'pid' => [
-        'description' => 'The PID of the object this token unlocks',
+        'description' => 'The PID of the object this token unlocks.',
         'type' => 'varchar',
         'length' => 128,
         'not null' => TRUE,
       ],
       'dsid' => [
-        'description' => 'The datasteram ID of the object this token unlocks',
+        'description' => 'The datasteram ID of the object this token unlocks.',
         'type' => 'varchar',
         'length' => 32,
         'not null' => TRUE,
