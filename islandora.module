@@ -1295,3 +1295,36 @@ function _islandora_user_wrapped_batch_op($id, $info, &$context) {
   }
 
 }
+
+/**
+ * Implements hook_help().
+ */
+function islandora_help($route) {
+  switch ($route) {
+    // Main help page for the module.
+    case 'help.page.islandora':
+      // About section.
+      $output = '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t(
+        'The Islandora module provides the backbone for all of the modules
+        designed to work within the Islandora system. See the <a href=":wiki">wiki</a> for more
+        information.', [
+          ':wiki' => 'https://wiki.duraspace.org/display/ISLANDORA/Start',
+        ]
+      ) .
+      '</p>';
+      // Uses section.
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dt>' . t('Manage Repositories and Objects') . '</dt>' . '<dd>' . t(
+        'Islandora can be used to manage repositories and objects at various levels.
+        More information can be found on specific usage <a href=":usage">here</a>.', [
+          ':usage' => 'https://wiki.duraspace.org/display/ISLANDORA/Usage',
+        ]
+      ) .
+      '</dd>';
+
+      return $output;
+
+    // Other cases can be added for various admin pages.
+  }
+}
