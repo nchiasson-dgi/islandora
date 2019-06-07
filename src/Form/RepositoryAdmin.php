@@ -131,7 +131,7 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
           '#type' => 'checkbox',
           '#title' => $this->t('Defer derivative generation during ingest'),
           '#description' => $this->t('Prevent derivatives from running during ingest.') .
-            $this->t('This is useful if derivatives are to be created by an external service.'),
+          $this->t('This is useful if derivatives are to be created by an external service.'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_defer_derivatives_on_ingest'),
         ],
         'islandora_render_context_ingeststep' => [
@@ -171,7 +171,7 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
           '#type' => 'checkbox',
           '#title' => $this->t('Use iTQL for particular queries'),
           '#description' => $this->t('SPARQL is the preferred language for querying the resource index; however, some features in the implementation of SPARQL in Mulgara may not work properly.') .
-            $this->t('If you are using the default triple store with Fedora, this should be left on to maintain legacy behaviour.'),
+          $this->t('If you are using the default triple store with Fedora, this should be left on to maintain legacy behaviour.'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_risearch_use_itql_when_necessary'),
         ],
         'islandora_require_obj_upload' => [
