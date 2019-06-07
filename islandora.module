@@ -1305,34 +1305,20 @@ function islandora_help($route) {
     case 'help.page.islandora':
       // About section.
       $output = '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t(
-        'The Islandora module provides the backbone for all of the modules
-        designed to work within the Islandora system. This module provides
-        the basics for viewing objects in repositories and managing metadata,
-        while other modules within Islandora (such as various Solution Packs,
-        Viewers, and Utility Modules) provide more advanced and specialized
-        ways to view and manage repositories, objects, and other aspects of
-        your website. See the <a href=":wiki">wiki*</a> for more information.', [
-          ':wiki' => 'https://wiki.duraspace.org/display/ISLANDORA/Start',
-        ]
-      ) .
+      $output .= '<p>' . t('The Islandora module provides the backbone for all of the modules designed to work within the Islandora system. This module provides the basics for viewing objects in repositories and managing metadata, while other modules within Islandora (such as various Solution Packs, Viewers, and Utility Modules) provide more advanced and specialized ways to view and manage repositories, objects, and other aspects of your website. See the <a href=":wiki">wiki*</a> for more information.', [
+        ':wiki' => 'https://wiki.duraspace.org/display/ISLANDORA/Start',
+      ]) .
       '</p>';
       // Uses section.
       $output .= '<h3>' . t('Uses') . '</h3>';
-      $output .= '<dt>' . t('Manage Repositories and Objects') . '</dt>' . '<dd>' . t(
-        'Islandora can be used to manage repositories and objects at various levels.
-        More information can be found on specific usage in the
-        <a href=":usage">usage section of wiki*</a>.', [
-          ':usage' => 'https://wiki.duraspace.org/display/ISLANDORA/Usage',
-        ]
-      ) .
+      $output .= '<dt>' . t('Manage Repositories and Objects') . '</dt><dd>';
+      $output .= t('Islandora can be used to manage repositories and objects at various levels. More information can be found on specific usage in the <a href=":usage">usage section of wiki*</a>.', [
+        ':usage' => 'https://wiki.duraspace.org/display/ISLANDORA/Usage',
+      ]) .
       '</dd>';
 
       $output .= '</br></br><p>' .
-        '*Links go to documentation for the Drupal 7 version of the module, as
-        documentation for the Drupal 8 version of the module has not yet been
-        written. There may be some small discrepencies; however, most key points
-        remain useful.' .
+        t('*Links go to documentation for the Drupal 7 version of the module, as documentation for the Drupal 8 version of the module has not yet been written. There may be some small discrepencies; however, most key points remain useful.') .
       '</p>';
       return $output;
 
