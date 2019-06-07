@@ -52,8 +52,7 @@ class ObjectManagementOverviewController extends ControllerBase {
         '#type' => 'item',
         '#title' => $this->t('Models'),
         '#title_display' => 'invisible',
-        '#description' => $this->formatPlural(count($links), "This object's
-          behavior is defined by the Islandora content model:",
+        '#description' => $this->formatPlural(count($links), "This object's behavior is defined by the Islandora content model:",
           "This object's behavior is defined by the Islandora content models:"),
         '#description_display' => 'before',
         'list' => [

@@ -104,8 +104,7 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
         'islandora_use_object_semaphores' => [
           '#type' => 'checkbox',
           '#title' => $this->t('Make Processes Claim Objects for Modification'),
-          '#description' => $this->t('Enabling this will increase stability of
-            Fedora at high concurrency but will incur a heavy performance hit.'),
+          '#description' => $this->t('Enabling this will increase stability of Fedora at high concurrency but will incur a heavy performance hit.'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_use_object_semaphores'),
         ],
         'islandora_semaphore_period' => [
@@ -131,15 +130,14 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
         'islandora_defer_derivatives_on_ingest' => [
           '#type' => 'checkbox',
           '#title' => $this->t('Defer derivative generation during ingest'),
-          '#description' => $this->t('Prevent derivatives from running during ingest.
-            This is useful if derivatives are to be created by an external service.'),
+          '#description' => $this->t('Prevent derivatives from running during ingest.') .
+            $this->t('This is useful if derivatives are to be created by an external service.'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_defer_derivatives_on_ingest'),
         ],
         'islandora_render_context_ingeststep' => [
           '#type' => 'checkbox',
           '#title' => $this->t('Render applicable Content Model label(s) during ingest steps'),
-          '#description' => $this->t('This enables contextual titles, displaying
-            Content Model label(s), to be added on top of ingest forms.'),
+          '#description' => $this->t('This enables contextual titles, displaying Content Model label(s), to be added on top of ingest forms.'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_render_context_ingeststep'),
         ],
         'islandora_show_print_option' => [
@@ -172,10 +170,8 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
         'islandora_risearch_use_itql_when_necessary' => [
           '#type' => 'checkbox',
           '#title' => $this->t('Use iTQL for particular queries'),
-          '#description' => $this->t('SPARQL is the preferred language for querying the resource index;
-            however, some features in the implementation of SPARQL in Mulgara may not work properly.
-            If you are using the default triple store with Fedora, this should be left on to maintain
-            legacy behaviour.'),
+          '#description' => $this->t('SPARQL is the preferred language for querying the resource index; however, some features in the implementation of SPARQL in Mulgara may not work properly.') .
+            $this->t('If you are using the default triple store with Fedora, this should be left on to maintain legacy behaviour.'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_risearch_use_itql_when_necessary'),
         ],
         'islandora_require_obj_upload' => [
@@ -192,17 +188,13 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
         'islandora_namespace_restriction_enforced' => [
           '#type' => 'checkbox',
           '#title' => $this->t('Enforce namespace restrictions'),
-          '#description' => $this->t("Allow administrator to restrict users'
-            access to the PID namepaces listed below."),
+          '#description' => $this->t("Allow administrator to restrict users' access to the PID namepaces listed below."),
           '#default_value' => $restrict_namespaces,
         ],
         'islandora_pids_allowed' => [
           '#type' => 'textarea',
           '#title' => $this->t('PID namespaces allowed in this Drupal install'),
-          '#description' => $this->t('A list of PID namespaces, separated by spaces,
-            that users are permitted to access from this Drupal installation. <br />
-            This could be more than a simple namespace, e.g. <strong>demo:mydemos</strong>.
-            <br /> The namespace <strong>islandora:</strong> is reserved, and is always allowed.'),
+          '#description' => $this->t('A list of PID namespaces, separated by spaces, that users are permitted to access from this Drupal installation. <br /> This could be more than a simple namespace, e.g. <strong>demo:mydemos</strong>.<br /> The namespace <strong>islandora:</strong> is reserved, and is always allowed.'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_pids_allowed'),
           '#states' => [
             'invisible' => [
@@ -220,8 +212,7 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
         'islandora_ds_replace_exclude_enforced' => [
           '#type' => 'textfield',
           '#title' => $this->t('Enforce DSID restrictions'),
-          '#description' => $this->t("A comma seperated list, allowing administrator
-            to restrict users' access to replace a versionable datastreams latest version."),
+          '#description' => $this->t("A comma seperated list, allowing administrator to restrict users' access to replace a versionable datastreams latest version."),
           '#default_value' => $this->config('islandora.settings')->get('islandora_ds_replace_exclude_enforced'),
         ],
       ],
