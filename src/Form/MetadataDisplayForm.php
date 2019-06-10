@@ -54,7 +54,7 @@ class MetadataDisplayForm extends ModuleHandlerAdminForm {
           '#plain_text' => $this->t('None'),
         ],
         'description' => [
-          '#plain_text' => $this->t("Don't display any metadata while viewing an object."),
+          '#plain_text' => $this->t("Don't show any metadata for displaying"),
         ],
         'configuration' => [],
       ];
