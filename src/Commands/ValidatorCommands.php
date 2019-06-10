@@ -3,7 +3,6 @@
 namespace Drupal\islandora\Commands;
 
 use Consolidation\AnnotatedCommand\CommandData;
-use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\CommandError;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
