@@ -78,7 +78,7 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
             '#type' => 'textfield',
             '#title' => $this->t('Fedora base URL'),
             '#default_value' => $url,
-            '#description' => $this->t('The URL to use for REST connections'),
+            '#description' => $this->t('The URL to use for REST connections.'),
             '#required' => TRUE,
             '#ajax' => [
               'callback' => '::updateUrlDiv',
@@ -98,7 +98,7 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
           '#type' => 'textfield',
           '#title' => $this->t('Root Collection PID'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_repository_pid'),
-          '#description' => $this->t('The PID of the Root Collection Object'),
+          '#description' => $this->t('The PID of the Root Collection Object.'),
           '#required' => TRUE,
         ],
         'islandora_use_object_semaphores' => [
@@ -142,13 +142,14 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
         'islandora_show_print_option' => [
           '#type' => 'checkbox',
           '#title' => $this->t('Show print option on objects'),
-          '#description' => $this->t('Displays an extra print tab, allowing an object to be printed'),
+          '#description' => $this->t('Displays an extra print tab, allowing an object to be printed.'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_show_print_option'),
         ],
         'islandora_render_drupal_breadcrumbs' => [
           '#type' => 'checkbox',
           '#title' => $this->t('Render Drupal breadcrumbs'),
-          '#description' => $this->t('Larger sites may experience a notable performance improvement when disabled due to how breadcrumbs are constructed.'),
+          '#description' => $this->t('Larger sites may experience a notable
+            performance improvement when disabled due to how breadcrumbs are constructed.'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_render_drupal_breadcrumbs'),
         ],
         'islandora_breadcrumbs_backends' => [
@@ -168,7 +169,8 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
         'islandora_risearch_use_itql_when_necessary' => [
           '#type' => 'checkbox',
           '#title' => $this->t('Use iTQL for particular queries'),
-          '#description' => $this->t('Sparql is the preferred language for querying the resource index; however, some features in the implementation of Sparql in Mulgara may not work properly. If you are using the default triple store with Fedora this should be left on to maintain legacy behaviour.'),
+          '#description' => $this->t('SPARQL is the preferred language for querying the resource index; however, some features in the implementation of SPARQL in Mulgara may not work properly.') .
+          $this->t('If you are using the default triple store with Fedora, this should be left on to maintain legacy behaviour.'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_risearch_use_itql_when_necessary'),
         ],
         'islandora_require_obj_upload' => [
@@ -185,13 +187,13 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
         'islandora_namespace_restriction_enforced' => [
           '#type' => 'checkbox',
           '#title' => $this->t('Enforce namespace restrictions'),
-          '#description' => $this->t("Allow administrator to restrict user's access to the PID namepaces listed below"),
+          '#description' => $this->t("Allow administrator to restrict users' access to the PID namepaces listed below."),
           '#default_value' => $restrict_namespaces,
         ],
         'islandora_pids_allowed' => [
           '#type' => 'textarea',
           '#title' => $this->t('PID namespaces allowed in this Drupal install'),
-          '#description' => $this->t('A list of PID namespaces, separated by spaces, that users are permitted to access from this Drupal installation. <br /> This could be more than a simple namespace, e.g. <strong>demo:mydemos</strong>. <br /> The namespace <strong>islandora:</strong> is reserved, and is always allowed.'),
+          '#description' => $this->t('A list of PID namespaces, separated by spaces, that users are permitted to access from this Drupal installation. <br /> This could be more than a simple namespace, e.g. <strong>demo:mydemos</strong>.<br /> The namespace <strong>islandora:</strong> is reserved, and is always allowed.'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_pids_allowed'),
           '#states' => [
             'invisible' => [
@@ -209,7 +211,7 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
         'islandora_ds_replace_exclude_enforced' => [
           '#type' => 'textfield',
           '#title' => $this->t('Enforce DSID restrictions'),
-          '#description' => $this->t("A comma seperated list, allowing administrator to restrict user's access to replace a versionable datastreams latest version"),
+          '#description' => $this->t("A comma seperated list, allowing administrator to restrict users' access to replace a versionable datastreams latest version."),
           '#default_value' => $this->config('islandora.settings')->get('islandora_ds_replace_exclude_enforced'),
         ],
       ],
