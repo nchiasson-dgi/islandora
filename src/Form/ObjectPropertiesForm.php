@@ -86,8 +86,7 @@ class ObjectPropertiesForm extends FormBase {
       'propogate' => [
         '#title' => $this->t('Apply changes to related objects?'),
         '#default_value' => TRUE,
-        '#description' => $this->t("Changes to owner and state will applied to associated objects.") .
-        $this->t("Such as page objects associated with a book object."),
+        '#description' => $this->t("Changes to owner and state will applied to associated objects. Such as page objects associated with a book object."),
         '#type' => 'checkbox',
         '#access' => count($related_objects_pids),
       ],

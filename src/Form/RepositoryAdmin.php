@@ -130,8 +130,7 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
         'islandora_defer_derivatives_on_ingest' => [
           '#type' => 'checkbox',
           '#title' => $this->t('Defer derivative generation during ingest'),
-          '#description' => $this->t('Prevent derivatives from running during ingest.') .
-          $this->t('This is useful if derivatives are to be created by an external service.'),
+          '#description' => $this->t('Prevent derivatives from running during ingest. This is useful if derivatives are to be created by an external service.'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_defer_derivatives_on_ingest'),
         ],
         'islandora_render_context_ingeststep' => [
@@ -149,8 +148,7 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
         'islandora_render_drupal_breadcrumbs' => [
           '#type' => 'checkbox',
           '#title' => $this->t('Render Drupal breadcrumbs'),
-          '#description' => $this->t('Larger sites may experience a notable
-            performance improvement when disabled due to how breadcrumbs are constructed.'),
+          '#description' => $this->t('Larger sites may experience a notable performance improvement when disabled due to how breadcrumbs are constructed.'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_render_drupal_breadcrumbs'),
         ],
         'islandora_breadcrumbs_backends' => [
