@@ -90,10 +90,9 @@ class DatastreamVersionReplaceForm extends FormBase {
           '#required' => TRUE,
           '#title' => $this->t('Upload Document'),
           '#size' => 64,
-          '#description' => $this->t('Select a file to upload.<br/>Files must
-            be less than <strong>@size MB.</strong>', [
-              '@size' => $upload_size,
-            ]),
+          '#description' => $this->t('Select a file to upload.<br/>Files must be less than <strong>@size MB.</strong>', [
+            '@size' => $upload_size,
+          ]),
           '#upload_location' => file_default_scheme() . '://',
           '#upload_validators' => [
             'file_validate_extensions' => [

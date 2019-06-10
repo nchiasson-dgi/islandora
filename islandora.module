@@ -984,7 +984,7 @@ function islandora_islandora_metadata_display_info() {
   return [
     'dublin_core' => [
       'label' => t('Dublin Core'),
-      'description' => t('Dublin Core metadata.'),
+      'description' => t('Dublin Core metadata'),
       'metadata callback' => 'islandora_metadata_display_renderable_callback',
       'description callback' => 'islandora_metadata_description_callback',
     ],

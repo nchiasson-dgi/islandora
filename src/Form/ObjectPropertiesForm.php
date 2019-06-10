@@ -55,7 +55,7 @@ class ObjectPropertiesForm extends FormBase {
         '#title' => $this->t('Item Label'),
         '#default_value' => $object->label,
         '#required' => 'TRUE',
-        '#description' => $this->t('A human-readable label.'),
+        '#description' => $this->t('A human-readable label'),
         // Double the normal length.
         '#size' => 120,
         // Max length for a Fedora Label.
@@ -68,14 +68,14 @@ class ObjectPropertiesForm extends FormBase {
         '#title' => $this->t('Owner'),
         '#default_value' => $object->owner,
         '#required' => FALSE,
-        '#description' => $this->t("The owner's account name."),
+        '#description' => $this->t("The owner's account name"),
         '#type' => 'textfield',
       ],
       'object_state' => [
         '#title' => $this->t('State'),
         '#default_value' => $object->state,
         '#required' => TRUE,
-        '#description' => $this->t("The object's state: active, inactive or deleted."),
+        '#description' => $this->t("The object's state (active, inactive or deleted)"),
         '#type' => 'select',
         '#options' => [
           'A' => 'Active',
@@ -86,8 +86,7 @@ class ObjectPropertiesForm extends FormBase {
       'propogate' => [
         '#title' => $this->t('Apply changes to related objects?'),
         '#default_value' => TRUE,
-        '#description' => $this->t("Changes to owner and state will applied to
-          associated objects. Such as page objects associated with a book object."),
+        '#description' => $this->t("Changes to owner and state will applied to associated objects. Such as page objects associated with a book object."),
         '#type' => 'checkbox',
         '#access' => count($related_objects_pids),
       ],
