@@ -47,7 +47,7 @@ trait StateTrait {
    * @param mixed $value
    *   The value to set for the key.
    *
-   * @throws Exception
+   * @throws \Exception
    *   If the passed $var is not one described in our ::stateDefaults().
    */
   public static function stateSet($var, $value) {
