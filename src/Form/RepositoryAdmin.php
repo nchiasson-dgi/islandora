@@ -148,8 +148,7 @@ class RepositoryAdmin extends ModuleHandlerAdminForm {
         'islandora_render_drupal_breadcrumbs' => [
           '#type' => 'checkbox',
           '#title' => $this->t('Render Drupal breadcrumbs'),
-          '#description' => $this->t('Larger sites may experience a notable
-            performance improvement when disabled due to how breadcrumbs are constructed.'),
+          '#description' => $this->t('Larger sites may experience a notable performance improvement when disabled due to how breadcrumbs are constructed.'),
           '#default_value' => $this->config('islandora.settings')->get('islandora_render_drupal_breadcrumbs'),
         ],
         'islandora_breadcrumbs_backends' => [
