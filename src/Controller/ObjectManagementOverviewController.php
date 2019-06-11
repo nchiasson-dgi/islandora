@@ -43,7 +43,7 @@ class ObjectManagementOverviewController extends ControllerBase {
           ]),
         ] :
         $this->t('@cmodel - (This content model is not in this Islandora repository.)', [
-          '@cmodel' => $loaded->id,
+          '@cmodel' => $model,
         ]);
     };
     $links = array_filter(array_map($to_item, $object->models));
