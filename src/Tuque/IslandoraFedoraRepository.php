@@ -11,6 +11,7 @@ use AbstractCache;
 
 use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Class IslandoraFedoraRepository.
@@ -19,6 +20,7 @@ use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
  */
 class IslandoraFedoraRepository extends FedoraRepository implements RefinableCacheableDependencyInterface {
   use RefinableCacheableDependencyTrait;
+  use StringTranslationTrait;
 
   /**
    * {@inheritdoc}
@@ -48,7 +50,7 @@ class IslandoraFedoraRepository extends FedoraRepository implements RefinableCac
         ];
         islandora_alter_datastream($object, $datastream, $datastream_context);
         if ($datastream_context['block']) {
-          throw new Exception(t('Object ingest blocked due to ingest of @dsid being blocked.', [
+          throw new Exception($this->t('Object ingest blocked due to ingest of @dsid being blocked.', [
             '@dsid' => $dsid,
           ]));
         }
