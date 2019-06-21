@@ -58,6 +58,8 @@ function islandora_retrieve_renderable_metadata(AbstractObject $object, $print =
     }
   }
 
+  $markup['#attached']['library'][] = 'islandora/islandora';
+
   \Drupal::service('renderer')->addCacheableDependency($markup, $config);
 
   return $markup;
