@@ -150,13 +150,13 @@ class NodeHasTerm extends ConditionPluginBase implements ContainerFactoryPluginI
         if (!$field->isEmpty()) {
           $link = $field->first()->getValue();
           if ($link['uri'] == $this->configuration['uri']) {
-            return $this->isNegated() ? FALSE : TRUE;
+            return TRUE;
           }
         }
       }
     }
 
-    return $this->isNegated() ? TRUE : FALSE;
+    return FALSE;
   }
 
   /**
