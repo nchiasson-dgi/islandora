@@ -168,6 +168,7 @@ class AbstractGenerateDerivative extends EmitEvent {
       'node' => $entity->id(),
       'media_type' => $this->configuration['destination_media_type'],
       'taxonomy_term' => $derivative_term->id(),
+      'source_term' => $source_term->id(),
     ];
     $data['destination_uri'] = Url::fromRoute('islandora.media_source_put_to_node', $route_params)
       ->setAbsolute()

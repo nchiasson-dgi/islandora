@@ -136,6 +136,8 @@ class MediaSourceController extends ControllerBase {
    *   Media type for new media.
    * @param \Drupal\taxonomy\TermInterface $taxonomy_term
    *   Term from the 'Behavior' vocabulary to give to new media.
+   * @param \Drupal\taxonomy\TermInterface $source_term
+   *   Term from the 'Behavior' vocabulary of the source media.
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
    *
@@ -148,6 +150,7 @@ class MediaSourceController extends ControllerBase {
     NodeInterface $node,
     MediaTypeInterface $media_type,
     TermInterface $taxonomy_term,
+    TermInterface $source_term,
     Request $request
   ) {
     $content_type = $request->headers->get('Content-Type', "");
@@ -167,6 +170,7 @@ class MediaSourceController extends ControllerBase {
         $node,
         $media_type,
         $taxonomy_term,
+        $source_term,
         $request->getContent(TRUE),
         $content_type,
         $content_location

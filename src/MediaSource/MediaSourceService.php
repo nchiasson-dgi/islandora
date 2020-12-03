@@ -235,6 +235,8 @@ class MediaSourceService {
    *   Media type for new media.
    * @param \Drupal\taxonomy\TermInterface $taxonomy_term
    *   Term from the 'Behavior' vocabulary to give to new media.
+   * @param \Drupal\taxonomy\TermInterface $source_term
+   *   Term from the 'Behavior' vocabulary of the source media.
    * @param resource $resource
    *   New file contents as a resource.
    * @param string $mimetype
@@ -248,6 +250,7 @@ class MediaSourceService {
     NodeInterface $node,
     MediaTypeInterface $media_type,
     TermInterface $taxonomy_term,
+    TermInterface $source_term,
     $resource,
     $mimetype,
     $content_location
@@ -320,7 +323,17 @@ class MediaSourceService {
 
       // Set alt text.
       if ($source_field_config->getSetting('alt_field') && $source_field_config->getSetting('alt_field_required')) {
-        $media_struct[$source_field]['alt'] = $file->getFilename;
+        $source_media_id = $this->islandoraUtils->getMediaReferencingNodeAndTerm($node, $source_term);
+        if (!empty($source_media_id)) {
+          $source_media = $this->entityTypeManager->getStorage('media')->load(reset($source_media_id));
+        }
+
+        if (isset($source_media) && $source_media->field_media_image->alt) {
+          $media_struct[$source_field]['alt'] = $source_media->field_media_image->alt;
+        }
+        else {
+          $media_struct[$source_field]['alt'] = $file->getFilename();
+        }
       }
 
       $media = $this->entityTypeManager->getStorage('media')->create($media_struct);
