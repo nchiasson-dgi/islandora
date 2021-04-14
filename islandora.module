@@ -485,7 +485,17 @@ function islandora_form_alter(&$form, FormStateInterface $form_state, $form_id) 
     $media_of_nid = $params['edit']['field_media_of']['widget'][0]['target_id'];
     $node = \Drupal::entityTypeManager()->getStorage('node')->load($media_of_nid);
     $title = $node->getTitle();
+    $description = $node->get('field_description')->getString();
+
     $form['name']['widget'][0]['value']['#default_value'] = $title;
+    if ($description) {
+      // Creating a hidden field to insert the description.
+      $form['object_description'] = [
+        '#id' => 'object_description',
+        '#type' => 'hidden',
+        '#value' => $description,
+      ];
+    }
   }
 }
 
